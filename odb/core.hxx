@@ -13,11 +13,6 @@
 #  define PRAGMA_ODB(x)
 #endif
 
-namespace odb
-{
-  class image
-  {
-  };
-}
+#include <odb/forward.hxx>
 
 #endif // ODB_CORE_HXX
