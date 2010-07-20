@@ -19,42 +19,58 @@ namespace odb
     virtual
     ~database ();
 
-    template <typename T, template <typename> class P>
+    // Object persistence API.
+    //
+  public:
+
+    // Make the object persistent.
+    //
+    template <typename T>
     typename object_traits<T>::id_type
-    persist (P<T> obj);
+    persist (T& object);
+
+    // Throw object_not_persistent if not found.
+    //
+    template <typename T>
+    typename object_traits<T>::pointer_type
+    load (typename object_traits<T>::id_type const& id);
 
     template <typename T>
-    typename object_traits<T>::shared_ptr
-    load (typename object_traits<T>::id_type const&);
+    void
+    load (typename object_traits<T>::id_type const& id, T& object);
+
+    // Return NULL/false if not found.
+    //
+    template <typename T>
+    typename object_traits<T>::pointer_type
+    find (typename object_traits<T>::id_type const& id);
 
     template <typename T>
-    typename object_traits<T>::shared_ptr
-    find (typename object_traits<T>::id_type const&);
+    bool
+    find (typename object_traits<T>::id_type const& id, T& object);
 
-    template <typename T, template <typename> class P>
+    // Save the state of a modified objects.
+    //
+    template <typename T>
     void
-    erase (P<T> obj);
+    store (T& object);
 
-    template <typename T, template <typename> class P>
+    // Make the object transient. Throw object_not_persistent if not
+    // found.
+    //
+    template <typename T>
     void
-    modified (P<T> obj);
+    erase (const T& object);
+
+    template <typename T>
+    void
+    erase (typename object_traits<T>::id_type const& id);
 
     // Transaction API.
     //
   public:
-    // Start a transaction. If an existing session can be obtained via
-    // session::current(), the transaction is run as part of that session.
-    // Otherwise a new session is created and will be automatically flushed
-    // and destroyed when transaction ends.
-    //
     virtual transaction_impl*
     begin_transaction () = 0;
-
-    // Start a transaction as part of an existing session. The session
-    // is not automatically flushed or destroyed when transaction ends.
-    //
-    virtual transaction_impl*
-    begin_transaction (session&) = 0;
 
   protected:
     database ();

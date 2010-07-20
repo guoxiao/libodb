@@ -8,7 +8,6 @@
 
 namespace odb
 {
-  class session;
   class database;
   class transaction;
 
@@ -31,7 +30,7 @@ namespace odb
     class object_factory;
 
     template <typename P>
-    class shared_factory;
+    class pointer_factory;
   };
 }
 

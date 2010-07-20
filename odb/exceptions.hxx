@@ -28,14 +28,6 @@ namespace odb
   {
   };
 
-  struct already_in_session: odb::exception
-  {
-  };
-
-  struct not_in_session: odb::exception
-  {
-  };
-
   struct object_not_persistent: odb::exception
   {
   };

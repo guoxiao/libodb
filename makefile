@@ -26,7 +26,7 @@ $(install): $(out_base)/odb/.install
 
 # Clean.
 #
-$(clean): $(out_base)/odb/.clean $(out_base)/tests/.clean
+$(clean): $(out_base)/odb/.clean #$(out_base)/tests/.clean
 
 $(call include,$(bld_root)/install.make)
 

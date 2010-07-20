@@ -4,7 +4,6 @@
 // license   : GNU GPL v2; see accompanying LICENSE file
 
 #include <odb/exceptions.hxx>
-#include <odb/session.hxx>
 #include <odb/transaction.hxx>
 
 namespace odb
@@ -12,62 +11,85 @@ namespace odb
   // @@ Should I make these inline?
   //
 
-  template <typename T, template <typename> class P>
+  template <typename T>
   typename object_traits<T>::id_type database::
-  persist (P<T> p)
+  persist (T& obj)
   {
-    // P<T> should be the same or convertible to
-    // object_traits<T>::shared_ptr.
-    //
-    const typename object_traits<T>::shared_ptr& obj (p);
+    typedef object_traits<T> traits;
 
-    session& s (transaction::current ().session ());
-    return s.persist<T> (*this, obj);
+    if (!transaction::has_current ())
+      throw not_in_transaction ();
+
+    traits::insert (*this, obj);
+    return traits::id (obj);
   }
 
   template <typename T>
-  typename object_traits<T>::shared_ptr database::
+  typename object_traits<T>::pointer_type database::
   load (typename object_traits<T>::id_type const& id)
   {
-    typename object_traits<T>::shared_ptr r (find<T> (id));
+    typedef object_traits<T> traits;
 
-    if (object_traits<T>::shared_ops::null_ptr (r))
+    typename traits::pointer_type r (find<T> (id));
+
+    if (traits::pointer_ops::null_ptr (r))
       throw object_not_persistent ();
 
     return r;
   }
 
   template <typename T>
-  typename object_traits<T>::shared_ptr database::
+  void database::
+  load (typename object_traits<T>::id_type const& id, T& obj)
+  {
+    if (!find<T> (id, obj))
+      throw object_not_persistent ();
+  }
+
+  template <typename T>
+  typename object_traits<T>::pointer_type database::
   find (typename object_traits<T>::id_type const& id)
   {
-    session& s (transaction::current ().session ());
-    return s.find<T> (*this, id);
+    if (!transaction::has_current ())
+      throw not_in_transaction ();
+
+    return object_traits<T>::find (*this, id);
   }
 
-  template <typename T, template <typename> class P>
-  void database::
-  erase (P<T> p)
+  template <typename T>
+  bool database::
+  find (typename object_traits<T>::id_type const& id, T& obj)
   {
-    // P<T> should be the same or convertible to
-    // object_traits<T>::shared_ptr.
-    //
-    const typename object_traits<T>::shared_ptr& obj (p);
+    if (!transaction::has_current ())
+      throw not_in_transaction ();
 
-    session& s (transaction::current ().session ());
-    return s.erase (*this, obj);
+    return object_traits<T>::find (*this, id, obj);
   }
 
-  template <typename T, template <typename> class P>
+  template <typename T>
   void database::
-  modified (P<T> p)
+  store (T& obj)
   {
-    // P<T> should be the same or convertible to
-    // object_traits<T>::shared_ptr.
-    //
-    const typename object_traits<T>::shared_ptr& obj (p);
+    if (!transaction::has_current ())
+      throw not_in_transaction ();
 
-    session& s (transaction::current ().session ());
-    return s.modified (obj);
+    object_traits<T>::update (*this, obj);
+  }
+
+  template <typename T>
+  void database::
+  erase (const T& obj)
+  {
+    erase<T> (object_traits<T>::id (obj));
+  }
+
+  template <typename T>
+  void database::
+  erase (typename object_traits<T>::id_type const& id)
+  {
+    if (!transaction::has_current ())
+      throw not_in_transaction ();
+
+    object_traits<T>::erase (*this, id);
   }
 }

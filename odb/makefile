@@ -6,10 +6,9 @@
 include $(dir $(lastword $(MAKEFILE_LIST)))../build/bootstrap.make
 
 cxx_tun   :=        \
+shared-ptr/base.cxx \
 exception.cxx       \
 exceptions.cxx      \
-shared-ptr/base.cxx \
-session.cxx         \
 database.cxx        \
 transaction.cxx
 

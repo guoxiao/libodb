@@ -11,12 +11,6 @@ namespace odb
     return impl_->database ();
   }
 
-  inline transaction::session_type& transaction::
-  session ()
-  {
-    return impl_->session ();
-  }
-
   inline transaction_impl& transaction::
   implementation ()
   {

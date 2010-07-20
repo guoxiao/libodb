@@ -61,11 +61,6 @@ namespace odb
     if (finilized_)
       throw transaction_already_finilized ();
 
-    // Flush the session if we are in the session-per-transaction mode.
-    //
-    if (impl_->own_session ())
-      session ().flush ();
-
     impl_->commit ();
     finilized_ = true;
   }
@@ -87,7 +82,5 @@ namespace odb
   transaction_impl::
   ~transaction_impl ()
   {
-    if (own_session ())
-      reinterpret_cast<session_type*> (&session_mem_)->~session ();
   }
 }

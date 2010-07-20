@@ -6,8 +6,6 @@
 #ifndef ODB_TRANSACTION_HXX
 #define ODB_TRANSACTION_HXX
 
-#include <new> // placement new
-
 #include <odb/forward.hxx>
 
 namespace odb
@@ -17,7 +15,6 @@ namespace odb
   class transaction
   {
   public:
-    typedef odb::session session_type;
     typedef odb::database database_type;
 
     explicit
@@ -38,11 +35,6 @@ namespace odb
     //
     database_type&
     database ();
-
-    // Return the session this transaction is part of.
-    //
-    session_type&
-    session ();
 
     // Return current transaction or throw if there is no transaction
     // in effect.
@@ -69,30 +61,17 @@ namespace odb
     bool finilized_;
     transaction_impl* impl_;
   };
-}
 
-#include <odb/session.hxx>
-
-namespace odb
-{
   class transaction_impl
   {
   protected:
     friend class transaction;
 
-    typedef odb::session session_type;
     typedef odb::database database_type;
 
-    transaction_impl (database_type& db, session_type& s)
-        : database_ (db), session_ (s)
-    {
-    }
-
     transaction_impl (database_type& db)
-        : database_ (db),
-          session_ (*reinterpret_cast<session_type*> (&session_mem_))
+        : database_ (db)
     {
-      new (&session_mem_) session_type ();
     }
 
     virtual
@@ -104,33 +83,14 @@ namespace odb
     virtual void
     rollback () = 0;
 
-    session_type&
-    session ()
-    {
-      return session_;
-    }
-
     database_type&
     database ()
     {
       return database_;
     }
 
-    bool
-    own_session () const
-    {
-      return &session_ == reinterpret_cast<const session_type*> (&session_mem_);
-    }
-
   protected:
     database_type& database_;
-    session_type& session_;
-
-    union
-    {
-      void* align_;
-      char data_[sizeof (session_type)];
-    } session_mem_;
   };
 }
 
