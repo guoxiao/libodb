@@ -20,7 +20,7 @@ namespace odb
     if (!transaction::has_current ())
       throw not_in_transaction ();
 
-    traits::insert (*this, obj);
+    traits::persist (*this, obj);
     return traits::id (obj);
   }
 
@@ -73,7 +73,7 @@ namespace odb
     if (!transaction::has_current ())
       throw not_in_transaction ();
 
-    object_traits<T>::update (*this, obj);
+    object_traits<T>::store (*this, obj);
   }
 
   template <typename T>

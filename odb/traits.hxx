@@ -27,8 +27,8 @@ namespace odb
   // id_source             - object id (primary key) source
   // id_type id (const T&) - get object id
   //
-  // void insert (database&, T&)
-  // void update (database&, T&)
+  // void persist (database&, T&)
+  // void store (database&, T&)
   // void erase (database&, const id_type&)
   // pointer_type find (database&, const id_type&)
   // bool find (database&, const id_type&, T&)
