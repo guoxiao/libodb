@@ -6,6 +6,7 @@
 #ifndef ODB_BUFFER_HXX
 #define ODB_BUFFER_HXX
 
+#include <new>
 #include <cstddef> // std::size_t
 
 namespace odb
@@ -13,10 +14,32 @@ namespace odb
   class buffer
   {
   public:
-    buffer ();
+    ~buffer ()
+    {
+      if (data_)
+        operator delete (data_);
+    }
+
+    buffer ()
+        : capacity_ (512)
+    {
+      data_ = static_cast<char*> (operator new (capacity_));
+    }
+
+    char*
+    data ()
+    {
+      return data_;
+    }
+
+    std::size_t
+    capacity () const
+    {
+      return capacity_;
+    }
 
     void
-    grow (std::size_t new_capacity, std::size_t data_size);
+    capacity (std::size_t, std::size_t data_size = 0);
 
   private:
     char* data_;
