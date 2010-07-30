@@ -7,6 +7,7 @@
 #define ODB_TRAITS_HXX
 
 #include <odb/forward.hxx>
+#include <odb/buffer.hxx>
 #include <odb/shared-ptr.hxx>
 #include <odb/pointer-traits.hxx>
 
@@ -87,6 +88,30 @@ namespace odb
     typedef
     pointer_traits<typename access::object_traits<T>::pointer_type>
     pointer_ops;
+  };
+
+  template <typename V>
+  struct value_traits
+  {
+    typedef V value_type;
+
+    template <typename I>
+    static void
+    set_value (value_type& v, I i, bool is_null)
+    {
+      if (!is_null)
+        v = value_type (i);
+      else
+        v = value_type ();
+    }
+
+    template <typename I>
+    static void
+    set_image (I& i, bool& is_null, value_type v)
+    {
+      is_null = false;
+      i = I (v);
+    }
   };
 }
 
