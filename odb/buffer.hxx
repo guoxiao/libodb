@@ -32,6 +32,12 @@ namespace odb
       return data_;
     }
 
+    const char*
+    data () const
+    {
+      return data_;
+    }
+
     std::size_t
     capacity () const
     {
