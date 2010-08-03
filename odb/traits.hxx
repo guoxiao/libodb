@@ -91,8 +91,9 @@ namespace odb
   };
 
   template <typename V>
-  struct value_traits
+  class value_traits
   {
+  public:
     typedef V value_type;
 
     template <typename I>
