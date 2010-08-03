@@ -36,7 +36,6 @@ namespace odb
       }
     }
 
-    current_transaction = 0;
     delete impl_;
   }
 
@@ -61,8 +60,9 @@ namespace odb
     if (finilized_)
       throw transaction_already_finilized ();
 
-    impl_->commit ();
     finilized_ = true;
+    current_transaction = 0;
+    impl_->commit ();
   }
 
   void transaction::
@@ -72,6 +72,7 @@ namespace odb
       throw transaction_already_finilized ();
 
     finilized_ = true;
+    current_transaction = 0;
     impl_->rollback ();
   }
 
