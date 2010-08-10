@@ -8,6 +8,8 @@
 
 #include <odb/traits.hxx>
 #include <odb/forward.hxx>
+#include <odb/query.hxx>
+#include <odb/result.hxx>
 
 namespace odb
 {
@@ -65,6 +67,20 @@ namespace odb
     template <typename T>
     void
     erase (typename object_traits<T>::id_type const& id);
+
+    // Object query API.
+    //
+    template <typename T>
+    shared_ptr<result_impl<T> >
+    query ();
+
+    template <typename T>
+    shared_ptr<result_impl<T> >
+    query (const std::string&);
+
+    template <typename T>
+    shared_ptr<result_impl<T> >
+    query (const odb::query<T>&);
 
     // Transaction API.
     //

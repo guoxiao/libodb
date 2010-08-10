@@ -92,4 +92,28 @@ namespace odb
 
     object_traits<T>::erase (*this, id);
   }
+
+  template <typename T>
+  shared_ptr<result_impl<T> > database::
+  query ()
+  {
+    return query (odb::query<T> ());
+  }
+
+  template <typename T>
+  shared_ptr<result_impl<T> > database::
+  query (const std::string& q)
+  {
+    return query (odb::query<T> (q));
+  }
+
+  template <typename T>
+  shared_ptr<result_impl<T> > database::
+  query (const odb::query<T>& q)
+  {
+    if (!transaction::has_current ())
+      throw not_in_transaction ();
+
+    return object_traits<T>::query (*this, q);
+  }
 }
