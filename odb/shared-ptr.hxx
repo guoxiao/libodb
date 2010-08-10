@@ -140,6 +140,20 @@ namespace odb
 
     X* x_;
   };
+
+  template <typename X, typename Y>
+  inline bool
+  operator== (const shared_ptr<X>& x, const shared_ptr<Y>& y)
+  {
+    return x.get () == y.get ();
+  }
+
+  template <typename X, typename Y>
+  inline bool
+  operator!= (const shared_ptr<X>& x, const shared_ptr<Y>& y)
+  {
+    return x.get () != y.get ();
+  }
 }
 
 #endif // ODB_SHARED_PTR_HXX
