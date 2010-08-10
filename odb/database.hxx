@@ -71,15 +71,15 @@ namespace odb
     // Object query API.
     //
     template <typename T>
-    shared_ptr<result_impl<T> >
+    result<T>
     query ();
 
     template <typename T>
-    shared_ptr<result_impl<T> >
+    result<T>
     query (const std::string&);
 
     template <typename T>
-    shared_ptr<result_impl<T> >
+    result<T>
     query (const odb::query<T>&);
 
     // Transaction API.

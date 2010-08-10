@@ -31,14 +31,9 @@ namespace odb
     typedef std::input_iterator_tag iterator_category;
 
   public:
-    result_iterator ()
-        : res_ (0)
-    {
-    }
-
     explicit
-    result_iterator (result_impl<T>& res)
-        : res_ (&res)
+    result_iterator (result_impl<T>* res = 0)
+        : res_ (res)
     {
     }
 
@@ -140,24 +135,41 @@ namespace odb
     typedef std::ptrdiff_t difference_type;
 
   public:
+    result ()
+    {
+    }
+
+    explicit
     result (shared_ptr<result_impl<T> > impl)
         : impl_ (impl)
     {
     }
 
-    /*
-    result&
-    operator= (shared_ptr<result_impl<T> > impl)
+    // Copying or assignment of a result object leads to one instance
+    // being an alias for another. Think of copying a result as copying
+    // a file handle -- the file you access through either of them is
+    // still the same.
+    //
+  public:
+    result (const result& r)
+        : impl_ (r.impl_)
     {
-      impl_ = impl;
     }
-    */
+
+    result&
+    operator= (const result& r)
+    {
+      if (impl_ != r.impl_)
+        impl_ = r.impl_;
+
+      return *this;
+    }
 
   public:
     iterator
     begin ()
     {
-      return iterator (*impl_);
+      return iterator (impl_.get ());
     }
 
     iterator
@@ -165,18 +177,6 @@ namespace odb
     {
       return iterator ();
     }
-
-  public:
-    operator shared_ptr<result_impl<T> > ()
-    {
-      return impl_;
-    }
-
-    // Copying or assignment of results is not supported.
-    //
-  private:
-    result (const result&);
-    result& operator= (const result&);
 
   private:
     shared_ptr<result_impl<T> > impl_;

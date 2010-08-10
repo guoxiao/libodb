@@ -94,21 +94,21 @@ namespace odb
   }
 
   template <typename T>
-  shared_ptr<result_impl<T> > database::
+  result<T> database::
   query ()
   {
     return query (odb::query<T> ());
   }
 
   template <typename T>
-  shared_ptr<result_impl<T> > database::
+  result<T> database::
   query (const std::string& q)
   {
     return query (odb::query<T> (q));
   }
 
   template <typename T>
-  shared_ptr<result_impl<T> > database::
+  result<T> database::
   query (const odb::query<T>& q)
   {
     if (!transaction::has_current ())
