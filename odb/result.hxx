@@ -72,6 +72,14 @@ namespace odb
       return *this;
     }
 
+  public:
+    void
+    load (T& x)
+    {
+      res_->current (x);
+    }
+
+  public:
     bool
     equal (const result_iterator& j)
     {
@@ -114,6 +122,9 @@ namespace odb
 
     virtual typename object_traits<T>::pointer_type
     current (bool release) = 0;
+
+    virtual void
+    current (T&) = 0;
 
     virtual void
     next () = 0;
