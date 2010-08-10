@@ -51,9 +51,9 @@ namespace odb
     transaction_impl&
     implementation ();
 
-  private:
     // Copying or assignment of transactions is not supported.
     //
+  private:
     transaction (const transaction&);
     transaction& operator= (const transaction&);
 
