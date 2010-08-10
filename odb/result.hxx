@@ -18,7 +18,49 @@ namespace odb
   class result;
 
   template <typename T>
-  class result_impl;
+  class result_iterator;
+
+  template <typename T>
+  class result_impl: public shared_base
+  {
+  public:
+    virtual
+    ~result_impl ();
+    result_impl () : end_ (false), current_ () {}
+
+  protected:
+    friend class result<T>;
+    friend class result_iterator<T>;
+
+    typename object_traits<T>::pointer_type
+    current (bool release)
+    {
+      if (object_traits<T>::pointer_ops::null_ptr (current_) && !end_)
+        current ();
+
+      return current_;
+    }
+
+    bool
+    end () const
+    {
+      return end_;
+    }
+
+  protected:
+    virtual void
+    current () = 0;
+
+    virtual void
+    current (T&) = 0;
+
+    virtual void
+    next () = 0;
+
+  protected:
+    bool end_;
+    typename object_traits<T>::pointer_type current_;
+  };
 
   template <typename T>
   class result_iterator
@@ -81,10 +123,9 @@ namespace odb
 
   public:
     bool
-    equal (const result_iterator& j)
+    equal (result_iterator j) const
     {
-      return  (res_ ? res_->current (false) : 0) ==
-        (j.res_ ? j.res_->current (false) : 0);
+      return  (res_ ? res_->end () : true) == (j.res_ ? j.res_->end () : true);
     }
 
   private:
@@ -109,27 +150,6 @@ namespace odb
 
   //
   //
-  template <typename T>
-  class result_impl: public shared_base
-  {
-  public:
-    virtual
-    ~result_impl ();
-
-  protected:
-    friend class result<T>;
-    friend class result_iterator<T>;
-
-    virtual typename object_traits<T>::pointer_type
-    current (bool release) = 0;
-
-    virtual void
-    current (T&) = 0;
-
-    virtual void
-    next () = 0;
-  };
-
   template <typename T>
   class result
   {
