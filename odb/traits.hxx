@@ -89,31 +89,6 @@ namespace odb
     pointer_traits<typename access::object_traits<T>::pointer_type>
     pointer_ops;
   };
-
-  template <typename V>
-  class value_traits
-  {
-  public:
-    typedef V value_type;
-
-    template <typename I>
-    static void
-    set_value (value_type& v, I i, bool is_null)
-    {
-      if (!is_null)
-        v = value_type (i);
-      else
-        v = value_type ();
-    }
-
-    template <typename I>
-    static void
-    set_image (I& i, bool& is_null, value_type v)
-    {
-      is_null = false;
-      i = I (v);
-    }
-  };
 }
 
 #endif // ODB_TRAITS_HXX
