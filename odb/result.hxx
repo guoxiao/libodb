@@ -33,7 +33,7 @@ namespace odb
     friend class result_iterator<T>;
 
     typename object_traits<T>::pointer_type
-    current (bool release)
+    current (bool /*release*/)
     {
       if (object_traits<T>::pointer_ops::null_ptr (current_) && !end_)
         current ();
