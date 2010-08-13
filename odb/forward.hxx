@@ -12,9 +12,6 @@ namespace odb
   class transaction;
 
   template <typename T>
-  class query;
-
-  template <typename T>
   class shared_ptr;
 
   class access
