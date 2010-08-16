@@ -8,9 +8,6 @@
 
 namespace odb
 {
-  // @@ Should I make these inline?
-  //
-
   template <typename T>
   typename object_traits<T>::id_type database::
   persist (T& obj)
@@ -29,7 +26,6 @@ namespace odb
   load (const typename object_traits<T>::id_type& id)
   {
     typedef object_traits<T> traits;
-
     typename traits::pointer_type r (find<T> (id));
 
     if (traits::pointer_traits::null_ptr (r))
@@ -78,33 +74,12 @@ namespace odb
 
   template <typename T>
   void database::
-  erase (const T& obj)
-  {
-    erase<T> (object_traits<T>::id (obj));
-  }
-
-  template <typename T>
-  void database::
   erase (const typename object_traits<T>::id_type& id)
   {
     if (!transaction::has_current ())
       throw not_in_transaction ();
 
     object_traits<T>::erase (*this, id);
-  }
-
-  template <typename T>
-  result<T> database::
-  query ()
-  {
-    return query (odb::query<T> ());
-  }
-
-  template <typename T>
-  result<T> database::
-  query (const std::string& q)
-  {
-    return query (odb::query<T> (q));
   }
 
   template <typename T>
