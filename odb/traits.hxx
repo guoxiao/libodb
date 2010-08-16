@@ -67,16 +67,16 @@ namespace odb
     create ()
     {
       void* v (pointer_traits<P>::allocate (sizeof (object_type)));
-      guard g (v);
+      mem_guard g (v);
       P p (new (v) object_type);
       g.release ();
       return p;
     }
   private:
-    struct guard
+    struct mem_guard
     {
-      guard (void* p): p_ (p) {}
-      ~guard () {if (p_) pointer_traits<P>::free (p_);}
+      mem_guard (void* p): p_ (p) {}
+      ~mem_guard () {if (p_) pointer_traits<P>::free (p_);}
       void release () {p_ = 0;}
       void* p_;
     };
@@ -86,8 +86,8 @@ namespace odb
   struct object_traits: access::object_traits<T>
   {
     typedef
-    pointer_traits<typename access::object_traits<T>::pointer_type>
-    pointer_ops;
+    odb::pointer_traits<typename access::object_traits<T>::pointer_type>
+    pointer_traits;
   };
 }
 

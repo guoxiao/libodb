@@ -32,11 +32,18 @@ namespace odb
     friend class result<T>;
     friend class result_iterator<T>;
 
-    typename object_traits<T>::pointer_type
-    current (bool /*release*/)
+    typedef object_traits<T> traits;
+    typedef typename traits::pointer_type pointer_type;
+    typedef typename traits::pointer_traits pointer_traits;
+
+    pointer_type
+    current (bool release)
     {
-      if (object_traits<T>::pointer_ops::null_ptr (current_) && !end_)
+      if (pointer_traits::null_ptr (current_) && !end_)
         current ();
+
+      if (release)
+        guard_.release ();
 
       return current_;
     }
@@ -58,8 +65,18 @@ namespace odb
     next () = 0;
 
   protected:
+    void
+    current (pointer_type p)
+    {
+      current_ = p;
+      guard_.reset (current_);
+    }
+
     bool end_;
-    typename object_traits<T>::pointer_type current_;
+
+  private:
+    pointer_type current_;
+    typename pointer_traits::guard guard_;
   };
 
   template <typename T>

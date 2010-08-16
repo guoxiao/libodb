@@ -16,6 +16,24 @@ namespace odb
   template <typename P>
   class pointer_traits;
 
+  // No-op pointer guard for smart pointers.
+  //
+  template <typename P>
+  class nop_guard
+  {
+  public:
+    nop_guard () {}
+
+    explicit
+    nop_guard (P) {}
+
+    void
+    release () {}
+
+    void
+    reset (P) {}
+  };
+
   // Default implementation that should work for any sensible smart
   // pointer with one template argument (object type). The only
   // assumptions that we make are the availability of operator-> and
@@ -28,6 +46,7 @@ namespace odb
   public:
     typedef T type;
     typedef P<T> pointer;
+    typedef nop_guard<pointer> guard;
 
     // Return underlying pointer, including NULL.
     //
@@ -77,12 +96,33 @@ namespace odb
 
   // Specialization for naked pointer.
   //
+  template <typename P>
+  class nptr_guard
+  {
+  public:
+    ~nptr_guard () {delete p_;}
+    nptr_guard (): p_ (0) {}
+
+    explicit
+    nptr_guard (P p): p_ (p) {}
+
+    void
+    release () {p_ = 0;}
+
+    void
+    reset (P p) {delete p_; p_ = p;}
+
+  private:
+    P p_;
+  };
+
   template <typename T>
   class pointer_traits<T*>
   {
   public:
     typedef T type;
     typedef T* pointer;
+    typedef nptr_guard<pointer> guard;
 
     static type*
     get_ptr (pointer p)
@@ -126,6 +166,7 @@ namespace odb
   public:
     typedef T type;
     typedef odb::shared_ptr<T> pointer;
+    typedef nop_guard<pointer> guard;
 
     static type*
     get_ptr (const pointer& p)

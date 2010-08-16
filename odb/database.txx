@@ -32,7 +32,7 @@ namespace odb
 
     typename traits::pointer_type r (find<T> (id));
 
-    if (traits::pointer_ops::null_ptr (r))
+    if (traits::pointer_traits::null_ptr (r))
       throw object_not_persistent ();
 
     return r;
