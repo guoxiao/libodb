@@ -30,13 +30,13 @@ namespace odb
   }
 
   inline shared_base::
-  shared_base (shared_base const&)
+  shared_base (const shared_base&)
       : counter_ (1)
   {
   }
 
   inline shared_base& shared_base::
-  operator= (shared_base const&)
+  operator= (const shared_base&)
   {
     return *this;
   }

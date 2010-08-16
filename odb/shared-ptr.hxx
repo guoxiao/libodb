@@ -28,7 +28,7 @@ namespace odb
     {
     }
 
-    shared_ptr (shared_ptr const& x)
+    shared_ptr (const shared_ptr& x)
         : base (x), x_ (x.x_)
     {
       if (x_ != 0)
@@ -36,7 +36,7 @@ namespace odb
     }
 
     template <typename Y>
-    shared_ptr (shared_ptr<Y> const& x)
+    shared_ptr (const shared_ptr<Y>& x)
         : base (x), x_ (x.x_)
     {
       if (x_ != 0)
@@ -44,7 +44,7 @@ namespace odb
     }
 
     shared_ptr&
-    operator= (shared_ptr const& x)
+    operator= (const shared_ptr& x)
     {
       if (x_ != x.x_)
       {
@@ -63,7 +63,7 @@ namespace odb
 
     template <typename Y>
     shared_ptr&
-    operator= (shared_ptr<Y> const& x)
+    operator= (const shared_ptr<Y>& x)
     {
       if (x_ != x.x_)
       {

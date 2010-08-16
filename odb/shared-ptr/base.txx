@@ -49,7 +49,7 @@ namespace odb
 
     template <typename X>
     std::size_t*
-    counter (X const* p)
+    counter (const X* p)
     {
       return bits::locator<X>::counter (const_cast<X*> (p));
     }
@@ -81,14 +81,14 @@ namespace odb
     template <typename X>
     struct counter_ops<X, X>
     {
-      counter_ops (X const* p) : counter_ (p ? bits::counter (p) : 0) {}
-      counter_ops (counter_ops const& x) : counter_ (x.counter_) {}
+      counter_ops (const X* p) : counter_ (p ? bits::counter (p) : 0) {}
+      counter_ops (const counter_ops& x) : counter_ (x.counter_) {}
 
       template <typename Z>
-      counter_ops (counter_ops<Z, Z> const& x) : counter_ (x.counter_) {}
+      counter_ops (const counter_ops<Z, Z>& x) : counter_ (x.counter_) {}
 
       counter_ops&
-      operator= (counter_ops const& x)
+      operator= (const counter_ops& x)
       {
         counter_ = x.counter_;
         return *this;
@@ -96,14 +96,14 @@ namespace odb
 
       template <typename Z>
       counter_ops&
-      operator= (counter_ops<Z, Z> const& x)
+      operator= (const counter_ops<Z, Z>& x)
       {
         counter_ = x.counter_;
         return *this;
       }
 
       void
-      reset (X const* p)
+      reset (const X* p)
       {
         counter_ = p ? bits::counter (p) : 0;
       }
@@ -125,7 +125,7 @@ namespace odb
       }
 
       std::size_t
-      count (X const*) const
+      count (const X*) const
       {
         return *counter_;
       }
@@ -136,27 +136,27 @@ namespace odb
     template <typename Y>
     struct counter_ops<shared_base, Y>
     {
-      counter_ops (Y const*) {}
-      counter_ops (counter_ops const&) {}
+      counter_ops (const Y*) {}
+      counter_ops (const counter_ops&) {}
 
       template <typename Z>
-      counter_ops (counter_ops<shared_base, Z> const&) {}
+      counter_ops (const counter_ops<shared_base, Z>&) {}
 
       counter_ops&
-      operator= (counter_ops const&)
+      operator= (const counter_ops&)
       {
         return *this;
       }
 
       template <typename Z>
       counter_ops&
-      operator= (counter_ops<shared_base, Z> const&)
+      operator= (const counter_ops<shared_base, Z>&)
       {
         return *this;
       }
 
       void
-      reset (Y const*) {}
+      reset (const Y*) {}
 
       void
       inc (shared_base* p) {p->_inc_ref ();}
@@ -169,7 +169,7 @@ namespace odb
       }
 
       std::size_t
-      count (shared_base const* p) const {return p->_ref_count ();}
+      count (const shared_base* p) const {return p->_ref_count ();}
     };
   }
 
@@ -192,7 +192,7 @@ namespace odb
 
   template <typename X>
   inline std::size_t
-  ref_count (X const* p)
+  ref_count (const X* p)
   {
     bits::counter_ops<typename bits::counter_type<X>::r, X> c (p);
     return c.count (p);

@@ -14,7 +14,7 @@ namespace odb
   {
     // By default return the exception type name ( typeid (*this).name () ).
     //
-    virtual char const*
+    virtual const char*
     what () const throw ();
   };
 }

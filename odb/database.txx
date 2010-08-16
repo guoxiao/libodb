@@ -26,7 +26,7 @@ namespace odb
 
   template <typename T>
   typename object_traits<T>::pointer_type database::
-  load (typename object_traits<T>::id_type const& id)
+  load (const typename object_traits<T>::id_type& id)
   {
     typedef object_traits<T> traits;
 
@@ -40,7 +40,7 @@ namespace odb
 
   template <typename T>
   void database::
-  load (typename object_traits<T>::id_type const& id, T& obj)
+  load (const typename object_traits<T>::id_type& id, T& obj)
   {
     if (!find<T> (id, obj))
       throw object_not_persistent ();
@@ -48,7 +48,7 @@ namespace odb
 
   template <typename T>
   typename object_traits<T>::pointer_type database::
-  find (typename object_traits<T>::id_type const& id)
+  find (const typename object_traits<T>::id_type& id)
   {
     if (!transaction::has_current ())
       throw not_in_transaction ();
@@ -58,7 +58,7 @@ namespace odb
 
   template <typename T>
   bool database::
-  find (typename object_traits<T>::id_type const& id, T& obj)
+  find (const typename object_traits<T>::id_type& id, T& obj)
   {
     if (!transaction::has_current ())
       throw not_in_transaction ();
@@ -85,7 +85,7 @@ namespace odb
 
   template <typename T>
   void database::
-  erase (typename object_traits<T>::id_type const& id)
+  erase (const typename object_traits<T>::id_type& id)
   {
     if (!transaction::has_current ())
       throw not_in_transaction ();

@@ -35,21 +35,21 @@ namespace odb
     //
     template <typename T>
     typename object_traits<T>::pointer_type
-    load (typename object_traits<T>::id_type const& id);
+    load (const typename object_traits<T>::id_type& id);
 
     template <typename T>
     void
-    load (typename object_traits<T>::id_type const& id, T& object);
+    load (const typename object_traits<T>::id_type& id, T& object);
 
     // Return NULL/false if not found.
     //
     template <typename T>
     typename object_traits<T>::pointer_type
-    find (typename object_traits<T>::id_type const& id);
+    find (const typename object_traits<T>::id_type& id);
 
     template <typename T>
     bool
-    find (typename object_traits<T>::id_type const& id, T& object);
+    find (const typename object_traits<T>::id_type& id, T& object);
 
     // Save the state of a modified objects.
     //
@@ -66,7 +66,7 @@ namespace odb
 
     template <typename T>
     void
-    erase (typename object_traits<T>::id_type const& id);
+    erase (const typename object_traits<T>::id_type& id);
 
     // Object query API.
     //

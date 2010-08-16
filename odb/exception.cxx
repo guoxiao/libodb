@@ -9,7 +9,7 @@
 
 namespace odb
 {
-  char const* exception::
+  const char* exception::
   what () const throw ()
   {
     return typeid (*this).name ();

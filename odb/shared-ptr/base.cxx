@@ -16,7 +16,7 @@ odb::share exclusive = odb::share (2);
 //
 namespace odb
 {
-  char const* not_shared::
+  const char* not_shared::
   what () const throw ()
   {
     return "object is not shared";

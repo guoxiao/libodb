@@ -39,16 +39,16 @@ namespace odb
 {
   struct not_shared: exception
   {
-    virtual char const*
+    virtual const char*
     what () const throw ();
   };
 
   struct shared_base
   {
     shared_base ();
-    shared_base (shared_base const&);
+    shared_base (const shared_base&);
     shared_base&
-    operator= (shared_base const&);
+    operator= (const shared_base&);
 
     void
     _inc_ref ();
@@ -82,7 +82,7 @@ namespace odb
 
   template <typename X>
   inline std::size_t
-  ref_count (X const*);
+  ref_count (const X*);
 }
 
 #include <odb/shared-ptr/base.ixx>
