@@ -20,7 +20,7 @@ namespace odb
     explicit
     transaction (transaction_impl*);
 
-    // Unless the transaction has been already been finilized (explicitly
+    // Unless the transaction has already been finilized (explicitly
     // committed or rolled back), the destructor will roll it back.
     //
     ~transaction ();
