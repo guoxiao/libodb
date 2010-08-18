@@ -6,19 +6,23 @@
 #include <odb/exceptions.hxx>
 #include <odb/transaction.hxx>
 
+#include <odb/details/tls.hxx>
+
 namespace odb
 {
+  using namespace details;
+
   //
   // transaction
   //
 
-  static transaction* current_transaction = 0;
+  static ODB_TLS_POINTER (transaction) current_transaction;
 
   transaction::
   transaction (transaction_impl* impl)
       : finilized_ (false), impl_ (impl)
   {
-    current_transaction = this;
+    tls_set (current_transaction, this);
   }
 
   transaction::
@@ -42,16 +46,18 @@ namespace odb
   bool transaction::
   has_current ()
   {
-    return current_transaction != 0;
+    return tls_get (current_transaction) != 0;
   }
 
   transaction& transaction::
   current ()
   {
-    if (current_transaction == 0)
+    transaction* cur (tls_get (current_transaction));
+
+    if (cur == 0)
       throw not_in_transaction ();
 
-    return *current_transaction;
+    return *cur;
   }
 
   void transaction::
@@ -61,7 +67,7 @@ namespace odb
       throw transaction_already_finilized ();
 
     finilized_ = true;
-    current_transaction = 0;
+    tls_set<transaction> (current_transaction, 0);
     impl_->commit ();
   }
 
@@ -72,7 +78,7 @@ namespace odb
       throw transaction_already_finilized ();
 
     finilized_ = true;
-    current_transaction = 0;
+    tls_set<transaction> (current_transaction, 0);
     impl_->rollback ();
   }
 
