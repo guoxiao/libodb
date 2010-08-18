@@ -7,11 +7,12 @@ include $(dir $(lastword $(MAKEFILE_LIST)))../build/bootstrap.make
 
 cxx_tun   :=        \
 shared-ptr/base.cxx \
-buffer.cxx          \
 exception.cxx       \
 exceptions.cxx      \
 database.cxx        \
 transaction.cxx
+
+cxx_tun   += details/buffer.cxx
 
 # POSIX-based implementation details.
 #
