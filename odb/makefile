@@ -13,6 +13,10 @@ exceptions.cxx      \
 database.cxx        \
 transaction.cxx
 
+# POSIX-based implementation details.
+#
+cxx_tun   += details/posix/exceptions.cxx details/posix/thread.cxx
+
 cxx_obj   := $(addprefix $(out_base)/,$(cxx_tun:.cxx=.o))
 cxx_od    := $(cxx_obj:.o=.o.d)
 
@@ -26,7 +30,7 @@ clean     := $(out_base)/.clean
 
 # Build.
 #
-$(odb.l): $(cxx_obj)
+$(odb.l): $(cxx_obj) -lpthread
 
 $(cxx_obj) $(cxx_od): $(odb.l.cpp-options)
 $(odb.l.cpp-options): value := -I$(src_root)
