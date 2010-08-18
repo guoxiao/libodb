@@ -68,8 +68,19 @@ namespace odb
     void
     operator delete (void*) throw ();
 
+    struct refcount_callback
+    {
+      void* arg;
+      void (*zero_counter) (void*);
+    };
+
+  private:
+    bool
+    _dec_ref_callback ();
+
   protected:
     std::size_t counter_;
+    refcount_callback* callback_;
   };
 
   template <typename X>

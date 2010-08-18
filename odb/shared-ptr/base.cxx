@@ -21,6 +21,20 @@ namespace odb
   {
     return "object is not shared";
   }
+
+  bool shared_base::
+  _dec_ref_callback ()
+  {
+    bool r (--counter_ == 0);
+
+    if (r)
+    {
+      callback_->zero_counter (callback_->arg);
+      r = (counter_ == 0);
+    }
+
+    return r;
+  }
 }
 
 //

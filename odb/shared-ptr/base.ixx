@@ -25,13 +25,13 @@ namespace odb
 
   inline shared_base::
   shared_base ()
-      : counter_ (1)
+      : counter_ (1), callback_ (0)
   {
   }
 
   inline shared_base::
   shared_base (const shared_base&)
-      : counter_ (1)
+      : counter_ (1), callback_ (0)
   {
   }
 
@@ -50,7 +50,10 @@ namespace odb
   inline bool shared_base::
   _dec_ref ()
   {
-    return --counter_ == 0;
+    if (callback_ == 0)
+      return --counter_ == 0;
+    else
+      return _dec_ref_callback ();
   }
 
   inline std::size_t shared_base::
