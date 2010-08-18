@@ -7,7 +7,6 @@
 #define ODB_TRAITS_HXX
 
 #include <odb/forward.hxx>
-#include <odb/shared-ptr.hxx>
 #include <odb/pointer-traits.hxx>
 
 namespace odb

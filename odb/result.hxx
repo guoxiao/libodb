@@ -10,7 +10,8 @@
 #include <iterator> // iterator categories
 
 #include <odb/forward.hxx>
-#include <odb/shared-ptr.hxx>
+
+#include <odb/details/shared-ptr.hxx>
 
 namespace odb
 {
@@ -21,7 +22,7 @@ namespace odb
   class result_iterator;
 
   template <typename T>
-  class result_impl: public shared_base
+  class result_impl: public details::shared_base
   {
   public:
     virtual
@@ -188,7 +189,7 @@ namespace odb
     }
 
     explicit
-    result (shared_ptr<result_impl<T> > impl)
+    result (details::shared_ptr<result_impl<T> > impl)
         : impl_ (impl)
     {
     }
@@ -227,7 +228,7 @@ namespace odb
     }
 
   private:
-    shared_ptr<result_impl<T> > impl_;
+    details::shared_ptr<result_impl<T> > impl_;
   };
 }
 

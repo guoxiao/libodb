@@ -11,9 +11,6 @@ namespace odb
   class database;
   class transaction;
 
-  template <typename T>
-  class shared_ptr;
-
   class access
   {
   public:

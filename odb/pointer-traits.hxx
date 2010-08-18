@@ -9,8 +9,6 @@
 #include <new>     // operators new/delete
 #include <cstddef> // std::size_t
 
-#include <odb/shared-ptr.hxx>
-
 namespace odb
 {
   template <typename P>
@@ -155,47 +153,6 @@ namespace odb
     free (void* p)
     {
       operator delete (p);
-    }
-  };
-
-  // Specialization for odb::shared_ptr.
-  //
-  template <typename T>
-  class pointer_traits< shared_ptr<T> >
-  {
-  public:
-    typedef T type;
-    typedef odb::shared_ptr<T> pointer;
-    typedef nop_guard<pointer> guard;
-
-    static type*
-    get_ptr (const pointer& p)
-    {
-      return p.get ();
-    }
-
-    static type&
-    get_ref (const pointer& p)
-    {
-      return *p;
-    }
-
-    static bool
-    null_ptr (const pointer& p)
-    {
-      return !p;
-    }
-
-    static void*
-    allocate (std::size_t n)
-    {
-      return operator new (n, shared);
-    }
-
-    static void
-    free (void* p)
-    {
-      operator delete (p, shared);
     }
   };
 }
