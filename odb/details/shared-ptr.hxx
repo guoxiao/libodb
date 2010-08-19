@@ -121,7 +121,7 @@ namespace odb
       }
 
       void
-      reset (X* x)
+      reset (X* x = 0)
       {
         if (x_ != 0)
           base::dec (x_);
