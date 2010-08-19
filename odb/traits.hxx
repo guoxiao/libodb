@@ -11,11 +11,6 @@
 
 namespace odb
 {
-  enum id_source
-  {
-    ids_assigned /* Assigned by the application. */
-  };
-
   // template <typename T>
   // class access::object_traits;
   //
@@ -23,7 +18,6 @@ namespace odb
   // and define the following members:
   //
   // id_type               - object id (primary key) type
-  // id_source             - object id (primary key) source
   // id_type id (const T&) - get object id
   //
   // void persist (database&, T&)
