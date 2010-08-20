@@ -10,21 +10,19 @@
 
 namespace odb
 {
-  // nested_transaction
-  //
   struct already_in_transaction: odb::exception
   {
   };
 
-  // no_transaction
-  //
   struct not_in_transaction: odb::exception
   {
   };
 
-  // finilized_transaction
-  //
   struct transaction_already_finilized: odb::exception
+  {
+  };
+
+  struct deadlock: odb::exception
   {
   };
 

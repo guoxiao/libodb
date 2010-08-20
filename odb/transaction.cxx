@@ -34,9 +34,8 @@ namespace odb
       {
         rollback ();
       }
-      catch (const database_exception&)
+      catch (...)
       {
-        // Ignore it.
       }
     }
 
