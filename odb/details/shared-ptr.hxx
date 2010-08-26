@@ -6,6 +6,8 @@
 #ifndef ODB_DETAILS_SHARED_PTR_HXX
 #define ODB_DETAILS_SHARED_PTR_HXX
 
+#include <odb/pre.hxx>
+
 #include <odb/details/shared-ptr/base.hxx>
 
 namespace odb
@@ -158,5 +160,7 @@ namespace odb
     }
   }
 }
+
+#include <odb/post.hxx>
 
 #endif // ODB_DETAILS_SHARED_PTR_HXX

@@ -6,13 +6,16 @@
 #ifndef ODB_DETAILS_LOCK_HXX
 #define ODB_DETAILS_LOCK_HXX
 
+#include <odb/pre.hxx>
+
+#include <odb/details/export.hxx>
 #include <odb/details/posix/mutex.hxx>
 
 namespace odb
 {
   namespace details
   {
-    struct lock
+    struct LIBODB_EXPORT lock
     {
       lock (mutex& m)
           : mutex_ (m), locked_ (true)
@@ -42,5 +45,7 @@ namespace odb
     };
   }
 }
+
+#include <odb/post.hxx>
 
 #endif // ODB_DETAILS_LOCK_HXX

@@ -6,13 +6,17 @@
 #ifndef ODB_DETAILS_POSIX_THREAD_HXX
 #define ODB_DETAILS_POSIX_THREAD_HXX
 
+#include <odb/pre.hxx>
+
 #include <pthread.h>
+
+#include <odb/details/export.hxx>
 
 namespace odb
 {
   namespace details
   {
-    class thread
+    class LIBODB_EXPORT thread
     {
     public:
       ~thread ();
@@ -33,5 +37,7 @@ namespace odb
 }
 
 #include <odb/details/posix/thread.ixx>
+
+#include <odb/post.hxx>
 
 #endif // ODB_DETAILS_POSIX_THREAD_HXX

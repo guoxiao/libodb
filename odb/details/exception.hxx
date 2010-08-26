@@ -6,16 +6,22 @@
 #ifndef ODB_DETAILS_EXCEPTION_HXX
 #define ODB_DETAILS_EXCEPTION_HXX
 
+#include <odb/pre.hxx>
+
 #include <odb/exception.hxx>
+
+#include <odb/details/export.hxx>
 
 namespace odb
 {
   namespace details
   {
-    struct exception: odb::exception
+    struct LIBODB_EXPORT exception: odb::exception
     {
     };
   }
 }
+
+#include <odb/post.hxx>
 
 #endif // ODB_DETAILS_EXCEPTION_HXX

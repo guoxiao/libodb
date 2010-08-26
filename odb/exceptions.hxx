@@ -6,37 +6,43 @@
 #ifndef ODB_EXCEPTIONS_HXX
 #define ODB_EXCEPTIONS_HXX
 
+#include <odb/pre.hxx>
+
 #include <odb/exception.hxx>
+
+#include <odb/details/export.hxx>
 
 namespace odb
 {
-  struct already_in_transaction: odb::exception
+  struct LIBODB_EXPORT already_in_transaction: odb::exception
   {
   };
 
-  struct not_in_transaction: odb::exception
+  struct LIBODB_EXPORT not_in_transaction: odb::exception
   {
   };
 
-  struct transaction_already_finilized: odb::exception
+  struct LIBODB_EXPORT transaction_already_finilized: odb::exception
   {
   };
 
-  struct deadlock: odb::exception
+  struct LIBODB_EXPORT deadlock: odb::exception
   {
   };
 
-  struct object_not_persistent: odb::exception
+  struct LIBODB_EXPORT object_not_persistent: odb::exception
   {
   };
 
-  struct object_already_persistent: odb::exception
+  struct LIBODB_EXPORT object_already_persistent: odb::exception
   {
   };
 
-  struct database_exception: odb::exception
+  struct LIBODB_EXPORT database_exception: odb::exception
   {
   };
 }
+
+#include <odb/post.hxx>
 
 #endif // ODB_EXCEPTIONS_HXX

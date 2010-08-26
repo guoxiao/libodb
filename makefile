@@ -5,30 +5,33 @@
 
 include $(dir $(lastword $(MAKEFILE_LIST)))build/bootstrap.make
 
+dirs := odb
+
 default  := $(out_base)/
-test     := $(out_base)/.test
-install  := $(out_base)/.install
+dist     := $(out_base)/.dist
 clean    := $(out_base)/.clean
 
-# Build.
-#
-$(default): $(out_base)/odb/ #$(out_base)/tests/
+$(default): $(addprefix $(out_base)/,$(addsuffix /,$(dirs)))
 
-# Test.
-#
-$(test): $(out_base)/tests/.test
+$(dist): export dirs := $(dirs)
+$(dist): export docs := GPLv2 LICENSE README version
+$(dist): export docs := GPLv2 LICENSE README version
+$(dist): data_dist := libodb-vc9.sln libodb-vc10.sln
+$(dist): exec_dist := bootstrap
+$(dist): export extra_dist := $(data_dist) $(exec_dist)
+$(dist): export version = $(shell cat $(src_root)/version)
 
-# Install.
-#
-$(install): $(out_base)/odb/.install
-	$(call install-data,$(src_base)/LICENSE,$(install_doc_dir)/libodb/LICENSE)
-	$(call install-data,$(src_base)/README,$(install_doc_dir)/libodb/README)
+$(dist): $(addprefix $(out_base)/,$(addsuffix /.dist,$(dirs)))
+	$(call dist-data,$(docs) $(data_dist) libodb.pc.in)
+	$(call dist-exec,$(exec_dist))
+	$(call dist-dir,m4)
+	$(call meta-automake)
+	$(call meta-autoconf)
 
-# Clean.
-#
-$(clean): $(out_base)/odb/.clean #$(out_base)/tests/.clean
+$(clean): $(addprefix $(out_base)/,$(addsuffix /.clean,$(dirs)))
 
-$(call include,$(bld_root)/install.make)
+$(call include,$(bld_root)/dist.make)
+$(call include,$(bld_root)/meta/automake.make)
+$(call include,$(bld_root)/meta/autoconf.make)
 
-$(call import,$(src_base)/odb/makefile)
-#$(call import,$(src_base)/tests/makefile)
+$(foreach d,$(dirs),$(call import,$(src_base)/$d/makefile))

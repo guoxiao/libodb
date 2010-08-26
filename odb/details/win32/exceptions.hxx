@@ -1,12 +1,14 @@
-// file      : odb/details/posix/exceptions.hxx
+// file      : odb/details/win32/exceptions.hxx
 // author    : Boris Kolpackov <boris@codesynthesis.com>
 // copyright : Copyright (c) 2009-2010 Code Synthesis Tools CC
 // license   : GNU GPL v2; see accompanying LICENSE file
 
-#ifndef ODB_DETAILS_POSIX_EXCEPTIONS_HXX
-#define ODB_DETAILS_POSIX_EXCEPTIONS_HXX
+#ifndef ODB_DETAILS_WIN32_EXCEPTIONS_HXX
+#define ODB_DETAILS_WIN32_EXCEPTIONS_HXX
 
 #include <odb/pre.hxx>
+
+#include <windows.h>
 
 #include <odb/details/export.hxx>
 #include <odb/details/exception.hxx>
@@ -15,22 +17,23 @@ namespace odb
 {
   namespace details
   {
-    struct LIBODB_EXPORT posix_exception: details::exception
+    struct LIBODB_EXPORT win32_exception: details::exception
     {
-      posix_exception (int code) : code_ (code) {}
+      win32_exception () : code_ (GetLastError ()) {}
+      win32_exception (DWORD code) : code_ (code) {}
 
-      int
+      DWORD
       code () const {return code_;}
 
       virtual const char*
       what () const throw ();
 
     private:
-      int code_;
+      DWORD code_;
     };
   }
 }
 
 #include <odb/post.hxx>
 
-#endif // ODB_DETAILS_POSIX_EXCEPTIONS_HXX
+#endif // ODB_DETAILS_WIN32_EXCEPTIONS_HXX

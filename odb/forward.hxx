@@ -6,6 +6,8 @@
 #ifndef ODB_FORWARD_HXX
 #define ODB_FORWARD_HXX
 
+#include <odb/pre.hxx>
+
 namespace odb
 {
   class database;
@@ -30,5 +32,7 @@ namespace odb
     class pointer_factory;
   };
 }
+
+#include <odb/post.hxx>
 
 #endif // ODB_FORWARD_HXX

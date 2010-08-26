@@ -6,6 +6,8 @@
 #ifndef ODB_TRAITS_HXX
 #define ODB_TRAITS_HXX
 
+#include <odb/pre.hxx>
+
 #include <odb/forward.hxx>
 #include <odb/pointer-traits.hxx>
 
@@ -82,5 +84,7 @@ namespace odb
     pointer_traits;
   };
 }
+
+#include <odb/post.hxx>
 
 #endif // ODB_TRAITS_HXX

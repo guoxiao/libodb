@@ -6,6 +6,8 @@
 #ifndef ODB_DETAILS_META_POLYMORPHIC_HXX
 #define ODB_DETAILS_META_POLYMORPHIC_HXX
 
+#include <odb/pre.hxx>
+
 #include <odb/details/meta/class-p.hxx>
 #include <odb/details/meta/remove-cv.hxx>
 
@@ -50,5 +52,7 @@ namespace odb
     }
   }
 }
+
+#include <odb/post.hxx>
 
 #endif // ODB_DETAILS_META_POLYMORPHIC_HXX

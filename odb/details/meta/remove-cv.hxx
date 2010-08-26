@@ -6,6 +6,8 @@
 #ifndef ODB_DETAILS_META_REMOVE_CV_HXX
 #define ODB_DETAILS_META_REMOVE_CV_HXX
 
+#include <odb/pre.hxx>
+
 #include <odb/details/meta/remove-c.hxx>
 #include <odb/details/meta/remove-v.hxx>
 
@@ -23,5 +25,7 @@ namespace odb
     }
   }
 }
+
+#include <odb/post.hxx>
 
 #endif // ODB_DETAILS_META_REMOVE_CV_HXX

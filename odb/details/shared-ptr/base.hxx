@@ -6,16 +6,20 @@
 #ifndef ODB_DETAILS_SHARED_PTR_BASE_HXX
 #define ODB_DETAILS_SHARED_PTR_BASE_HXX
 
+#include <odb/pre.hxx>
+
 #include <new>
 #include <cstddef>   // std::size_t
 
 #include <odb/exception.hxx>
 
+#include <odb/details/export.hxx>
+
 namespace odb
 {
   namespace details
   {
-    struct share
+    struct LIBODB_EXPORT share
     {
       explicit
       share (char id);
@@ -32,23 +36,23 @@ namespace odb
   }
 }
 
-void*
+LIBODB_EXPORT void*
 operator new (std::size_t, odb::details::share) throw (std::bad_alloc);
 
-void
+LIBODB_EXPORT void
 operator delete (void*, odb::details::share) throw ();
 
 namespace odb
 {
   namespace details
   {
-    struct not_shared: exception
+    struct LIBODB_EXPORT not_shared: exception
     {
       virtual const char*
       what () const throw ();
     };
 
-    struct shared_base
+    struct LIBODB_EXPORT shared_base
     {
       shared_base ();
       shared_base (const shared_base&);
@@ -104,5 +108,7 @@ namespace odb
 
 #include <odb/details/shared-ptr/base.ixx>
 #include <odb/details/shared-ptr/base.txx>
+
+#include <odb/post.hxx>
 
 #endif // ODB_DETAILS_SHARED_PTR_BASE_HXX

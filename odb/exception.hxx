@@ -6,11 +6,15 @@
 #ifndef ODB_EXCEPTION_HXX
 #define ODB_EXCEPTION_HXX
 
+#include <odb/pre.hxx>
+
 #include <exception>
+
+#include <odb/details/export.hxx>
 
 namespace odb
 {
-  struct exception: std::exception
+  struct LIBODB_EXPORT exception: std::exception
   {
     // By default return the exception type name ( typeid (*this).name () ).
     //
@@ -18,5 +22,7 @@ namespace odb
     what () const throw ();
   };
 }
+
+#include <odb/post.hxx>
 
 #endif // ODB_EXCEPTION_HXX

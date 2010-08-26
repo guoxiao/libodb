@@ -5,27 +5,41 @@
 
 include $(dir $(lastword $(MAKEFILE_LIST)))../build/bootstrap.make
 
-cxx_tun   :=        \
-exception.cxx       \
-exceptions.cxx      \
-database.cxx        \
+cxx :=          \
+exception.cxx   \
+exceptions.cxx  \
+database.cxx    \
 transaction.cxx
 
-cxx_tun   += details/buffer.cxx details/shared-ptr/base.cxx
+# Implementation details.
+#
+cxx +=                      \
+details/buffer.cxx          \
+details/shared-ptr/base.cxx
 
 # POSIX-based implementation details.
 #
-cxx_tun   += details/posix/exceptions.cxx details/posix/thread.cxx
+posix_cxx :=                 \
+details/posix/exceptions.cxx \
+details/posix/thread.cxx
 
-cxx_obj   := $(addprefix $(out_base)/,$(cxx_tun:.cxx=.o))
-cxx_od    := $(cxx_obj:.o=.o.d)
+# Win32-based implementation details.
+#
+win32_cxx :=                 \
+details/win32/exceptions.cxx \
+details/win32/condition.cxx  \
+details/win32/thread.cxx
+
+cxx_tun := $(cxx) $(posix_cxx)
+cxx_obj := $(addprefix $(out_base)/,$(cxx_tun:.cxx=.o))
+cxx_od  := $(cxx_obj:.o=.o.d)
 
 odb.l             := $(out_base)/odb.l
 odb.l.cpp-options := $(out_base)/odb.l.cpp-options
 
-default   := $(out_base)/
-install   := $(out_base)/.install
-clean     := $(out_base)/.clean
+default := $(out_base)/
+dist    := $(out_base)/.dist
+clean   := $(out_base)/.clean
 
 
 # Build.
@@ -33,7 +47,7 @@ clean     := $(out_base)/.clean
 $(odb.l): $(cxx_obj) -lpthread
 
 $(cxx_obj) $(cxx_od): $(odb.l.cpp-options)
-$(odb.l.cpp-options): value := -I$(src_root)
+$(odb.l.cpp-options): value := -I$(out_root) -I$(src_root)
 
 $(call include-dep,$(cxx_od))
 
@@ -42,12 +56,33 @@ $(call include-dep,$(cxx_od))
 #
 $(out_base)/: $(odb.l)
 
-# Install.
+# Dist.
 #
-$(install): $(odb.l)
-	$(call install-lib,$<,$(install_lib_dir)/$(ld_lib_prefix)odb$(ld_lib_suffix))
-	$(call install-dir,$(src_base),$(install_inc_dir)/odb,\
-'(' -name '*.hxx' -o -name '*.ixx' -o -name '*.txx' ')')
+$(dist): export sources := $(cxx)
+$(dist): export posix_sources := $(posix_cxx)
+$(dist): export win32_sources := $(win32_cxx)
+
+$(dist): export headers = $(subst $(src_base)/,,$(shell find $(src_base) \
+-path $(src_base)/details/posix -a -prune -a -false -o \
+-path $(src_base)/details/win32 -a -prune -a -false -o \
+-name '*.hxx' -o -name '*.ixx' -o -name '*.txx'))
+$(dist): export posix_headers = $(subst $(src_base)/,,$(shell find \
+$(src_base)/details/posix -name '*.hxx' -o -name '*.ixx' -o -name '*.txx'))
+$(dist): export win32_headers = $(subst $(src_base)/,,$(shell find \
+$(src_base)/details/win32 -name '*.hxx' -o -name '*.ixx' -o -name '*.txx'))
+
+$(dist): data_dist := details/config-vc.h
+$(dist): export extra_dist := $(data_dist) libodb-vc9.vcproj \
+libodb-vc10.vcxproj libodb-vc10.vcxproj.filters
+$(dist): export interface_version = $(shell sed -e \
+'s/^\([0-9]*\.[0-9]*\).*/\1/' $(src_root)/version)
+
+$(dist):
+	$(call dist-data,$(sources) $(posix_sources) $(win32_sources) \
+$(headers) $(posix_headers) $(win32_headers) $(data_dist) details/config.h.in)
+	$(call meta-vc9proj,$(src_base)/libodb-vc9.vcproj)
+	$(call meta-vc10proj,$(src_base)/libodb-vc10.vcxproj)
+	$(call meta-automake)
 
 # Clean.
 #
@@ -59,6 +94,11 @@ $(clean): $(odb.l).o.clean           \
 
 # How to.
 #
+$(call include,$(bld_root)/dist.make)
+$(call include,$(bld_root)/meta/vc9proj.make)
+$(call include,$(bld_root)/meta/vc10proj.make)
+$(call include,$(bld_root)/meta/automake.make)
+
 $(call include,$(bld_root)/cxx/o-l.make)
 $(call include,$(bld_root)/cxx/cxx-o.make)
 $(call include,$(bld_root)/cxx/cxx-d.make)

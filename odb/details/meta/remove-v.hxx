@@ -6,6 +6,8 @@
 #ifndef ODB_DETAILS_META_REMOVE_V_HXX
 #define ODB_DETAILS_META_REMOVE_V_HXX
 
+#include <odb/pre.hxx>
+
 namespace odb
 {
   namespace details
@@ -26,5 +28,7 @@ namespace odb
     }
   }
 }
+
+#include <odb/post.hxx>
 
 #endif // ODB_DETAILS_META_REMOVE_V_HXX

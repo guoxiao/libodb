@@ -1,14 +1,14 @@
-// file      : odb/details/posix/mutex.hxx
+// file      : odb/details/win32/mutex.hxx
 // author    : Boris Kolpackov <boris@codesynthesis.com>
 // copyright : Copyright (c) 2009-2010 Code Synthesis Tools CC
 // license   : GNU GPL v2; see accompanying LICENSE file
 
-#ifndef ODB_DETAILS_POSIX_MUTEX_HXX
-#define ODB_DETAILS_POSIX_MUTEX_HXX
+#ifndef ODB_DETAILS_WIN32_MUTEX_HXX
+#define ODB_DETAILS_WIN32_MUTEX_HXX
 
 #include <odb/pre.hxx>
 
-#include <pthread.h>
+#include <windows.h>
 
 #include <odb/details/export.hxx>
 
@@ -34,13 +34,13 @@ namespace odb
 
     private:
       friend class condition;
-      pthread_mutex_t mutex_;
+      CRITICAL_SECTION cs_;
     };
   }
 }
 
-#include <odb/details/posix/mutex.ixx>
+#include <odb/details/win32/mutex.ixx>
 
 #include <odb/post.hxx>
 
-#endif // ODB_DETAILS_POSIX_MUTEX_HXX
+#endif // ODB_DETAILS_WIN32_MUTEX_HXX

@@ -6,6 +6,8 @@
 #ifndef ODB_DETAILS_POSIX_TLS_HXX
 #define ODB_DETAILS_POSIX_TLS_HXX
 
+#include <odb/pre.hxx>
+
 #include <pthread.h>
 
 namespace odb
@@ -69,28 +71,30 @@ namespace odb
 
     template <typename T>
     inline T&
-    tls_get (const tls<T>& s)
+    tls_get (const tls<T>& t)
     {
-      return s.get ();
+      return t.get ();
     }
 
     template <typename T>
     inline T*
-    tls_get (const tls<T*>& s)
+    tls_get (const tls<T*>& t)
     {
-      return s.get ();
+      return t.get ();
     }
 
     template <typename T>
     inline void
-    tls_set (tls<T*>& s, T* p)
+    tls_set (tls<T*>& t, T* p)
     {
-      return s.set (p);
+      t.set (p);
     }
   }
 }
 
 #include <odb/details/posix/tls.ixx>
 #include <odb/details/posix/tls.txx>
+
+#include <odb/post.hxx>
 
 #endif // ODB_DETAILS_POSIX_TLS_HXX

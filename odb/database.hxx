@@ -6,16 +6,22 @@
 #ifndef ODB_DATABASE_HXX
 #define ODB_DATABASE_HXX
 
+#include <odb/pre.hxx>
+
+#include <string>
+
 #include <odb/traits.hxx>
 #include <odb/forward.hxx>
 #include <odb/query.hxx>
 #include <odb/result.hxx>
 
+#include <odb/details/export.hxx>
+
 namespace odb
 {
   class transaction_impl;
 
-  class database
+  class LIBODB_EXPORT database
   {
   public:
     virtual
@@ -99,5 +105,7 @@ namespace odb
 
 #include <odb/database.ixx>
 #include <odb/database.txx>
+
+#include <odb/post.hxx>
 
 #endif // ODB_DATABASE_HXX

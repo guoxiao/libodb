@@ -6,6 +6,8 @@
 #ifndef ODB_VERSION_HXX
 #define ODB_VERSION_HXX
 
+#include <odb/pre.hxx>
+
 // Version format is AABBCCDD where
 //
 // AA - major version number
@@ -32,5 +34,7 @@
 //
 #define LIBODB_VERSION     999901
 #define LIBODB_VERSION_STR "1.0.0.a1"
+
+#include <odb/post.hxx>
 
 #endif // ODB_VERSION_HXX

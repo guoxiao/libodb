@@ -19,23 +19,31 @@ endif
 
 # Aliases
 #
-.PHONY: $(out_base)/         \
-        $(out_base)/.test    \
-        $(out_base)/.install \
+.PHONY: $(out_base)/       \
+        $(out_base)/.test  \
+        $(out_base)/.dist  \
         $(out_base)/.clean
 
 ifdef %interactive%
 
-.PHONY: test install clean
+.PHONY: test dist clean
 
-test:    $(out_base)/.test
-install: $(out_base)/.install
-clean:   $(out_base)/.clean
+test:  $(out_base)/.test
+dist:  $(out_base)/.dist
+clean: $(out_base)/.clean
 
-ifneq ($(filter $(.DEFAULT_GOAL),test install clean),)
+ifneq ($(filter $(.DEFAULT_GOAL),test dist clean),)
 .DEFAULT_GOAL :=
 endif
 
+endif
+
+# Make sure the distribution prefix is set if the goal is dist.
+#
+ifneq ($(filter $(MAKECMDGOALS),dist),)
+ifeq ($(dist_prefix),)
+$(error dist_prefix is not set)
+endif
 endif
 
 # Don't include dependency info for certain targets.

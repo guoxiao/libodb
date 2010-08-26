@@ -18,6 +18,7 @@
 //
 #pragma warning (disable:4355) // passing 'this' to a member
 #pragma warning (disable:4800) // forcing value to bool
+#pragma warning (disable:4290) // exception specification ignored
 //#pragma warning (disable:4275) // non dll-interface base
 //#pragma warning (disable:4251) // base needs to have dll-interface
 //#pragma warning (disable:4224) // nonstandard extension  (/Za option)

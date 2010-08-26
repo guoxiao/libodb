@@ -6,14 +6,18 @@
 #ifndef ODB_BUFFER_DETAILS_HXX
 #define ODB_BUFFER_DETAILS_HXX
 
+#include <odb/pre.hxx>
+
 #include <new>
 #include <cstddef> // std::size_t
+
+#include <odb/details/export.hxx>
 
 namespace odb
 {
   namespace details
   {
-    class buffer
+    class LIBODB_EXPORT buffer
     {
     public:
       ~buffer ()
@@ -55,5 +59,7 @@ namespace odb
     };
   }
 }
+
+#include <odb/post.hxx>
 
 #endif // ODB_BUFFER_DETAILS_HXX

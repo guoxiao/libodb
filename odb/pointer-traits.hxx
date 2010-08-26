@@ -6,6 +6,8 @@
 #ifndef ODB_POINTER_TRAITS_HXX
 #define ODB_POINTER_TRAITS_HXX
 
+#include <odb/pre.hxx>
+
 #include <new>     // operators new/delete
 #include <cstddef> // std::size_t
 
@@ -156,5 +158,7 @@ namespace odb
     }
   };
 }
+
+#include <odb/post.hxx>
 
 #endif // ODB_POINTER_TRAITS_HXX

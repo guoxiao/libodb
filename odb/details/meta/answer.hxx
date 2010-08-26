@@ -6,6 +6,8 @@
 #ifndef ODB_DETAILS_META_ANSWER_HXX
 #define ODB_DETAILS_META_ANSWER_HXX
 
+#include <odb/pre.hxx>
+
 namespace odb
 {
   namespace details
@@ -24,5 +26,7 @@ namespace odb
     }
   }
 }
+
+#include <odb/post.hxx>
 
 #endif // ODB_DETAILS_META_ANSWER_HXX

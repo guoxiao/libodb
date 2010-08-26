@@ -6,6 +6,8 @@
 #ifndef ODB_RESULT_HXX
 #define ODB_RESULT_HXX
 
+#include <odb/pre.hxx>
+
 #include <cstddef>  // std::ptrdiff_t, std::size_t
 #include <iterator> // iterator categories
 
@@ -233,5 +235,7 @@ namespace odb
 }
 
 #include <odb/result.txx>
+
+#include <odb/post.hxx>
 
 #endif // ODB_RESULT_HXX

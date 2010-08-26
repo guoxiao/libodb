@@ -6,13 +6,17 @@
 #ifndef ODB_TRANSACTION_HXX
 #define ODB_TRANSACTION_HXX
 
+#include <odb/pre.hxx>
+
 #include <odb/forward.hxx>
+
+#include <odb/details/export.hxx>
 
 namespace odb
 {
   class transaction_impl;
 
-  class transaction
+  class LIBODB_EXPORT transaction
   {
   public:
     typedef odb::database database_type;
@@ -62,7 +66,7 @@ namespace odb
     transaction_impl* impl_;
   };
 
-  class transaction_impl
+  class LIBODB_EXPORT transaction_impl
   {
   protected:
     friend class transaction;
@@ -95,5 +99,7 @@ namespace odb
 }
 
 #include <odb/transaction.ixx>
+
+#include <odb/post.hxx>
 
 #endif // ODB_TRANSACTION_HXX
