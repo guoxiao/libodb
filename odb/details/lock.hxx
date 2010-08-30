@@ -9,7 +9,7 @@
 #include <odb/pre.hxx>
 
 #include <odb/details/export.hxx>
-#include <odb/details/posix/mutex.hxx>
+#include <odb/details/mutex.hxx>
 
 namespace odb
 {
