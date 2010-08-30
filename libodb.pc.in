@@ -9,7 +9,7 @@ libdir=@libdir@
 includedir=@includedir@
 
 Name: libodb
-Description: Object persistence compiler for C++, runtime library
+Description: Object persistence compiler for C++, common runtime library
 URL: http://www.codesynthesis.com/products/odb/
 Version: @VERSION@
 Libs: -L${libdir} -lodb

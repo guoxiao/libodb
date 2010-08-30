@@ -66,11 +66,11 @@
 			/>
 			<Tool
 				Name="VCLinkerTool"
-				OutputFile="$(OutDir)\bin\odb_d-__value__(interface_version)-vc9.dll"
+				OutputFile="$(OutDir)\bin\odb-d-__value__(interface_version)-vc9.dll"
 				LinkIncremental="2"
 				GenerateDebugInformation="true"
 				SubSystem="2"
-				ImportLibrary="$(OutDir)\lib\odb_d.lib"
+				ImportLibrary="$(OutDir)\lib\odb-d.lib"
 				TargetMachine="1"
 			/>
 			<Tool
@@ -143,11 +143,11 @@
 			/>
 			<Tool
 				Name="VCLinkerTool"
-				OutputFile="$(OutDir)\bin64\odb_d-__value__(interface_version)-vc9.dll"
+				OutputFile="$(OutDir)\bin64\odb-d-__value__(interface_version)-vc9.dll"
 				LinkIncremental="2"
 				GenerateDebugInformation="true"
 				SubSystem="2"
-				ImportLibrary="$(OutDir)\lib64\odb_d.lib"
+				ImportLibrary="$(OutDir)\lib64\odb-d.lib"
 				TargetMachine="17"
 			/>
 			<Tool
