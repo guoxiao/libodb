@@ -50,7 +50,9 @@ namespace odb
 
 #elif defined(ODB_THREADS_WIN32)
 
-#  ifdef ODB_THREADS_TLS_DECLSPEC_POINTER
+#  include <odb/details/win32/tls.hxx>
+
+#  ifdef ODB_THREADS_TLS_DECLSPEC
 #    define ODB_TLS_POINTER(type) __declspec(thread) type*
 
 namespace odb
@@ -74,29 +76,9 @@ namespace odb
 }
 
 #  else
-#    error unsupported TLS pointer model
+#    define ODB_TLS_POINTER(type) tls<type*>
 #  endif
-
-#  ifdef ODB_THREADS_TLS_DECLSPEC_OBJECT
-#    define ODB_TLS_OBJECT(type) __declspec(thread) type
-
-namespace odb
-{
-  namespace details
-  {
-    template <typename T>
-    inline T&
-    tls_get (T& x)
-    {
-      return x;
-    }
-  }
-}
-
-#  else
-#    error unsupported TLS object model
-#  endif
-
+#  define ODB_TLS_OBJECT(type) tls<type>
 #else
 # error unknown threading model
 #endif

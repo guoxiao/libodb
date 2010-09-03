@@ -31,8 +31,8 @@ namespace odb
       char id_;
     };
 
-    extern share shared;
-    extern share exclusive;
+    extern LIBODB_EXPORT share shared;
+    extern LIBODB_EXPORT share exclusive;
   }
 }
 

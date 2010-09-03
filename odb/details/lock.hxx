@@ -18,30 +18,29 @@ namespace odb
     struct LIBODB_EXPORT lock
     {
       lock (mutex& m)
-          : mutex_ (m), locked_ (true)
+          : mutex_ (&m)
       {
-        mutex_.lock ();
+        mutex_->lock ();
       }
 
       ~lock ()
       {
-        if (locked_)
-          mutex_.unlock ();
+        if (mutex_ != 0)
+          mutex_->unlock ();
       }
 
       void
       unlock ()
       {
-        if (locked_)
+        if (mutex_ != 0)
         {
-          mutex_.unlock ();
-          locked_ = true;
+          mutex_->unlock ();
+          mutex_ = 0;
         }
       }
 
     private:
-      mutex& mutex_;
-      bool locked_;
+      mutex* mutex_;
     };
   }
 }

@@ -18,9 +18,9 @@ nobase_odbinclude_HEADERS += __path__(posix_headers)
 endif
 
 if ODB_THREADS_WIN32
-libodb_la_SOURCES += __path__(win32_sources)
+libodb_la_SOURCES += __path__(win32_sources) __path__(win32_dll_sources)
 nobase_odbinclude_HEADERS += __path__(win32_headers)
 endif
 
-AM_CPPFLAGS = -I$(top_builddir) -I$(top_srcdir)
-libodb_la_LDFLAGS = -release __value__(interface_version)
+libodb_la_CPPFLAGS= -I$(top_builddir) -I$(top_srcdir) -DLIBODB_DYNAMIC_LIB
+libodb_la_LDFLAGS = -release __value__(interface_version) -no-undefined

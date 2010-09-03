@@ -14,10 +14,22 @@
 #  define LIBODB_EXPORT
 #else
 #  ifdef _WIN32
-#    ifdef LIBODB_DYNAMIC_LIB
-#      define LIBODB_EXPORT __declspec(dllexport)
+#    ifdef _MSC_VER
+#      ifdef LIBODB_DYNAMIC_LIB
+#        define LIBODB_EXPORT __declspec(dllexport)
+#      else
+#        define LIBODB_EXPORT __declspec(dllimport)
+#      endif
 #    else
-#      define LIBODB_EXPORT __declspec(dllimport)
+#      ifdef LIBODB_DYNAMIC_LIB
+#        ifdef DLL_EXPORT
+#          define LIBODB_EXPORT __declspec(dllexport)
+#        else
+#          define LIBODB_EXPORT
+#        endif
+#      else
+#        define LIBODB_EXPORT __declspec(dllimport)
+#      endif
 #    endif
 #  else
 #    define LIBODB_EXPORT

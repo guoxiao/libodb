@@ -1,21 +1,37 @@
-// file      : odb/details/posix/tls.hxx
+// file      : odb/details/win32/tls.hxx
 // author    : Boris Kolpackov <boris@codesynthesis.com>
 // copyright : Copyright (c) 2009-2010 Code Synthesis Tools CC
 // license   : GNU GPL v2; see accompanying LICENSE file
 
-#ifndef ODB_DETAILS_POSIX_TLS_HXX
-#define ODB_DETAILS_POSIX_TLS_HXX
+#ifndef ODB_DETAILS_WIN32_TLS_HXX
+#define ODB_DETAILS_WIN32_TLS_HXX
 
 #include <odb/pre.hxx>
 
-#include <pthread.h>
+#include <cstddef> // std::size_t
+
+#include <odb/details/export.hxx>
+#include <odb/details/win32/once.hxx>
 
 namespace odb
 {
   namespace details
   {
+    class LIBODB_EXPORT tls_common
+    {
+    public:
+      static std::size_t
+      _allocate (void (*dtor) (void*));
+
+      static void*
+      _get (std::size_t key);
+
+      static void
+      _set (std::size_t key, void* value);
+    };
+
     template <typename T>
-    class tls
+    class tls: protected tls_common
     {
     public:
       tls ();
@@ -35,13 +51,12 @@ namespace odb
       destructor (void*);
 
     private:
-      static int error_;
-      static pthread_once_t once_;
-      static pthread_key_t key_;
+      static once once_;
+      static std::size_t key_;
     };
 
     template <typename T>
-    class tls<T*>
+    class tls<T*>: protected tls_common
     {
     public:
       tls ();
@@ -61,9 +76,8 @@ namespace odb
       key_init ();
 
     private:
-      static int error_;
-      static pthread_once_t once_;
-      static pthread_key_t key_;
+      static once once_;
+      static std::size_t key_;
     };
 
     template <typename T>
@@ -89,9 +103,9 @@ namespace odb
   }
 }
 
-#include <odb/details/posix/tls.ixx>
-#include <odb/details/posix/tls.txx>
+#include <odb/details/win32/tls.ixx>
+#include <odb/details/win32/tls.txx>
 
 #include <odb/post.hxx>
 
-#endif // ODB_DETAILS_POSIX_TLS_HXX
+#endif // ODB_DETAILS_WIN32_TLS_HXX

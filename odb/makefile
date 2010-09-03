@@ -26,9 +26,14 @@ details/posix/thread.cxx
 # Win32-based implementation details.
 #
 win32_cxx :=                 \
-details/win32/exceptions.cxx \
+details/win32/init.cxx       \
+details/win32/once.cxx       \
+details/win32/tls.cxx        \
 details/win32/condition.cxx  \
-details/win32/thread.cxx
+details/win32/thread.cxx     \
+details/win32/exceptions.cxx
+
+win32_dll_cxx := details/win32/dll.cxx
 
 cxx_tun := $(cxx) $(posix_cxx)
 cxx_obj := $(addprefix $(out_base)/,$(cxx_tun:.cxx=.o))
@@ -61,6 +66,7 @@ $(out_base)/: $(odb.l)
 $(dist): export sources := $(cxx)
 $(dist): export posix_sources := $(posix_cxx)
 $(dist): export win32_sources := $(win32_cxx)
+$(dist): export win32_dll_sources := $(win32_dll_cxx)
 
 $(dist): export headers = $(subst $(src_base)/,,$(shell find $(src_base) \
 -path $(src_base)/details/posix -a -prune -a -false -o \
@@ -79,7 +85,8 @@ $(dist): export interface_version = $(shell sed -e \
 
 $(dist):
 	$(call dist-data,$(sources) $(posix_sources) $(win32_sources) \
-$(headers) $(posix_headers) $(win32_headers) $(data_dist) details/config.h.in)
+$(win32_dll_sources) $(headers) $(posix_headers) $(win32_headers) \
+$(data_dist) details/config.h.in)
 	$(call meta-vc9proj,$(src_base)/libodb-vc9.vcproj)
 	$(call meta-vc10proj,$(src_base)/libodb-vc10.vcxproj)
 	$(call meta-automake)
