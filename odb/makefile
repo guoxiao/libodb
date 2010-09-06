@@ -51,11 +51,21 @@ clean   := $(out_base)/.clean
 #
 $(odb.l): $(cxx_obj) -lpthread
 
-$(cxx_obj) $(cxx_od): $(odb.l.cpp-options)
+$(cxx_obj) $(cxx_od): $(odb.l.cpp-options) $(out_base)/details/config.h
 $(odb.l.cpp-options): value := -I$(out_root) -I$(src_root)
 
 $(call include-dep,$(cxx_od))
 
+$(out_base)/details/config.h:
+	@echo '// file      : odb/details/config.h'                      >$@
+	@echo '// author    : automatically generated'                  >>$@
+	@echo ''                                                        >>$@
+	@echo '#ifndef ODB_DETAILS_CONFIG_H'                            >>$@
+	@echo '#define ODB_DETAILS_CONFIG_H'                            >>$@
+	@echo ''                                                        >>$@
+	@echo '#define ODB_THREADS_POSIX 1'                             >>$@
+	@echo ''                                                        >>$@
+	@echo '#endif // ODB_DETAILS_CONFIG_H'                          >>$@
 
 # Convenience alias for default target.
 #
@@ -97,7 +107,18 @@ $(clean): $(odb.l).o.clean           \
   $(odb.l.cpp-options).clean         \
   $(addsuffix .cxx.clean,$(cxx_obj)) \
   $(addsuffix .cxx.clean,$(cxx_od))
+	$(call message,rm $$1,rm -f $$1,$(out_base)/details/config.h)
 
+# Generated .gitignore.
+#
+ifeq ($(out_base),$(src_base))
+$(odb.l): | $(out_base)/.gitignore
+
+$(out_base)/.gitignore: files := details/config.h
+$(clean): $(out_base)/.gitignore.clean
+
+$(call include,$(bld_root)/git/gitignore.make)
+endif
 
 # How to.
 #

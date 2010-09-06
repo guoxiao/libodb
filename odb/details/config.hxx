@@ -10,12 +10,11 @@
 
 #ifdef _MSC_VER
 #  include <odb/details/config-vc.h>
+#elif defined(ODB_COMPILER)
+#  define ODB_THREADS_NONE
+#  define LIBODB_STATIC_LIB
 #else
-#  ifdef HAVE_CONFIG_H
-#    include <odb/details/config.h>
-#  else
-#    define ODB_THREADS_POSIX
-#  endif
+#  include <odb/details/config.h>
 #endif
 
 // no post
