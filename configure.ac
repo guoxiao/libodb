@@ -51,7 +51,5 @@ DISABLE_RPATH
 # Output.
 #
 AC_CONFIG_HEADERS([odb/config.h odb/details/config.h])
-AC_CONFIG_FILES([
-  __path__(config_files)
-])
+AC_CONFIG_FILES([__path__(config_files)])
 AC_OUTPUT
