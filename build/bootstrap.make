@@ -52,6 +52,6 @@ define include-dep
 $(call -include,$1)
 endef
 
-ifneq ($(filter $(MAKECMDGOALS),clean disfigure),)
+ifneq ($(filter $(MAKECMDGOALS),clean disfigure dist),)
 include-dep =
 endif
