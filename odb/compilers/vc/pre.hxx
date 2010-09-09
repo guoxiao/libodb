@@ -16,6 +16,7 @@
 
 // Disabled warnings.
 //
+#pragma warning (disable:4068) // unknown pragma
 #pragma warning (disable:4355) // passing 'this' to a member
 #pragma warning (disable:4800) // forcing value to bool
 #pragma warning (disable:4290) // exception specification ignored
