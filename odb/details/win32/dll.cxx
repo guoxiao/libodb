@@ -8,6 +8,10 @@
 //
 #if defined(LIBODB_STATIC_LIB) || !defined (_MSC_VER) && !defined(DLL_EXPORT)
 
+#ifndef WIN32_LEAN_AND_MEAN
+#define WIN32_LEAN_AND_MEAN
+#endif
+
 #include <windows.h>
 
 #include <odb/details/win32/init.hxx>
