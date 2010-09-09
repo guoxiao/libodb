@@ -43,7 +43,7 @@
 			/>
 			<Tool
 				Name="VCCLCompilerTool"
-				AdditionalOptions="/wd4355 /wd4800 /wd4290"
+				AdditionalOptions="/wd4355 /wd4800 /wd4290 /wd4200"
 				Optimization="0"
 				AdditionalIncludeDirectories=".."
 				PreprocessorDefinitions="WIN32;_DEBUG;_WINDOWS;_USRDLL;LIBODB_DYNAMIC_LIB"
@@ -120,7 +120,7 @@
 			/>
 			<Tool
 				Name="VCCLCompilerTool"
-				AdditionalOptions="/wd4355 /wd4800 /wd4290"
+				AdditionalOptions="/wd4355 /wd4800 /wd4290 /wd4200"
 				Optimization="0"
 				AdditionalIncludeDirectories=".."
 				PreprocessorDefinitions="WIN32;_DEBUG;_WINDOWS;_USRDLL;LIBODB_DYNAMIC_LIB"
@@ -197,7 +197,7 @@
 			/>
 			<Tool
 				Name="VCCLCompilerTool"
-				AdditionalOptions="/wd4355 /wd4800 /wd4290"
+				AdditionalOptions="/wd4355 /wd4800 /wd4290 /wd4200"
 				Optimization="2"
 				EnableIntrinsicFunctions="true"
 				AdditionalIncludeDirectories=".."
@@ -277,7 +277,7 @@
 			/>
 			<Tool
 				Name="VCCLCompilerTool"
-				AdditionalOptions="/wd4355 /wd4800 /wd4290"
+				AdditionalOptions="/wd4355 /wd4800 /wd4290 /wd4200"
 				Optimization="2"
 				EnableIntrinsicFunctions="true"
 				AdditionalIncludeDirectories=".."
