@@ -15,6 +15,9 @@ transaction.cxx
 #
 cxx +=                      \
 details/buffer.cxx          \
+details/condition.cxx       \
+details/lock.cxx            \
+details/mutex.cxx           \
 details/shared-ptr/base.cxx
 
 # POSIX-based implementation details.
