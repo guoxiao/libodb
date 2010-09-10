@@ -17,18 +17,13 @@
 // Disabled warnings.
 //
 #pragma warning (disable:4068) // unknown pragma
+#pragma warning (disable:4251) // needs to have DLL-interface
+#pragma warning (disable:4290) // exception specification ignored
 #pragma warning (disable:4355) // passing 'this' to a member
 #pragma warning (disable:4800) // forcing value to bool
-#pragma warning (disable:4290) // exception specification ignored
 
 //#pragma warning (disable:4275) // non dll-interface base
 //#pragma warning (disable:4224) // nonstandard extension  (/Za option)
-
-// VC++ 10.0 (2010)
-//
-#if (_MSC_VER == 1600)
-#  pragma warning (disable:4251) // needs to have DLL-interface
-#endif
 
 // Elevated warnings.
 //
