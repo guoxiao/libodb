@@ -16,7 +16,7 @@ namespace odb
     // tls<T>
     //
     template <typename T>
-    once tls<T>::once_;
+    win32_once_t tls<T>::once_= WIN32_ONCE_INIT;
 
     template <typename T>
     size_t tls<T>::key_;
@@ -25,7 +25,7 @@ namespace odb
     T& tls<T>::
     get () const
     {
-      once_.call (key_init);
+      win32_once (once_, key_init);
 
       if (void* v = _get (key_))
         return *static_cast<T*> (v);
@@ -42,7 +42,7 @@ namespace odb
     void tls<T>::
     free ()
     {
-      once_.call (key_init);
+      win32_once (once_, key_init);
 
       if (void* v = _get (key_))
       {
@@ -68,7 +68,7 @@ namespace odb
     // tls<T*>
     //
     template <typename T>
-    once tls<T*>::once_;
+    win32_once_t tls<T*>::once_ = WIN32_ONCE_INIT;
 
     template <typename T>
     size_t tls<T*>::key_;
@@ -77,7 +77,7 @@ namespace odb
     T* tls<T*>::
     get () const
     {
-      once_.call (key_init);
+      win32_once (once_, key_init);
       return static_cast<T*> (_get (key_));
     }
 
@@ -85,7 +85,7 @@ namespace odb
     void tls<T*>::
     set (T* p)
     {
-      once_.call (key_init);
+      win32_once (once_, key_init);
       _set (key_, p);
     }
 

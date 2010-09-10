@@ -35,16 +35,20 @@ namespace odb
       once& operator= (const once&);
 
     private:
-      friend void
-      once_process_start ();
-
-      friend void
-      once_process_end (bool);
-
-    private:
       bool called_;
-      static CRITICAL_SECTION cs_;
     };
+
+    // Low-level, POSIX-like API that can be used safely during static
+    // initialization (that is, win32_once() can be called during static
+    // initialization) provided once_process_start() has been called.
+    //
+    typedef unsigned int win32_once_t;
+    const win32_once_t WIN32_ONCE_INIT = 0;
+
+    LIBODB_EXPORT void
+    win32_once (win32_once_t&, void (*func) ());
+
+    extern LIBODB_EXPORT CRITICAL_SECTION win32_once_cs_;
   }
 }
 

@@ -54,7 +54,7 @@ namespace odb
       destructor (void*);
 
     private:
-      static once once_;
+      static win32_once_t once_;
       static std::size_t key_;
     };
 
@@ -79,7 +79,7 @@ namespace odb
       key_init ();
 
     private:
-      static once once_;
+      static win32_once_t once_;
       static std::size_t key_;
     };
 

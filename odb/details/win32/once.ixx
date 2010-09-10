@@ -9,6 +9,19 @@ namespace odb
 {
   namespace details
   {
+    inline void
+    win32_once (win32_once_t& o, void (*func) ())
+    {
+      win32_lock l (win32_once_cs_);
+
+      if (o == 0)
+      {
+        o = 1;
+        l.unlock ();
+        func ();
+      }
+    }
+
     inline once::
     once ()
         : called_ (false)
@@ -18,12 +31,13 @@ namespace odb
     inline void once::
     call (void (*func) ())
     {
-      win32_lock l (cs_);
+      win32_lock l (win32_once_cs_);
 
       if (!called_)
       {
-        func ();
         called_ = true;
+        l.unlock ();
+        func ();
       }
     }
   }

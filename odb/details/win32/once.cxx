@@ -16,18 +16,18 @@ namespace odb
 {
   namespace details
   {
-    CRITICAL_SECTION once::cs_;
+    CRITICAL_SECTION win32_once_cs_;
 
     void
     once_process_start ()
     {
-      InitializeCriticalSection (&once::cs_);
+      InitializeCriticalSection (&win32_once_cs_);
     }
 
     void
     once_process_end (bool)
     {
-      DeleteCriticalSection (&once::cs_);
+      DeleteCriticalSection (&win32_once_cs_);
     }
   }
 }
