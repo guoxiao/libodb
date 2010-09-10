@@ -26,6 +26,15 @@ namespace odb
       return x;
     }
 
+    // If early destructions is possible, destroy the object and free
+    // any allocated resources.
+    //
+    template <typename T>
+    inline void
+    tls_free (T& x)
+    {
+    }
+
     template <typename T>
     inline T*
     tls_get (T* p)

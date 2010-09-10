@@ -23,6 +23,9 @@ namespace odb
       T&
       get () const;
 
+      void
+      free ();
+
     private:
       tls (const tls&);
       tls& operator= (const tls&);
@@ -71,6 +74,13 @@ namespace odb
     tls_get (const tls<T>& t)
     {
       return t.get ();
+    }
+
+    template <typename T>
+    inline void
+    tls_free (tls<T>& t)
+    {
+      t.free ();
     }
 
     template <typename T>

@@ -32,9 +32,7 @@ namespace odb
       if (e != 0 || error_ != 0)
         throw posix_exception (e ? e : error_);
 
-      void* v (pthread_getspecific (key_));
-
-      if (v != 0)
+      if (void* v = pthread_getspecific (key_))
         return *static_cast<T*> (v);
 
       std::auto_ptr<T> p (new T);
@@ -45,6 +43,24 @@ namespace odb
       T& r (*p);
       p.release ();
       return r;
+    }
+
+    template <typename T>
+    void tls<T>::
+    free ()
+    {
+      int e (pthread_once (&once_, key_init));
+
+      if (e != 0 || error_ != 0)
+        throw posix_exception (e ? e : error_);
+
+      if (void* v = pthread_getspecific (key_))
+      {
+        if (e = pthread_setspecific (key_, 0))
+          throw posix_exception (e);
+
+        delete static_cast<T*> (v);
+      }
     }
 
     template <typename T>

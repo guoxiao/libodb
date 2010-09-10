@@ -26,9 +26,8 @@ namespace odb
     get () const
     {
       once_.call (key_init);
-      void* v (_get (key_));
 
-      if (v != 0)
+      if (void* v = _get (key_))
         return *static_cast<T*> (v);
 
       auto_ptr<T> p (new T);
@@ -37,6 +36,19 @@ namespace odb
       T& r (*p);
       p.release ();
       return r;
+    }
+
+    template <typename T>
+    void tls<T>::
+    free ()
+    {
+      once_.call (key_init);
+
+      if (void* v = _get (key_))
+      {
+        _set (key_, 0);
+        delete static_cast<T*> (v);
+      }
     }
 
     template <typename T>

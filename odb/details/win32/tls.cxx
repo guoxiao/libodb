@@ -18,6 +18,10 @@
 #include <odb/details/win32/tls-init.hxx>
 #include <odb/details/win32/exceptions.hxx>
 
+#ifdef _MSC_VER
+#  pragma warning (disable:4200) // zero-sized array in struct
+#endif
+
 using namespace std;
 
 namespace odb
