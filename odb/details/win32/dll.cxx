@@ -6,7 +6,9 @@
 // If we are building a static library from VC++ (LIBODB_STATIC_LIB) or
 // a static library from automake (!DLL_EXPORT), then omit DllMain.
 //
-#if defined(LIBODB_STATIC_LIB) || !defined (_MSC_VER) && !defined(DLL_EXPORT)
+
+#if (defined(_MSC_VER) && defined(LIBODB_DYNAMIC_LIB)) || \
+    (!defined(_MSC_VER) && defined(DLL_EXPORT))
 
 #ifndef WIN32_LEAN_AND_MEAN
 #define WIN32_LEAN_AND_MEAN
