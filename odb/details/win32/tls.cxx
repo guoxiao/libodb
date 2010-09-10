@@ -139,7 +139,7 @@ namespace odb
             operator new (sizeof (process_data) + sizeof (dtor_func) * c)));
 
         memcpy (pd->dtors, proc_data_->dtors, n * sizeof (dtor_func));
-        memset (proc_data_->dtors + n, 0, sizeof (dtor_func) * (c - n));
+        memset (pd->dtors + n, 0, sizeof (dtor_func) * (c - n));
 
         pd->size = n;
         pd->capacity = c;
