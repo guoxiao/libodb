@@ -67,6 +67,9 @@ namespace odb
     virtual void
     next () = 0;
 
+    virtual void
+    cache () = 0;
+
   protected:
     void
     current (pointer_type p)
@@ -214,6 +217,18 @@ namespace odb
         impl_ = r.impl_;
 
       return *this;
+    }
+
+    // Cache the result instead of fetching the data from the database
+    // one object at a time. This is necessary if you plan on performing
+    // database operations while iterating over the result.
+    //
+  public:
+    void
+    cache ()
+    {
+      if (impl_)
+        impl_->cache ();
     }
 
   public:
