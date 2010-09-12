@@ -1,0 +1,73 @@
+Prerequisites
+=============
+
+  - C++ compiler
+
+Building on UNIX
+================
+
+The following build instructions are used for Linux/UNIX/MacOS X operating
+systems as well as for Cigwin and MinGW on Windows.
+
+The standard autotools-based build system is used on these platforms. After
+unpacking the source code archive change to the libodb package directory
+(referred to as libodb/ from now on) and run the configure script:
+
+./configure
+
+To see the available configuration options run configure with --help:
+
+./configure --help
+
+Here is an example configure run that creates shared libraries only using
+the specified GNU C++ compiler with optimization and without the debug 
+information:
+
+./configure --disable-static CXX=g++-4.5 CXXFLAGS=-O3
+
+Once configuration is complete, run make to build libodb:
+
+make
+
+If the build completes successfully, you can install the libodb headers
+and libraries using the install target (you may need to do this step as 
+root depending on the installation directory):
+
+make install
+
+
+Building on Windows
+===================
+
+The following build instructions are for Microsoft Visual Studio. If you
+would like to build libodb with GCC either using Cigwin or MinGW, refer
+to the "Building on UNIX" section above.
+
+To build libodb with Visual Studio unpacking the source code archive and
+open the libodb-vc<N>.sln file located in the libodb package directory 
+(referred to as libodb\ from now on). Here N is the version of Visual
+Studio that you are using. Once the solution is open, select the desired
+configuration (Debug or Release) and platform (Win32 or x64) and build
+the solution.
+
+The resulting 32-bit DLLs and import libraries are placed into the 
+libodb\bin\ and libodb\lib\ directories, respectively. Similarly, the
+64-bit DLLs and import libraries are placed into libodb\bin64\ and
+libodb\lib64\. The Release versions of import libraries are named
+odb.lib and the Debug versions are named odb-d.lib.
+
+To configure Visual Sudio to automatically locate the libodb headers,
+DLLs, and import libraries, add the following paths to your VC++
+Directories:
+
+Win32:
+
+  Inlcude:    ...\libodb
+  Library:    ...\libodb\lib
+  Executable: ...\libodb\bin    
+
+x64:
+
+  Inlcude:    ...\libodb
+  Library:    ...\libodb\lib64
+  Executable: ...\libodb\bin64    
