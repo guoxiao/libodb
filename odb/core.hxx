@@ -9,10 +9,10 @@
 #include <odb/pre.hxx>
 
 #ifdef ODB_COMPILER
-#  define ODB_PRAGMA_IMPL(x) _Pragma (#x)
-#  define ODB_PRAGMA(x) ODB_PRAGMA_IMPL (odb x)
+#  define PRAGMA_DB_IMPL(x) _Pragma (#x)
+#  define PRAGMA_DB(x) PRAGMA_DB_IMPL (db x)
 #else
-#  define PRAGMA_ODB(x)
+#  define PRAGMA_DB(x)
 #endif
 
 #include <odb/forward.hxx>
