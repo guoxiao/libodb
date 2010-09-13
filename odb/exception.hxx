@@ -16,10 +16,8 @@ namespace odb
 {
   struct LIBODB_EXPORT exception: std::exception
   {
-    // By default return the exception type name ( typeid (*this).name () ).
-    //
     virtual const char*
-    what () const throw ();
+    what () const throw () = 0;
   };
 }
 

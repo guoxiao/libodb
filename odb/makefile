@@ -6,7 +6,6 @@
 include $(dir $(lastword $(MAKEFILE_LIST)))../build/bootstrap.make
 
 cxx :=          \
-exception.cxx   \
 exceptions.cxx  \
 database.cxx    \
 transaction.cxx

@@ -16,26 +16,38 @@ namespace odb
 {
   struct LIBODB_EXPORT already_in_transaction: odb::exception
   {
+    virtual const char*
+    what () const throw ();
   };
 
   struct LIBODB_EXPORT not_in_transaction: odb::exception
   {
+    virtual const char*
+    what () const throw ();
   };
 
   struct LIBODB_EXPORT transaction_already_finilized: odb::exception
   {
+    virtual const char*
+    what () const throw ();
   };
 
   struct LIBODB_EXPORT deadlock: odb::exception
   {
+    virtual const char*
+    what () const throw ();
   };
 
   struct LIBODB_EXPORT object_not_persistent: odb::exception
   {
+    virtual const char*
+    what () const throw ();
   };
 
   struct LIBODB_EXPORT object_already_persistent: odb::exception
   {
+    virtual const char*
+    what () const throw ();
   };
 
   struct LIBODB_EXPORT database_exception: odb::exception
