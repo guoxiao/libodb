@@ -36,6 +36,8 @@ AS_IF([test x$threads = xnone], AC_DEFINE([ODB_THREADS_NONE], [1], [Have no thre
 AS_IF([test x$threads = xwin32], AC_DEFINE([ODB_THREADS_WIN32], [1], [Have Win32 threads.]))
 AS_IF([test x$threads = xposix], AC_DEFINE([ODB_THREADS_POSIX], [1], [Have POSIX threads.]))
 
+AS_IF([test x$threads_thread_keyword = xyes], AC_DEFINE([ODB_THREADS_TLS_KEYWORD], [1], [Have __thread keyword.]))
+
 # Define LIBODB_STATIC_LIB if we are build static library on certain platforms.
 #
 STATIC_LIB([LIBODB_STATIC_LIB], [Static library interface.])

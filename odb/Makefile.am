@@ -22,5 +22,5 @@ libodb_la_SOURCES += __path__(win32_sources) __path__(win32_dll_sources)
 nobase_odbinclude_HEADERS += __path__(win32_headers)
 endif
 
-libodb_la_CPPFLAGS= -I'$(top_builddir)' -I'$(top_srcdir)' -DLIBODB_DYNAMIC_LIB
-libodb_la_LDFLAGS = -release __value__(interface_version) -no-undefined
+AM_CPPFLAGS= -I'$(top_builddir)' -I'$(top_srcdir)' -DLIBODB_DYNAMIC_LIB
+AM_LDFLAGS = -release __value__(interface_version) -no-undefined

@@ -54,7 +54,33 @@ namespace odb
 #elif defined(ODB_THREADS_POSIX)
 
 #  include <odb/details/posix/tls.hxx>
-#  define ODB_TLS_POINTER(type) tls<type*>
+
+#  ifdef ODB_THREADS_TLS_KEYWORD
+#    define ODB_TLS_POINTER(type) __thread type*
+
+namespace odb
+{
+  namespace details
+  {
+    template <typename T>
+    inline T*
+    tls_get (T* p)
+    {
+      return p;
+    }
+
+    template <typename T>
+    inline void
+    tls_set (T*& rp, T* p)
+    {
+      rp = p;
+    }
+  }
+}
+
+#  else
+#    define ODB_TLS_POINTER(type) tls<type*>
+#  endif
 #  define ODB_TLS_OBJECT(type) tls<type>
 
 #elif defined(ODB_THREADS_WIN32)
