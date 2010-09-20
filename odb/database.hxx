@@ -35,6 +35,10 @@ namespace odb
     //
     template <typename T>
     typename object_traits<T>::id_type
+    persist (const T& object);
+
+    template <typename T>
+    typename object_traits<T>::id_type
     persist (T& object);
 
     // Throw object_not_persistent if not found.
@@ -61,7 +65,7 @@ namespace odb
     //
     template <typename T>
     void
-    update (T& object);
+    update (const T& object);
 
     // Make the object transient. Throw object_not_persistent if not
     // found.

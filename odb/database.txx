@@ -10,6 +10,19 @@ namespace odb
 {
   template <typename T>
   typename object_traits<T>::id_type database::
+  persist (const T& obj)
+  {
+    typedef object_traits<T> traits;
+
+    if (!transaction::has_current ())
+      throw not_in_transaction ();
+
+    traits::persist (*this, obj);
+    return traits::id (obj);
+  }
+
+  template <typename T>
+  typename object_traits<T>::id_type database::
   persist (T& obj)
   {
     typedef object_traits<T> traits;
@@ -64,7 +77,7 @@ namespace odb
 
   template <typename T>
   void database::
-  update (T& obj)
+  update (const T& obj)
   {
     if (!transaction::has_current ())
       throw not_in_transaction ();
