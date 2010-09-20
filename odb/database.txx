@@ -64,12 +64,12 @@ namespace odb
 
   template <typename T>
   void database::
-  store (T& obj)
+  update (T& obj)
   {
     if (!transaction::has_current ())
       throw not_in_transaction ();
 
-    object_traits<T>::store (*this, obj);
+    object_traits<T>::update (*this, obj);
   }
 
   template <typename T>

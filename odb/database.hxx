@@ -57,11 +57,11 @@ namespace odb
     bool
     find (const typename object_traits<T>::id_type& id, T& object);
 
-    // Save the state of a modified objects.
+    // Update the state of a modified objects.
     //
     template <typename T>
     void
-    store (T& object);
+    update (T& object);
 
     // Make the object transient. Throw object_not_persistent if not
     // found.

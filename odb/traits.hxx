@@ -23,7 +23,7 @@ namespace odb
   // id_type id (const T&) - get object id
   //
   // void persist (database&, T&)
-  // void store (database&, T&)
+  // void update (database&, T&)
   // void erase (database&, const id_type&)
   // pointer_type find (database&, const id_type&)
   // bool find (database&, const id_type&, T&)
