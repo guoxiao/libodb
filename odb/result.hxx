@@ -12,6 +12,7 @@
 #include <iterator> // iterator categories
 
 #include <odb/forward.hxx>
+#include <odb/pointer-traits.hxx>
 
 #include <odb/details/shared-ptr.hxx>
 
@@ -45,10 +46,15 @@ namespace odb
       if (pointer_traits::null_ptr (current_) && !end_)
         current ();
 
-      if (release)
-        guard_.release ();
+      pointer_type r (current_);
 
-      return current_;
+      if (release)
+      {
+        current_ = pointer_type ();
+        guard_.release ();
+      }
+
+      return r;
     }
 
     bool
@@ -89,7 +95,7 @@ namespace odb
   class result_iterator
   {
   public:
-    typedef typename object_traits<T>::pointer_type value_type;
+    typedef T value_type;
     typedef value_type& reference;
     typedef value_type* pointer;
     typedef std::ptrdiff_t difference_type;
@@ -105,20 +111,20 @@ namespace odb
     // Input iterator requirements.
     //
   public:
-    value_type
+    reference
     operator* () const
     {
-      return res_->current (true);
+      return pointer_traits::get_ref (res_->current (false));
     }
 
     // Our value_type is already a pointer so return it instead of
     // a pointer to it (operator-> will just have to go one deeper
     // in the latter case).
     //
-    value_type
+    pointer
     operator-> () const
     {
-      return res_->current (false);
+      return pointer_traits::get_ptr (res_->current (false));
     }
 
     result_iterator&
@@ -138,6 +144,12 @@ namespace odb
     }
 
   public:
+    typename object_traits<T>::pointer_type
+    load ()
+    {
+      return res_->current (true);
+    }
+
     void
     load (T& x)
     {
@@ -152,6 +164,8 @@ namespace odb
     }
 
   private:
+    typedef typename object_traits<T>::pointer_traits pointer_traits;
+
     result_impl<T>* res_;
   };
 
