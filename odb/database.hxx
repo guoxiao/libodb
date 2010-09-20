@@ -74,19 +74,23 @@ namespace odb
     void
     erase (const typename object_traits<T>::id_type& id);
 
-    // Object query API.
+    // Query API.
     //
     template <typename T>
     result<T>
-    query ();
+    query (bool cache = true);
 
     template <typename T>
     result<T>
-    query (const std::string&);
+    query (const char*, bool cache = true);
 
     template <typename T>
     result<T>
-    query (const odb::query<T>&);
+    query (const std::string&, bool cache = true);
+
+    template <typename T>
+    result<T>
+    query (const odb::query<T>&, bool cache = true);
 
     // Transaction API.
     //

@@ -19,15 +19,22 @@ namespace odb
 
   template <typename T>
   inline result<T> database::
-  query ()
+  query (bool cache)
   {
-    return query (odb::query<T> ());
+    return query (odb::query<T> (), cache);
   }
 
   template <typename T>
   inline result<T> database::
-  query (const std::string& q)
+  query (const char* q, bool cache)
   {
-    return query (odb::query<T> (q));
+    return query (odb::query<T> (q), cache);
+  }
+
+  template <typename T>
+  inline result<T> database::
+  query (const std::string& q, bool cache)
+  {
+    return query (odb::query<T> (q), cache);
   }
 }

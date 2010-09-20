@@ -84,11 +84,16 @@ namespace odb
 
   template <typename T>
   result<T> database::
-  query (const odb::query<T>& q)
+  query (const odb::query<T>& q, bool cache)
   {
     if (!transaction::has_current ())
       throw not_in_transaction ();
 
-    return object_traits<T>::query (*this, q);
+    result<T> r (object_traits<T>::query (*this, q));
+
+    if (cache)
+      r.cache ();
+
+    return r;
   }
 }
