@@ -14,6 +14,7 @@
 #include <odb/forward.hxx>
 #include <odb/query.hxx>
 #include <odb/result.hxx>
+#include <odb/exceptions.hxx>
 
 #include <odb/details/export.hxx>
 
