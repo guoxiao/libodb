@@ -50,6 +50,12 @@ namespace odb
     what () const throw ();
   };
 
+  struct LIBODB_EXPORT result_not_cached: odb::exception
+  {
+    virtual const char*
+    what () const throw ();
+  };
+
   struct LIBODB_EXPORT database_exception: odb::exception
   {
   };

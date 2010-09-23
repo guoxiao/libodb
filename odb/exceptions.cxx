@@ -37,6 +37,12 @@ namespace odb
     return "object not persistent";
   }
 
+  const char* result_not_cached::
+  what () const throw ()
+  {
+    return "query result in not cached";
+  }
+
   const char* object_already_persistent::
   what () const throw ()
   {

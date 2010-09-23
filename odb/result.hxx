@@ -76,6 +76,9 @@ namespace odb
     virtual void
     cache () = 0;
 
+    virtual std::size_t
+    size () = 0;
+
   protected:
     void
     current (pointer_type p)
@@ -233,16 +236,14 @@ namespace odb
       return *this;
     }
 
-    // Cache the result instead of fetching the data from the database
-    // one object at a time. This is necessary if you plan on performing
-    // database operations while iterating over the result.
-    //
-  public:
     void
-    cache ()
+    swap (result& r)
     {
-      if (impl_)
-        impl_->cache ();
+      // @@ add swap() to shared_ptr.
+      //
+      details::shared_ptr<result_impl<T> > p (impl_);
+      impl_ = r.impl_;
+      r.impl_ = p;
     }
 
   public:
@@ -256,6 +257,33 @@ namespace odb
     end ()
     {
       return iterator ();
+    }
+
+    // Cache the result instead of fetching the data from the database
+    // one object at a time. This is necessary if you plan on performing
+    // database operations while iterating over the result.
+    //
+  public:
+    void
+    cache ()
+    {
+      if (impl_)
+        impl_->cache ();
+    }
+
+  public:
+    bool
+    empty () const
+    {
+      return impl_ == 0 || impl_->end ();
+    }
+
+    // Size is only known in cached results.
+    //
+    size_type
+    size () const
+    {
+      return impl_ ? impl_->size () : 0;
     }
 
   private:
