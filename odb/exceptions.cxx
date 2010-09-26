@@ -19,7 +19,7 @@ namespace odb
     return "operation can only be performed in transaction";
   }
 
-  const char* transaction_already_finilized::
+  const char* transaction_already_finalized::
   what () const throw ()
   {
     return "transaction already committed or rolled back";

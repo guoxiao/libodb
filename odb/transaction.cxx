@@ -20,7 +20,7 @@ namespace odb
 
   transaction::
   transaction (transaction_impl* impl)
-      : finilized_ (false), impl_ (impl)
+      : finalized_ (false), impl_ (impl)
   {
     tls_set (current_transaction, this);
   }
@@ -28,7 +28,7 @@ namespace odb
   transaction::
   ~transaction ()
   {
-    if (!finilized_)
+    if (!finalized_)
     {
       try
       {
@@ -62,10 +62,10 @@ namespace odb
   void transaction::
   commit ()
   {
-    if (finilized_)
-      throw transaction_already_finilized ();
+    if (finalized_)
+      throw transaction_already_finalized ();
 
-    finilized_ = true;
+    finalized_ = true;
     tls_set<transaction> (current_transaction, 0);
     impl_->commit ();
   }
@@ -73,10 +73,10 @@ namespace odb
   void transaction::
   rollback ()
   {
-    if (finilized_)
-      throw transaction_already_finilized ();
+    if (finalized_)
+      throw transaction_already_finalized ();
 
-    finilized_ = true;
+    finalized_ = true;
     tls_set<transaction> (current_transaction, 0);
     impl_->rollback ();
   }

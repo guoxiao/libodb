@@ -26,7 +26,7 @@ namespace odb
     what () const throw ();
   };
 
-  struct LIBODB_EXPORT transaction_already_finilized: odb::exception
+  struct LIBODB_EXPORT transaction_already_finalized: odb::exception
   {
     virtual const char*
     what () const throw ();
