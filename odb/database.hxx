@@ -101,7 +101,7 @@ namespace odb
     //
   public:
     virtual transaction_impl*
-    begin_transaction () = 0;
+    begin () = 0;
 
   protected:
     database ();
