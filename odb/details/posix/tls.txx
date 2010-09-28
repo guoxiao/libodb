@@ -37,7 +37,7 @@ namespace odb
 
       std::auto_ptr<T> p (new T);
 
-      if (e = pthread_setspecific (key_, p.get ()))
+      if ((e = pthread_setspecific (key_, p.get ())))
         throw posix_exception (e);
 
       T& r (*p);
@@ -56,7 +56,7 @@ namespace odb
 
       if (void* v = pthread_getspecific (key_))
       {
-        if (e = pthread_setspecific (key_, 0))
+        if ((e = pthread_setspecific (key_, 0)))
           throw posix_exception (e);
 
         delete static_cast<T*> (v);
@@ -110,7 +110,7 @@ namespace odb
       if (e != 0 || error_ != 0)
         throw posix_exception (e ? e : error_);
 
-      if (e = pthread_setspecific (key_, p))
+      if ((e = pthread_setspecific (key_, p)))
         throw posix_exception (e);
     }
 
