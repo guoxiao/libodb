@@ -10,4 +10,25 @@ namespace odb
   ~result_impl ()
   {
   }
+
+  template <typename T>
+  typename result_impl<T>::pointer_type result_impl<T>::
+  current (bool release)
+  {
+    if (pointer_traits::null_ptr (current_) && !end_)
+    {
+      current (traits::create ());
+      current (pointer_traits::get_ref (current_));
+    }
+
+    pointer_type r (current_);
+
+    if (release)
+    {
+      current_ = pointer_type ();
+      guard_.release ();
+    }
+
+    return r;
+  }
 }

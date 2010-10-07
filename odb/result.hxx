@@ -41,21 +41,7 @@ namespace odb
     typedef typename traits::pointer_traits pointer_traits;
 
     pointer_type
-    current (bool release)
-    {
-      if (pointer_traits::null_ptr (current_) && !end_)
-        current ();
-
-      pointer_type r (current_);
-
-      if (release)
-      {
-        current_ = pointer_type ();
-        guard_.release ();
-      }
-
-      return r;
-    }
+    current (bool release);
 
     bool
     end () const
@@ -64,9 +50,6 @@ namespace odb
     }
 
   protected:
-    virtual void
-    current () = 0;
-
     virtual void
     current (T&) = 0;
 
