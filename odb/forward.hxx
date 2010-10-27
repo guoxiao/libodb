@@ -17,9 +17,6 @@ namespace odb
   {
   public:
     template <typename T>
-    class value_traits;
-
-    template <typename T>
     class object_traits;
 
     template <typename T>
@@ -30,6 +27,9 @@ namespace odb
 
     template <typename P>
     class pointer_factory;
+
+    template <typename T>
+    class composite_value_traits;
   };
 }
 

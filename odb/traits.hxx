@@ -83,6 +83,11 @@ namespace odb
     odb::pointer_traits<typename access::object_traits<T>::pointer_type>
     pointer_traits;
   };
+
+  template <typename T>
+  struct composite_value_traits: access::composite_value_traits<T>
+  {
+  };
 }
 
 #include <odb/post.hxx>
