@@ -62,6 +62,9 @@ namespace odb
     if (!transaction::has_current ())
       throw not_in_transaction ();
 
+    // Compiler error pointing here? Perhaps the object doesn't have the
+    // default constructor?
+    //
     return object_traits<T>::find (*this, id);
   }
 
