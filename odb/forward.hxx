@@ -30,6 +30,9 @@ namespace odb
 
     template <typename T>
     class composite_value_traits;
+
+    template <typename C>
+    class container_traits;
   };
 }
 
