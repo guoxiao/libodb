@@ -16,8 +16,7 @@ namespace odb
   // template <typename T>
   // class access::object_traits;
   //
-  // Specializations should inherit from object_memory, object_factory
-  // and define the following members:
+  // Specializations should define the following members:
   //
   // id_type               - object id (primary key) type
   // id_type id (const T&) - get object id
@@ -30,39 +29,35 @@ namespace odb
   //
   //
 
-  template <typename T>
-  class access::object_memory
-  {
-  public:
-    typedef T* pointer_type;
-  };
-
-  template <typename T>
+  template <typename T, typename P>
   class access::object_factory
   {
   public:
-    static typename object_memory<T>::pointer_type
-    create ()
-    {
-      // By default use pointer-specific construction.
-      //
-      return
-        pointer_factory<typename object_memory<T>::pointer_type>::create ();
-    }
-  };
-
-  template <typename P>
-  class access::pointer_factory
-  {
-  public:
-    typedef typename pointer_traits<P>::type object_type;
+    typedef T object_type;
+    typedef P pointer_type;
 
     static P
     create ()
     {
-      void* v (pointer_traits<P>::allocate (sizeof (object_type)));
+      // By default use pointer-specific construction.
+      //
+      return pointer_factory<T, P>::create ();
+    }
+  };
+
+  template <typename T, typename P>
+  class access::pointer_factory
+  {
+  public:
+    typedef T object_type;
+    typedef P pointer_type;
+
+    static P
+    create ()
+    {
+      void* v (pointer_traits<P>::allocate (sizeof (T)));
       mem_guard g (v);
-      P p (new (v) object_type);
+      P p (new (v) T);
       g.release ();
       return p;
     }
@@ -77,8 +72,12 @@ namespace odb
   };
 
   template <typename T>
-  struct object_traits: access::object_traits<T>
+  struct object_traits: access::object_traits<T>,
+    access::object_factory<T, typename access::object_traits<T>::pointer_type>
   {
+    typedef typename access::object_traits<T>::object_type object_type;
+    typedef typename access::object_traits<T>::pointer_type pointer_type;
+
     typedef
     odb::pointer_traits<typename access::object_traits<T>::pointer_type>
     pointer_traits;

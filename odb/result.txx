@@ -12,8 +12,8 @@ namespace odb
   }
 
   template <typename T>
-  typename result_impl<T>::pointer_type result_impl<T>::
-  current (bool release)
+  typename result_impl<T>::pointer_type& result_impl<T>::
+  current ()
   {
     if (pointer_traits::null_ptr (current_) && !end_)
     {
@@ -21,14 +21,6 @@ namespace odb
       current (pointer_traits::get_ref (current_));
     }
 
-    pointer_type r (current_);
-
-    if (release)
-    {
-      current_ = pointer_type ();
-      guard_.release ();
-    }
-
-    return r;
+    return current_;
   }
 }

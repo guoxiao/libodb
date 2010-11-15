@@ -19,13 +19,10 @@ namespace odb
     template <typename T>
     class object_traits;
 
-    template <typename T>
-    class object_memory;
-
-    template <typename T>
+    template <typename T, typename P>
     class object_factory;
 
-    template <typename P>
+    template <typename T, typename P>
     class pointer_factory;
 
     template <typename T>

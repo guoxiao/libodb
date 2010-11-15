@@ -40,8 +40,19 @@ namespace odb
     typedef typename traits::pointer_type pointer_type;
     typedef typename traits::pointer_traits pointer_traits;
 
-    pointer_type
-    current (bool release);
+    // To make this work with all kinds of pointers (naked, std::auto_ptr,
+    // shared), we need to make sure we don't make any copies of the
+    // pointer on the return path.
+    //
+    pointer_type&
+    current ();
+
+    void
+    release ()
+    {
+      current_ = pointer_type ();
+      guard_.release ();
+    }
 
     bool
     end () const
@@ -100,7 +111,7 @@ namespace odb
     reference
     operator* () const
     {
-      return pointer_traits::get_ref (res_->current (false));
+      return pointer_traits::get_ref (res_->current ());
     }
 
     // Our value_type is already a pointer so return it instead of
@@ -110,7 +121,7 @@ namespace odb
     pointer
     operator-> () const
     {
-      return pointer_traits::get_ptr (res_->current (false));
+      return pointer_traits::get_ptr (res_->current ());
     }
 
     result_iterator&
@@ -133,7 +144,9 @@ namespace odb
     typename object_traits<T>::pointer_type
     load ()
     {
-      return res_->current (true);
+      typename object_traits<T>::pointer_type r (res_->current ());
+      res_->release ();
+      return r;
     }
 
     void

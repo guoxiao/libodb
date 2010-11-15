@@ -25,13 +25,13 @@ namespace odb
     nop_guard () {}
 
     explicit
-    nop_guard (P) {}
+    nop_guard (const P&) {}
 
     void
     release () {}
 
     void
-    reset (P) {}
+    reset (const P&) {}
   };
 
   // Default implementation that should work for any sensible smart
@@ -69,7 +69,7 @@ namespace odb
     static bool
     null_ptr (const pointer& p)
     {
-      return get_ptr () == 0;
+      return get_ptr (p) == 0;
     }
 
   public:
