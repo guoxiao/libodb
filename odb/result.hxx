@@ -85,7 +85,7 @@ namespace odb
 
   private:
     pointer_type current_;
-    typename pointer_traits::guard guard_;
+    typename pointer_traits::guard_type guard_;
   };
 
   template <typename T>

@@ -9,6 +9,7 @@
 #include <odb/pre.hxx>
 
 #include <new>     // operators new/delete
+#include <memory>  // std::auto_ptr
 #include <cstddef> // std::size_t
 
 namespace odb
@@ -16,95 +17,21 @@ namespace odb
   template <typename P>
   class pointer_traits;
 
-  // No-op pointer guard for smart pointers.
+  //
+  // Standard pointer guards.
+  //
+
+  // Naked pointer guard.
   //
   template <typename P>
-  class nop_guard
+  class naked_ptr_guard
   {
   public:
-    nop_guard () {}
+    ~naked_ptr_guard () {delete p_;}
+    naked_ptr_guard (): p_ (0) {}
 
     explicit
-    nop_guard (const P&) {}
-
-    void
-    release () {}
-
-    void
-    reset (const P&) {}
-  };
-
-  // Default implementation that should work for any sensible smart
-  // pointer with one template argument (object type). The only
-  // assumptions that we make are the availability of operator-> and
-  // operator*, and that the former does not throw if the pointer is
-  // NULL.
-  //
-  template <typename T, template <typename> class P>
-  class pointer_traits< P<T> >
-  {
-  public:
-    typedef T type;
-    typedef P<T> pointer;
-    typedef nop_guard<pointer> guard;
-
-    // Return underlying pointer, including NULL.
-    //
-    static type*
-    get_ptr (const pointer& p)
-    {
-      return p.operator-> ();
-    }
-
-    // Return reference to the pointed-to object.
-    //
-    static type&
-    get_ref (const pointer& p)
-    {
-      return *p;
-    }
-
-    // Return true if the pointer is NULL.
-    //
-    static bool
-    null_ptr (const pointer& p)
-    {
-      return get_ptr (p) == 0;
-    }
-
-  public:
-    // Allocate memory for a shared object.
-    //
-    static void*
-    allocate (std::size_t n)
-    {
-      return operator new (n);
-    }
-
-    // Free memory allocated for a shared object. This functions is
-    // only called if the constructor of the object being created
-    // fails. Otherwise, pointer is used to delete the object
-    // and free the memory. This behavior is identical to the one
-    // used by operator delete overloading.
-    //
-    static void
-    free (void* p)
-    {
-      operator delete (p);
-    }
-  };
-
-  // Specialization for naked pointer.
-  //
-  template <typename P>
-  class nptr_guard
-  {
-  public:
-    ~nptr_guard () {delete p_;}
-    nptr_guard (): p_ (0) {}
-
-    explicit
-    nptr_guard (P p): p_ (p) {}
+    naked_ptr_guard (P p): p_ (p) {}
 
     void
     release () {p_ = 0;}
@@ -116,22 +43,46 @@ namespace odb
     P p_;
   };
 
+  // No-op pointer guard for smart pointers.
+  //
+  template <typename P>
+  class smart_ptr_guard
+  {
+  public:
+    smart_ptr_guard () {}
+
+    explicit
+    smart_ptr_guard (const P&) {}
+
+    void
+    release () {}
+
+    void
+    reset (const P&) {}
+  };
+
+  // Specialization for naked pointers.
+  //
   template <typename T>
   class pointer_traits<T*>
   {
   public:
-    typedef T type;
-    typedef T* pointer;
-    typedef nptr_guard<pointer> guard;
+    typedef T element_type;
+    typedef T* pointer_type;
+    typedef naked_ptr_guard<pointer_type> guard_type;
 
-    static type*
-    get_ptr (pointer p)
+    // Return naked pointer to the pointed-to element, including NULL.
+    //
+    static element_type*
+    get_ptr (pointer_type p)
     {
       return p;
     }
 
-    static type&
-    get_ref (pointer p)
+    // Return reference to the pointed-to element.
+    //
+    static element_type&
+    get_ref (pointer_type p)
     {
       return *p;
     }
@@ -139,9 +90,60 @@ namespace odb
     // Return true if the pointer is NULL.
     //
     static bool
-    null_ptr (pointer p)
+    null_ptr (pointer_type p)
     {
       return p == 0;
+    }
+
+  public:
+    // Allocate memory for an element that will be managed by this
+    // pointer.
+    //
+    static void*
+    allocate (std::size_t n)
+    {
+      return operator new (n);
+    }
+
+    // Free memory allocated for an element. This functions is only
+    // called if the constructor of the element being created fails.
+    // Otherwise, the pointer (or guard) is used to delete the object
+    // and free the memory. This behavior is identical to the one
+    // used by operator delete overloading.
+    //
+    static void
+    free (void* p)
+    {
+      operator delete (p);
+    }
+  };
+
+  // Specialization for std::auto_ptr.
+  //
+  template <typename T>
+  class pointer_traits< std::auto_ptr<T> >
+  {
+  public:
+    typedef T element_type;
+    typedef std::auto_ptr<element_type> pointer_type;
+    typedef smart_ptr_guard<pointer_type> guard_type;
+
+    static element_type*
+    get_ptr (const pointer_type& p)
+    {
+      return p.get ();
+    }
+
+    static element_type&
+    get_ref (const pointer_type& p)
+    {
+      return *p;
+    }
+
+    static bool
+    null_ptr (const pointer_type& p)
+    {
+      return p.get () == 0;
     }
 
   public:
