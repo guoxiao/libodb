@@ -14,15 +14,16 @@
 
 namespace odb
 {
-  template <typename V>
-  class access::container_traits<std::vector<V> >
+  template <typename V, typename A>
+  class access::container_traits<std::vector<V, A> >
   {
   public:
     static container_kind const kind = ck_ordered;
 
+    typedef std::vector<V, A> container_type;
+
     typedef V value_type;
-    typedef typename std::vector<V>::size_type index_type;
-    typedef std::vector<V> container_type;
+    typedef typename container_type::size_type index_type;
 
     typedef ordered_functions<index_type, value_type> functions;
 

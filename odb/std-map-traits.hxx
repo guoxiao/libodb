@@ -14,15 +14,16 @@
 
 namespace odb
 {
-  template <typename K, typename V>
-  class access::container_traits<std::map<K, V> >
+  template <typename K, typename V, typename C, typename A>
+  class access::container_traits<std::map<K, V, C, A> >
   {
   public:
     static container_kind const kind = ck_map;
 
+    typedef std::map<K, V, C, A> container_type;
+
     typedef K key_type;
     typedef V value_type;
-    typedef std::map<K, V> container_type;
     typedef typename container_type::value_type pair_type;
 
     typedef map_functions<key_type, value_type> functions;
@@ -71,15 +72,16 @@ namespace odb
   // changes that. The current implementation in the generated code does
   // not guarantee this either.
   //
-  template <typename K, typename V>
-  class access::container_traits<std::multimap<K, V> >
+  template <typename K, typename V, typename C, typename A>
+  class access::container_traits<std::multimap<K, V, C, A> >
   {
   public:
     static container_kind const kind = ck_multimap;
 
+    typedef std::multimap<K, V, C, A> container_type;
+
     typedef K key_type;
     typedef V value_type;
-    typedef std::multimap<K, V> container_type;
     typedef typename container_type::value_type pair_type;
 
     typedef map_functions<key_type, value_type> functions;

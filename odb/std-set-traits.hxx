@@ -14,14 +14,14 @@
 
 namespace odb
 {
-  template <typename V>
-  class access::container_traits<std::set<V> >
+  template <typename V, typename C, typename A>
+  class access::container_traits<std::set<V, C, A> >
   {
   public:
     static container_kind const kind = ck_set;
 
+    typedef std::set<V, C, A> container_type;
     typedef V value_type;
-    typedef std::set<V> container_type;
 
     typedef set_functions<value_type> functions;
 
@@ -68,14 +68,14 @@ namespace odb
   // changes that. The current implementation in the generated code does
   // not guarantee this either.
   //
-  template <typename V>
-  class access::container_traits<std::multiset<V> >
+  template <typename V, typename C, typename A>
+  class access::container_traits<std::multiset<V, C, A> >
   {
   public:
     static container_kind const kind = ck_multiset;
 
+    typedef std::multiset<V, C, A> container_type;
     typedef V value_type;
-    typedef std::multiset<V> container_type;
 
     typedef set_functions<value_type> functions;
 
