@@ -90,10 +90,11 @@ namespace odb
       return t.get ();
     }
 
-    template <typename T>
+    template <typename T, typename T1>
     inline void
-    tls_set (tls<T*>& t, T* p)
+    tls_set (tls<T*>& t, T1* p1)
     {
+      T* p (p1);
       t.set (p);
     }
   }

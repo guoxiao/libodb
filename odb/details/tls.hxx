@@ -42,9 +42,9 @@ namespace odb
       return p;
     }
 
-    template <typename T>
+    template <typename T, typename T1>
     inline void
-    tls_set (T*& rp, T* p)
+    tls_set (T*& rp, T1* p)
     {
       rp = p;
     }
@@ -69,9 +69,9 @@ namespace odb
       return p;
     }
 
-    template <typename T>
+    template <typename T, typename T1>
     inline void
-    tls_set (T*& rp, T* p)
+    tls_set (T*& rp, T1* p)
     {
       rp = p;
     }
@@ -101,9 +101,9 @@ namespace odb
       return p;
     }
 
-    template <typename T>
+    template <typename T, typename T1>
     inline void
-    tls_set (T*& rp, T* p)
+    tls_set (T*& rp, T1* p)
     {
       rp = p;
     }
