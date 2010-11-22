@@ -13,6 +13,9 @@ namespace odb
   class database;
   class transaction;
 
+  // Implementation details.
+  //
+
   class access
   {
   public:
@@ -31,6 +34,12 @@ namespace odb
     template <typename C>
     class container_traits;
   };
+
+  namespace details
+  {
+    template <typename X>
+    class shared_ptr;
+  }
 }
 
 #include <odb/post.hxx>
