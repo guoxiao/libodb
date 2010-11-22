@@ -66,7 +66,8 @@ namespace odb
       throw transaction_already_finalized ();
 
     finalized_ = true;
-    tls_set<transaction> (current_transaction, 0);
+    transaction* t (0);
+    tls_set (current_transaction, t);
     impl_->commit ();
   }
 
@@ -77,7 +78,8 @@ namespace odb
       throw transaction_already_finalized ();
 
     finalized_ = true;
-    tls_set<transaction> (current_transaction, 0);
+    transaction* t (0);
+    tls_set (current_transaction, t);
     impl_->rollback ();
   }
 
