@@ -72,15 +72,74 @@ namespace odb
   };
 
   template <typename T>
-  struct object_traits: access::object_traits<T>,
+  struct object_traits:
+    access::object_traits<T>,
     access::object_factory<T, typename access::object_traits<T>::pointer_type>
   {
-    typedef typename access::object_traits<T>::object_type object_type;
-    typedef typename access::object_traits<T>::pointer_type pointer_type;
+    //
+    // If a C++ compiler issues an error pointing to this struct and
+    // saying that it is incomplete, then you are most likely trying to
+    // perform a database operation on a C++ type that is not a persistent
+    // object. Or you forgot to include the corresponding -odb.hxx file.
+    //
 
     typedef
     odb::pointer_traits<typename access::object_traits<T>::pointer_type>
     pointer_traits;
+
+    typedef typename access::object_traits<T>::object_type object_type;
+    typedef typename access::object_traits<T>::pointer_type pointer_type;
+    typedef typename pointer_traits::const_pointer_type const_pointer_type;
+  };
+
+  // Specialization for const objects. It only defines the id, object,
+  // pointer, and const_pointer types with pointer and const_pointer
+  // being the same. The idea is to only use this specialization in the
+  // interfaces, with the implementations detecting this situation and
+  // using the non-const object_traits version.
+  //
+  template <typename T>
+  struct object_traits<const T>
+  {
+  private:
+    typedef
+    odb::pointer_traits<typename access::object_traits<T>::pointer_type>
+    pointer_traits;
+
+  public:
+    typedef typename access::object_traits<T>::id_type id_type;
+    typedef typename access::object_traits<T>::object_type object_type;
+    typedef typename pointer_traits::const_pointer_type const_pointer_type;
+    typedef const_pointer_type pointer_type;
+  };
+
+  // Specializations for pointer types to allow the C++ compiler to
+  // instantiate persist(), etc., signatures in class database. The
+  // overloads that use these specializations would never actually
+  // be selected by the compiler.
+  //
+  template <typename T>
+  struct object_traits<T*>
+  {
+    struct id_type {};
+  };
+
+  template <typename T>
+  struct object_traits<T* const>
+  {
+    struct id_type {};
+  };
+
+  template <typename T, template <typename> class P>
+  struct object_traits< P<T> >
+  {
+    struct id_type {};
+  };
+
+  template <typename T, template <typename> class P>
+  struct object_traits< const P<T> >
+  {
+    struct id_type {};
   };
 
   template <typename T>

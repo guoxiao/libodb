@@ -36,11 +36,23 @@ namespace odb
     //
     template <typename T>
     typename object_traits<T>::id_type
-    persist (const T& object);
+    persist (T& object);
 
     template <typename T>
     typename object_traits<T>::id_type
-    persist (T& object);
+    persist (T* obj_ptr);
+
+    template <typename T, template <typename> class P>
+    typename object_traits<T>::id_type
+    persist (const P<T>& obj_ptr);
+
+    template <typename T, template <typename> class P>
+    typename object_traits<T>::id_type
+    persist (P<T>& obj_ptr);
+
+    template <typename T>
+    typename object_traits<T>::id_type
+    persist (const typename object_traits<T>::pointer_type& obj_ptr);
 
     // Throw object_not_persistent if not found.
     //
@@ -66,18 +78,50 @@ namespace odb
     //
     template <typename T>
     void
-    update (const T& object);
+    update (T& object);
+
+    template <typename T>
+    void
+    update (T* obj_ptr);
+
+    template <typename T, template <typename> class P>
+    void
+    update (const P<T>& obj_ptr);
+
+    template <typename T, template <typename> class P>
+    void
+    update (P<T>& obj_ptr);
+
+    template <typename T>
+    void
+    update (const typename object_traits<T>::pointer_type& obj_ptr);
 
     // Make the object transient. Throw object_not_persistent if not
     // found.
     //
     template <typename T>
     void
-    erase (const T& object);
+    erase (const typename object_traits<T>::id_type& id);
 
     template <typename T>
     void
-    erase (const typename object_traits<T>::id_type& id);
+    erase (T& object);
+
+    template <typename T>
+    void
+    erase (T* obj_ptr);
+
+    template <typename T, template <typename> class P>
+    void
+    erase (const P<T>& obj_ptr);
+
+    template <typename T, template <typename> class P>
+    void
+    erase (P<T>& obj_ptr);
+
+    template <typename T>
+    void
+    erase (const typename object_traits<T>::pointer_type& obj_ptr);
 
     // Query API.
     //
@@ -95,7 +139,8 @@ namespace odb
 
     template <typename T>
     result<T>
-    query (const odb::query<T>&, bool cache = true);
+    query (const odb::query<typename object_traits<T>::object_type>&,
+           bool cache = true);
 
     // Transaction API.
     //
@@ -105,6 +150,19 @@ namespace odb
 
   protected:
     database ();
+
+  protected:
+    template <typename T>
+    typename object_traits<T>::id_type
+    persist_ (const typename object_traits<T>::pointer_type&);
+
+    template <typename T>
+    void
+    update_ (const typename object_traits<T>::pointer_type&);
+
+    template <typename T>
+    void
+    erase_ (const typename object_traits<T>::pointer_type&);
 
   private:
     database (const database&);

@@ -25,6 +25,24 @@ namespace odb
     return "transaction already committed or rolled back";
   }
 
+  const char* already_in_session::
+  what () const throw ()
+  {
+    return "session already in effect in this thread";
+  }
+
+  const char* not_in_session::
+  what () const throw ()
+  {
+    return "session not in effect in this thread";
+  }
+
+  const char* const_object::
+  what () const throw ()
+  {
+    return "object cached in session is const";
+  }
+
   const char* deadlock::
   what () const throw ()
   {

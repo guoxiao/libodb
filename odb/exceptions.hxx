@@ -14,6 +14,8 @@
 
 namespace odb
 {
+  // Transaction exceptions.
+  //
   struct LIBODB_EXPORT already_in_transaction: odb::exception
   {
     virtual const char*
@@ -32,6 +34,28 @@ namespace odb
     what () const throw ();
   };
 
+  // Session exceptions.
+  //
+  struct LIBODB_EXPORT already_in_session: odb::exception
+  {
+    virtual const char*
+    what () const throw ();
+  };
+
+  struct LIBODB_EXPORT not_in_session: odb::exception
+  {
+    virtual const char*
+    what () const throw ();
+  };
+
+  struct LIBODB_EXPORT const_object: odb::exception
+  {
+    virtual const char*
+    what () const throw ();
+  };
+
+  // Database operations exceptions.
+  //
   struct LIBODB_EXPORT deadlock: odb::exception
   {
     virtual const char*

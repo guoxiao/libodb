@@ -30,15 +30,30 @@ namespace odb
   public:
     virtual
     ~result_impl ();
-    result_impl () : end_ (false), current_ () {}
 
   protected:
     friend class result<T>;
     friend class result_iterator<T>;
 
-    typedef object_traits<T> traits;
-    typedef typename traits::pointer_type pointer_type;
-    typedef typename traits::pointer_traits pointer_traits;
+    typedef odb::database database_type;
+
+    typedef typename odb::object_traits<T>::pointer_type pointer_type;
+    typedef odb::pointer_traits<pointer_type> pointer_traits;
+
+    typedef typename odb::object_traits<T>::object_type object_type;
+    typedef typename odb::object_traits<T>::id_type id_type;
+    typedef odb::object_traits<object_type> object_traits;
+
+    result_impl (database_type& db)
+        : end_ (false), db_ (db), current_ ()
+    {
+    }
+
+    database_type&
+    database () const
+    {
+      return db_;
+    }
 
     // To make this work with all kinds of pointers (naked, std::auto_ptr,
     // shared), we need to make sure we don't make any copies of the
@@ -62,7 +77,10 @@ namespace odb
 
   protected:
     virtual void
-    current (T&) = 0;
+    current (object_type&) = 0;
+
+    virtual id_type
+    current_id () = 0;
 
     virtual void
     next () = 0;
@@ -84,6 +102,7 @@ namespace odb
     bool end_;
 
   private:
+    database_type& db_;
     pointer_type current_;
     typename pointer_traits::guard_type guard_;
   };
@@ -97,6 +116,11 @@ namespace odb
     typedef value_type* pointer;
     typedef std::ptrdiff_t difference_type;
     typedef std::input_iterator_tag iterator_category;
+
+    // T might be const T, but object_type is always T.
+    //
+    typedef typename object_traits<T>::object_type object_type;
+    typedef typename object_traits<T>::id_type id_type;
 
   public:
     explicit
@@ -150,10 +174,7 @@ namespace odb
     }
 
     void
-    load (T& x)
-    {
-      res_->current (x);
-    }
+    load (object_type&);
 
   public:
     bool
@@ -163,7 +184,9 @@ namespace odb
     }
 
   private:
-    typedef typename object_traits<T>::pointer_traits pointer_traits;
+    typedef
+    odb::pointer_traits<typename object_traits<T>::pointer_type>
+    pointer_traits;
 
     result_impl<T>* res_;
   };
