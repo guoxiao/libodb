@@ -21,8 +21,11 @@ namespace odb
   class pointer_traits< std::tr1::shared_ptr<T> >
   {
   public:
+    static pointer_kind const kind = pk_shared;
+
     typedef T element_type;
     typedef std::tr1::shared_ptr<element_type> pointer_type;
+    typedef std::tr1::shared_ptr<const element_type> const_pointer_type;
     typedef smart_ptr_guard<pointer_type> guard_type;
 
     static element_type*
@@ -63,9 +66,13 @@ namespace odb
   class pointer_traits< std::tr1::weak_ptr<T> >
   {
   public:
+    static pointer_kind const kind = pk_weak;
+
     typedef T element_type;
     typedef std::tr1::weak_ptr<element_type> pointer_type;
+    typedef std::tr1::weak_ptr<const element_type> const_pointer_type;
     typedef std::tr1::shared_ptr<element_type> strong_pointer_type;
+    typedef std::tr1::shared_ptr<const element_type> strong_const_pointer_type;
   };
 }
 

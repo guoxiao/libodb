@@ -14,6 +14,14 @@
 
 namespace odb
 {
+  enum pointer_kind
+  {
+    pk_naked,  // Naked or equivalent (i.e., unmanaged).
+    pk_unique, // Smart pointer that doesn't support sharing.
+    pk_shared, // Smart pointer that support sharing.
+    pk_weak    // Weak counterpart for shared pointer.
+  };
+
   template <typename P>
   class pointer_traits;
 
@@ -67,8 +75,11 @@ namespace odb
   class pointer_traits<T*>
   {
   public:
+    static pointer_kind const kind = pk_naked;
+
     typedef T element_type;
     typedef T* pointer_type;
+    typedef const T* const_pointer_type;
     typedef naked_ptr_guard<pointer_type> guard_type;
 
     // Return naked pointer to the pointed-to element, including NULL.
@@ -124,8 +135,11 @@ namespace odb
   class pointer_traits< std::auto_ptr<T> >
   {
   public:
+    static pointer_kind const kind = pk_unique;
+
     typedef T element_type;
     typedef std::auto_ptr<element_type> pointer_type;
+    typedef std::auto_ptr<const element_type> const_pointer_type;
     typedef smart_ptr_guard<pointer_type> guard_type;
 
     static element_type*
