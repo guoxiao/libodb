@@ -35,6 +35,16 @@ namespace odb
     typedef I index_type;
     typedef V value_type;
 
+    // Return true if the order is preserved in the database. If the
+    // order is not preserved, then the index argument in the functions
+    // below is not used.
+    //
+    bool
+    ordered () const
+    {
+      return ordered_;
+    }
+
     void
     insert_one (I index, const V& value) const
     {
@@ -68,8 +78,15 @@ namespace odb
     {
     }
 
+    void
+    ordered (bool v)
+    {
+      ordered_ = v;
+    }
+
   private:
     void* data_;
+    bool ordered_;
     insert_one_type insert_one_;
     load_all_type load_all_;
     delete_all_type delete_all_;
