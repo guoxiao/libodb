@@ -80,7 +80,7 @@ namespace odb
     typedef T element_type;
     typedef T* pointer_type;
     typedef const T* const_pointer_type;
-    typedef naked_ptr_guard<pointer_type> guard_type;
+    typedef naked_ptr_guard<pointer_type> guard;
 
     // Return naked pointer to the pointed-to element, including NULL.
     //
@@ -140,7 +140,7 @@ namespace odb
     typedef T element_type;
     typedef std::auto_ptr<element_type> pointer_type;
     typedef std::auto_ptr<const element_type> const_pointer_type;
-    typedef smart_ptr_guard<pointer_type> guard_type;
+    typedef smart_ptr_guard<pointer_type> guard;
 
     static element_type*
     get_ptr (const pointer_type& p)

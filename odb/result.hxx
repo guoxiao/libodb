@@ -104,7 +104,7 @@ namespace odb
   private:
     database_type& db_;
     pointer_type current_;
-    typename pointer_traits::guard_type guard_;
+    typename pointer_traits::guard guard_;
   };
 
   template <typename T>

@@ -26,7 +26,7 @@ namespace odb
     typedef T element_type;
     typedef std::tr1::shared_ptr<element_type> pointer_type;
     typedef std::tr1::shared_ptr<const element_type> const_pointer_type;
-    typedef smart_ptr_guard<pointer_type> guard_type;
+    typedef smart_ptr_guard<pointer_type> guard;
 
     static element_type*
     get_ptr (const pointer_type& p)
