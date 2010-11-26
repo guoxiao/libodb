@@ -45,7 +45,7 @@ namespace odb
     typedef odb::object_traits<object_type> object_traits;
 
     result_impl (database_type& db)
-        : end_ (false), db_ (db), current_ ()
+        : begin_ (true), end_ (false), db_ (db), current_ ()
     {
     }
 
@@ -67,6 +67,16 @@ namespace odb
     {
       current_ = pointer_type ();
       guard_.release ();
+    }
+
+    void
+    begin ()
+    {
+      if (begin_)
+      {
+        next ();
+        begin_ = false;
+      }
     }
 
     bool
@@ -99,6 +109,7 @@ namespace odb
       guard_.reset (current_);
     }
 
+    bool begin_;
     bool end_;
 
   private:
@@ -269,6 +280,9 @@ namespace odb
     iterator
     begin ()
     {
+      if (impl_)
+        impl_->begin ();
+
       return iterator (impl_.get ());
     }
 
@@ -294,7 +308,11 @@ namespace odb
     bool
     empty () const
     {
-      return impl_ == 0 || impl_->end ();
+      if (impl_ == 0)
+        return true;
+
+      impl_->begin ();
+      return impl_->end ();
     }
 
     // Size is only known in cached results.
