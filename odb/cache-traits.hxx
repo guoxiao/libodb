@@ -27,12 +27,10 @@ namespace odb
     struct insert_guard
     {
       insert_guard (const position_type& pos): pos_ (pos) {}
+      ~insert_guard () {erase (pos_);}
 
-      ~insert_guard ()
-      {
-        if (pos_.map_ != 0)
-          session::current ().erase<element_type> (pos_);
-      }
+      position_type
+      position () const {return pos_;}
 
       void
       release () {pos_.map_ = 0;}
@@ -65,6 +63,13 @@ namespace odb
       if (session::has_current ())
         session::current ().erase<element_type> (db, id);
     }
+
+    static void
+    erase (const position_type& p)
+    {
+      if (p.map_ != 0)
+        session::current ().erase<element_type> (p);
+    }
   };
 
   // Unique pointers don't work with the object cache.
@@ -80,7 +85,12 @@ namespace odb
     struct insert_guard
     {
       insert_guard (const position_type&) {}
-      void release () {}
+
+      position_type
+      position () const {return position_type ();}
+
+      void
+      release () {}
     };
 
     static position_type
@@ -94,6 +104,9 @@ namespace odb
 
     static void
     erase (database&, const id_type&) {}
+
+    static void
+    erase (const position_type&) {}
   };
 
   // Caching traits for objects passed by reference. Only if the object
@@ -108,12 +121,19 @@ namespace odb
     typedef typename object_traits<element_type>::pointer_type pointer_type;
     typedef typename object_traits<element_type>::id_type id_type;
 
-    struct position_type {};
+    typedef
+    typename pointer_cache_traits<pointer_type>::position_type
+    position_type;
 
     struct insert_guard
     {
       insert_guard (const position_type&) {}
-      void release () {}
+
+      position_type
+      position () const {return position_type ();}
+
+      void
+      release () {}
     };
 
     static position_type

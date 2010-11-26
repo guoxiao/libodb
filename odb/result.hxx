@@ -77,10 +77,10 @@ namespace odb
 
   protected:
     virtual void
-    current (object_type&) = 0;
+    load (object_type&) = 0;
 
     virtual id_type
-    current_id () = 0;
+    load_id () = 0;
 
     virtual void
     next () = 0;

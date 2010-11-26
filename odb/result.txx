@@ -25,20 +25,17 @@ namespace odb
     {
       if (!session::has_current ())
       {
-        // Non-const pointer.
-        //
-        unrestricted_pointer_type p (object_traits::create ());
-        object_type& r (unrestricted_pointer_traits::get_ref (p));
-
-        current (pointer_type (p));
-        current (r);
+        unrestricted_pointer_type up (object_traits::create ());
+        object_type& obj (unrestricted_pointer_traits::get_ref (up));
+        current (pointer_type (up));
+        load (obj);
       }
       else
       {
-        const id_type& id (current_id ());
-
         // First check the session.
         //
+        const id_type& id (load_id ());
+
         pointer_type p (
           pointer_cache_traits<pointer_type>::find (database (), id));
 
@@ -50,14 +47,12 @@ namespace odb
 
           typename
             pointer_cache_traits<unrestricted_pointer_type>::insert_guard ig (
-            pointer_cache_traits<unrestricted_pointer_type>::insert (
-              database (), id, up));
+              pointer_cache_traits<unrestricted_pointer_type>::insert (
+                database (), id, up));
 
-          object_type& r (unrestricted_pointer_traits::get_ref (up));
-
+          object_type& obj (unrestricted_pointer_traits::get_ref (up));
           current (pointer_type (up));
-          current (r);
-
+          load (obj);
           ig.release ();
         }
       }
@@ -72,22 +67,19 @@ namespace odb
 
   template <typename T>
   void result_iterator<T>::
-  load (object_type& x)
+  load (object_type& obj)
   {
     if (res_->end ())
       return;
 
     if (!session::has_current ())
-      res_->current (x);
+      res_->load (obj);
     else
     {
-      const id_type& id (res_->current_id ());
-
       typename reference_cache_traits<object_type>::insert_guard ig (
         reference_cache_traits<object_type>::insert (
-          res_->database (), id, x));
-
-      res_->current (x);
+          res_->database (), res_->load_id (), obj));
+      res_->load (obj);
       ig.release ();
     }
   }
