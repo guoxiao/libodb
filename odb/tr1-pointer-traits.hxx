@@ -8,9 +8,11 @@
 
 #include <odb/pre.hxx>
 
+//
 // This header assumes that the necessary TR1 header has already
 // been included.
 //
+
 #include <odb/pointer-traits.hxx>
 
 namespace odb
