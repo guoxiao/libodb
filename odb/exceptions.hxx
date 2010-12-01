@@ -14,6 +14,12 @@
 
 namespace odb
 {
+  struct LIBODB_EXPORT null_pointer: odb::exception
+  {
+    virtual const char*
+    what () const throw ();
+  };
+
   // Transaction exceptions.
   //
   struct LIBODB_EXPORT already_in_transaction: odb::exception

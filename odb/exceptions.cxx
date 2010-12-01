@@ -7,6 +7,12 @@
 
 namespace odb
 {
+  const char* null_pointer::
+  what () const throw ()
+  {
+    return "NULL pointer";
+  }
+
   const char* already_in_transaction::
   what () const throw ()
   {
