@@ -35,6 +35,9 @@ namespace odb
     class container_traits;
   };
 
+  template <typename T>
+  struct object_traits;
+
   namespace details
   {
     template <typename X>

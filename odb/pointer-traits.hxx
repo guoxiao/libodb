@@ -76,6 +76,7 @@ namespace odb
   {
   public:
     static pointer_kind const kind = pk_naked;
+    static bool const lazy = false;
 
     typedef T element_type;
     typedef T* pointer_type;
@@ -136,6 +137,7 @@ namespace odb
   {
   public:
     static pointer_kind const kind = pk_unique;
+    static bool const lazy = false;
 
     typedef T element_type;
     typedef std::auto_ptr<element_type> pointer_type;

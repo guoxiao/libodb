@@ -24,6 +24,7 @@ namespace odb
   {
   public:
     static pointer_kind const kind = pk_shared;
+    static bool const lazy = false;
 
     typedef T element_type;
     typedef std::tr1::shared_ptr<element_type> pointer_type;
@@ -45,7 +46,7 @@ namespace odb
     static bool
     null_ptr (const pointer_type& p)
     {
-      return p.get () == 0;
+      return !p;
     }
 
   public:
@@ -69,12 +70,17 @@ namespace odb
   {
   public:
     static pointer_kind const kind = pk_weak;
+    static bool const lazy = false;
 
     typedef T element_type;
     typedef std::tr1::weak_ptr<element_type> pointer_type;
-    typedef std::tr1::weak_ptr<const element_type> const_pointer_type;
     typedef std::tr1::shared_ptr<element_type> strong_pointer_type;
-    typedef std::tr1::shared_ptr<const element_type> strong_const_pointer_type;
+
+    static strong_pointer_type
+    lock (const pointer_type& p)
+    {
+      return p.lock ();
+    }
   };
 }
 
