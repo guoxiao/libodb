@@ -17,7 +17,7 @@ namespace odb
   class pointer_traits< lazy_ptr<T> >
   {
   public:
-    static pointer_kind const kind = pk_naked;
+    static pointer_kind const kind = pk_raw;
     static bool const lazy = true;
 
     typedef T element_type;

@@ -16,7 +16,7 @@ namespace odb
 {
   enum pointer_kind
   {
-    pk_naked,  // Naked or equivalent (i.e., unmanaged).
+    pk_raw,    // Raw pointer or equivalent (i.e., unmanaged).
     pk_unique, // Smart pointer that doesn't support sharing.
     pk_shared, // Smart pointer that support sharing.
     pk_weak    // Weak counterpart for shared pointer.
@@ -29,17 +29,17 @@ namespace odb
   // Standard pointer guards.
   //
 
-  // Naked pointer guard.
+  // Raw pointer guard.
   //
   template <typename P>
-  class naked_ptr_guard
+  class raw_ptr_guard
   {
   public:
-    ~naked_ptr_guard () {delete p_;}
-    naked_ptr_guard (): p_ (0) {}
+    ~raw_ptr_guard () {delete p_;}
+    raw_ptr_guard (): p_ (0) {}
 
     explicit
-    naked_ptr_guard (P p): p_ (p) {}
+    raw_ptr_guard (P p): p_ (p) {}
 
     void
     release () {p_ = 0;}
@@ -69,21 +69,21 @@ namespace odb
     reset (const P&) {}
   };
 
-  // Specialization for naked pointers.
+  // Specialization for raw pointers.
   //
   template <typename T>
   class pointer_traits<T*>
   {
   public:
-    static pointer_kind const kind = pk_naked;
+    static pointer_kind const kind = pk_raw;
     static bool const lazy = false;
 
     typedef T element_type;
     typedef T* pointer_type;
     typedef const T* const_pointer_type;
-    typedef naked_ptr_guard<pointer_type> guard;
+    typedef raw_ptr_guard<pointer_type> guard;
 
-    // Return naked pointer to the pointed-to element, including NULL.
+    // Return raw pointer to the pointed-to element, including NULL.
     //
     static element_type*
     get_ptr (pointer_type p)

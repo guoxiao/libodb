@@ -55,7 +55,7 @@ namespace odb
       return db_;
     }
 
-    // To make this work with all kinds of pointers (naked, std::auto_ptr,
+    // To make this work with all kinds of pointers (raw, std::auto_ptr,
     // shared), we need to make sure we don't make any copies of the
     // pointer on the return path.
     //

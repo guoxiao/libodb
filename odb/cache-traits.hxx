@@ -110,7 +110,7 @@ namespace odb
   };
 
   // Caching traits for objects passed by reference. Only if the object
-  // pointer kind is naked do we add the object to the session.
+  // pointer kind is raw do we add the object to the session.
   //
   template <typename T,
             pointer_kind =
@@ -144,7 +144,7 @@ namespace odb
   };
 
   template <typename T>
-  struct reference_cache_traits<T, pk_naked>
+  struct reference_cache_traits<T, pk_raw>
   {
     typedef T element_type;
     typedef typename object_traits<element_type>::pointer_type pointer_type;
