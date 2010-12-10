@@ -58,15 +58,16 @@ $(cxx_obj) $(cxx_od): $(odb.l.cpp-options) $(out_base)/details/config.h
 $(odb.l.cpp-options): value := -I$(out_root) -I$(src_root)
 
 $(out_base)/details/config.h:
-	@echo '// file      : odb/details/config.h'                      >$@
-	@echo '// author    : automatically generated'                  >>$@
+	@echo '/* file      : odb/details/config.h'                      >$@
+	@echo ' * author    : automatically generated'                  >>$@
+	@echo ' */'                                                     >>$@
 	@echo ''                                                        >>$@
 	@echo '#ifndef ODB_DETAILS_CONFIG_H'                            >>$@
 	@echo '#define ODB_DETAILS_CONFIG_H'                            >>$@
 	@echo ''                                                        >>$@
 	@echo '#define ODB_THREADS_POSIX 1'                             >>$@
 	@echo ''                                                        >>$@
-	@echo '#endif // ODB_DETAILS_CONFIG_H'                          >>$@
+	@echo '#endif /* ODB_DETAILS_CONFIG_H */'                       >>$@
 
 $(call include-dep,$(cxx_od),$(cxx_obj),$(out_base)/details/config.h)
 
