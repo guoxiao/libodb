@@ -18,7 +18,7 @@ namespace odb
   {
     pk_raw,    // Raw pointer or equivalent (i.e., unmanaged).
     pk_unique, // Smart pointer that doesn't support sharing.
-    pk_shared, // Smart pointer that support sharing.
+    pk_shared, // Smart pointer that supports sharing.
     pk_weak    // Weak counterpart for shared pointer.
   };
 
