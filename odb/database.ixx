@@ -3,6 +3,8 @@
 // copyright : Copyright (c) 2009-2011 Code Synthesis Tools CC
 // license   : GNU GPL v2; see accompanying LICENSE file
 
+#include <cstring> // std::string
+
 namespace odb
 {
   inline database::
@@ -203,5 +205,17 @@ namespace odb
     typedef typename odb::object_traits<T>::object_type object_type;
 
     return query<T> (odb::query<object_type> (q), cache);
+  }
+
+  inline unsigned long long database::
+  execute (const char* statement)
+  {
+    return execute (statement, std::strlen (statement));
+  }
+
+  inline unsigned long long database::
+  execute (const std::string& statement)
+  {
+    return execute (statement.c_str (), statement.size ());
   }
 }

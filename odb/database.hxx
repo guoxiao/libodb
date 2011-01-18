@@ -9,6 +9,7 @@
 #include <odb/pre.hxx>
 
 #include <string>
+#include <cstddef> // std::size_t
 
 #include <odb/traits.hxx>
 #include <odb/forward.hxx>
@@ -141,6 +142,18 @@ namespace odb
     result<T>
     query (const odb::query<typename object_traits<T>::object_type>&,
            bool cache = true);
+
+    // Native database statement execution.
+    //
+  public:
+    unsigned long long
+    execute (const char* statement);
+
+    unsigned long long
+    execute (const std::string& statement);
+
+    virtual unsigned long long
+    execute (const char* statement, std::size_t length) = 0;
 
     // Transaction API.
     //
