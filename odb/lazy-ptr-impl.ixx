@@ -29,6 +29,44 @@ namespace odb
   {
   }
 
+  inline void lazy_ptr_base::
+  reset_id ()
+  {
+    if (id_)
+      free_ (id_);
+
+    id_ = 0;
+  }
+
+  inline void lazy_ptr_base::
+  reset_ (database_type* db, const void* id, free_func free, copy_func copy)
+  {
+    void* idc (id ? copy (id) : 0);
+
+    if (id_)
+      free_ (id_);
+
+    free_ = free;
+    copy_ = copy;
+
+    id_ = idc;
+    db_ = db;
+  }
+
+  inline void lazy_ptr_base::
+  reset ()
+  {
+    reset_id ();
+    db_ = 0;
+  }
+
+  inline void lazy_ptr_base::
+  reset (database_type& db)
+  {
+    reset_id ();
+    db_ = &db;
+  }
+
   inline lazy_ptr_base& lazy_ptr_base::
   operator= (const lazy_ptr_base& r)
   {
@@ -60,44 +98,6 @@ namespace odb
   {
     if (id_)
       free_ (id_);
-  }
-
-  inline void lazy_ptr_base::
-  reset ()
-  {
-    reset_id ();
-    db_ = 0;
-  }
-
-  inline void lazy_ptr_base::
-  reset (database_type& db)
-  {
-    reset_id ();
-    db_ = &db;
-  }
-
-  inline void lazy_ptr_base::
-  reset_id ()
-  {
-    if (id_)
-      free_ (id_);
-
-    id_ = 0;
-  }
-
-  inline void lazy_ptr_base::
-  reset_ (database_type* db, const void* id, free_func free, copy_func copy)
-  {
-    void* idc (id ? copy (id) : 0);
-
-    if (id_)
-      free_ (id_);
-
-    free_ = free;
-    copy_ = copy;
-
-    id_ = idc;
-    db_ = db;
   }
 
   inline void lazy_ptr_base::
