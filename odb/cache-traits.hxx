@@ -9,6 +9,7 @@
 #include <odb/pre.hxx>
 
 #include <odb/traits.hxx>
+#include <odb/forward.hxx>
 #include <odb/session.hxx>
 #include <odb/pointer-traits.hxx>
 
@@ -39,8 +40,10 @@ namespace odb
       position_type pos_;
     };
 
+    // Qualify the database type to resolve a phony ambiguity in VC 10.
+    //
     static position_type
-    insert (database& db, const id_type& id, const pointer_type& p)
+    insert (odb::database& db, const id_type& id, const pointer_type& p)
     {
       if (session::has_current ())
         return session::current ().insert<element_type> (db, id, p);
@@ -49,7 +52,7 @@ namespace odb
     }
 
     static pointer_type
-    find (database& db, const id_type& id)
+    find (odb::database& db, const id_type& id)
     {
       if (session::has_current ())
         return session::current ().find<element_type> (db, id);
@@ -58,7 +61,7 @@ namespace odb
     }
 
     static void
-    erase (database& db, const id_type& id)
+    erase (odb::database& db, const id_type& id)
     {
       if (session::has_current ())
         session::current ().erase<element_type> (db, id);
@@ -94,16 +97,16 @@ namespace odb
     };
 
     static position_type
-    insert (database&, const id_type&, const pointer_type&)
+    insert (odb::database&, const id_type&, const pointer_type&)
     {
       return position_type ();
     }
 
     static pointer_type
-    find (database&, const id_type&) { return pointer_type (); }
+    find (odb::database&, const id_type&) { return pointer_type (); }
 
     static void
-    erase (database&, const id_type&) {}
+    erase (odb::database&, const id_type&) {}
 
     static void
     erase (const position_type&) {}
@@ -137,7 +140,7 @@ namespace odb
     };
 
     static position_type
-    insert (database&, const id_type&, element_type&)
+    insert (odb::database&, const id_type&, element_type&)
     {
       return position_type ();
     }
@@ -159,7 +162,7 @@ namespace odb
     insert_guard;
 
     static position_type
-    insert (database& db, const id_type& id, element_type& obj)
+    insert (odb::database& db, const id_type& id, element_type& obj)
     {
       pointer_type p (&obj);
       return pointer_cache_traits<pointer_type>::insert (db, id, p);
