@@ -20,7 +20,7 @@ namespace odb
   // Specialization for std::tr1::shared_ptr.
   //
   template <typename T>
-  class pointer_traits< std::tr1::shared_ptr<T> >
+  class pointer_traits<std::tr1::shared_ptr<T> >
   {
   public:
     static pointer_kind const kind = pk_shared;
@@ -66,7 +66,7 @@ namespace odb
   // Specialization for std::tr1::weak_ptr.
   //
   template <typename T>
-  class pointer_traits< std::tr1::weak_ptr<T> >
+  class pointer_traits<std::tr1::weak_ptr<T> >
   {
   public:
     static pointer_kind const kind = pk_weak;

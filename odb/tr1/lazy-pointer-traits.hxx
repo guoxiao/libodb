@@ -14,7 +14,7 @@
 namespace odb
 {
   template <typename T>
-  class pointer_traits< tr1::lazy_shared_ptr<T> >
+  class pointer_traits<tr1::lazy_shared_ptr<T> >
   {
   public:
     static pointer_kind const kind = pk_shared;
@@ -39,7 +39,7 @@ namespace odb
   };
 
   template <typename T>
-  class pointer_traits< tr1::lazy_weak_ptr<T> >
+  class pointer_traits<tr1::lazy_weak_ptr<T> >
   {
   public:
     static pointer_kind const kind = pk_weak;
