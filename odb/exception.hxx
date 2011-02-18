@@ -19,6 +19,11 @@ namespace odb
     virtual const char*
     what () const throw () = 0;
   };
+
+  namespace core
+  {
+    using odb::exception;
+  }
 }
 
 #include <odb/post.hxx>

@@ -186,6 +186,12 @@ namespace odb
     mutable std::auto_ptr<T> p_;
     mutable lazy_ptr_impl<T> i_;
   };
+
+  namespace core
+  {
+    using odb::lazy_ptr;
+    using odb::lazy_auto_ptr;
+  }
 }
 
 #include <odb/lazy-ptr.ixx>

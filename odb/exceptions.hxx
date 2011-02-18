@@ -89,6 +89,25 @@ namespace odb
   struct LIBODB_EXPORT database_exception: odb::exception
   {
   };
+
+  namespace core
+  {
+    using odb::null_pointer;
+
+    using odb::already_in_transaction;
+    using odb::not_in_transaction;
+    using odb::transaction_already_finalized;
+
+    using odb::already_in_session;
+    using odb::not_in_session;
+    using odb::const_object;
+
+    using odb::deadlock;
+    using odb::object_not_persistent;
+    using odb::object_already_persistent;
+    using odb::result_not_cached;
+    using odb::database_exception;
+  }
 }
 
 #include <odb/post.hxx>

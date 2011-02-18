@@ -326,6 +326,11 @@ namespace odb
   private:
     details::shared_ptr<result_impl<T> > impl_;
   };
+
+  namespace core
+  {
+    using odb::result;
+  }
 }
 
 #include <odb/result.txx>

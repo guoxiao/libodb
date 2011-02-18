@@ -15,6 +15,11 @@ namespace odb
   template <typename T,
             typename Q = typename object_traits<T>::query_base_type>
   class query;
+
+  namespace core
+  {
+    using odb::query;
+  }
 }
 
 #include <odb/post.hxx>

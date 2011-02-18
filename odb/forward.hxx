@@ -12,6 +12,14 @@ namespace odb
 {
   class database;
   class transaction;
+  class session;
+
+  namespace core
+  {
+    using odb::database;
+    using odb::transaction;
+    using odb::session;
+  }
 
   // Implementation details.
   //
