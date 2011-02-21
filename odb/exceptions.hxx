@@ -62,7 +62,23 @@ namespace odb
 
   // Database operations exceptions.
   //
-  struct LIBODB_EXPORT deadlock: exception
+  struct LIBODB_EXPORT recoverable: exception
+  {
+  };
+
+  struct LIBODB_EXPORT connection_lost: recoverable
+  {
+    virtual const char*
+    what () const throw ();
+  };
+
+  struct LIBODB_EXPORT timeout: recoverable
+  {
+    virtual const char*
+    what () const throw ();
+  };
+
+  struct LIBODB_EXPORT deadlock: recoverable
   {
     virtual const char*
     what () const throw ();
@@ -102,7 +118,10 @@ namespace odb
     using odb::not_in_session;
     using odb::const_object;
 
+    using odb::recoverable;
     using odb::deadlock;
+    using odb::connection_lost;
+    using odb::timeout;
     using odb::object_not_persistent;
     using odb::object_already_persistent;
     using odb::result_not_cached;

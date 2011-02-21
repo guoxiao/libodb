@@ -55,6 +55,18 @@ namespace odb
     return "transaction aborted due to deadlock";
   }
 
+  const char* connection_lost::
+  what () const throw ()
+  {
+    return "connection to database lost";
+  }
+
+  const char* timeout::
+  what () const throw ()
+  {
+    return "database operation timeout";
+  }
+
   const char* object_not_persistent::
   what () const throw ()
   {
