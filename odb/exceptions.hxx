@@ -14,7 +14,7 @@
 
 namespace odb
 {
-  struct LIBODB_EXPORT null_pointer: odb::exception
+  struct LIBODB_EXPORT null_pointer: exception
   {
     virtual const char*
     what () const throw ();
@@ -22,19 +22,19 @@ namespace odb
 
   // Transaction exceptions.
   //
-  struct LIBODB_EXPORT already_in_transaction: odb::exception
+  struct LIBODB_EXPORT already_in_transaction: exception
   {
     virtual const char*
     what () const throw ();
   };
 
-  struct LIBODB_EXPORT not_in_transaction: odb::exception
+  struct LIBODB_EXPORT not_in_transaction: exception
   {
     virtual const char*
     what () const throw ();
   };
 
-  struct LIBODB_EXPORT transaction_already_finalized: odb::exception
+  struct LIBODB_EXPORT transaction_already_finalized: exception
   {
     virtual const char*
     what () const throw ();
@@ -42,19 +42,19 @@ namespace odb
 
   // Session exceptions.
   //
-  struct LIBODB_EXPORT already_in_session: odb::exception
+  struct LIBODB_EXPORT already_in_session: exception
   {
     virtual const char*
     what () const throw ();
   };
 
-  struct LIBODB_EXPORT not_in_session: odb::exception
+  struct LIBODB_EXPORT not_in_session: exception
   {
     virtual const char*
     what () const throw ();
   };
 
-  struct LIBODB_EXPORT const_object: odb::exception
+  struct LIBODB_EXPORT const_object: exception
   {
     virtual const char*
     what () const throw ();
@@ -62,31 +62,31 @@ namespace odb
 
   // Database operations exceptions.
   //
-  struct LIBODB_EXPORT deadlock: odb::exception
+  struct LIBODB_EXPORT deadlock: exception
   {
     virtual const char*
     what () const throw ();
   };
 
-  struct LIBODB_EXPORT object_not_persistent: odb::exception
+  struct LIBODB_EXPORT object_not_persistent: exception
   {
     virtual const char*
     what () const throw ();
   };
 
-  struct LIBODB_EXPORT object_already_persistent: odb::exception
+  struct LIBODB_EXPORT object_already_persistent: exception
   {
     virtual const char*
     what () const throw ();
   };
 
-  struct LIBODB_EXPORT result_not_cached: odb::exception
+  struct LIBODB_EXPORT result_not_cached: exception
   {
     virtual const char*
     what () const throw ();
   };
 
-  struct LIBODB_EXPORT database_exception: odb::exception
+  struct LIBODB_EXPORT database_exception: exception
   {
   };
 
