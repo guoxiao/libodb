@@ -5,12 +5,14 @@
 
 include $(dir $(lastword $(MAKEFILE_LIST)))../build/bootstrap.make
 
-cxx :=            \
-exceptions.cxx    \
-database.cxx      \
-session.cxx       \
-transaction.cxx   \
-lazy-ptr-impl.cxx
+cxx :=             \
+exceptions.cxx     \
+database.cxx       \
+lazy-ptr-impl.cxx  \
+schema-catalog.cxx \
+session.cxx        \
+transaction.cxx
+
 
 # Implementation details.
 #

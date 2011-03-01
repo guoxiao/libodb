@@ -8,6 +8,8 @@
 
 #include <odb/pre.hxx>
 
+#include <string>
+
 #include <odb/exception.hxx>
 
 #include <odb/details/export.hxx>
@@ -106,6 +108,27 @@ namespace odb
   {
   };
 
+  // Schema catalog exceptions.
+  //
+  struct LIBODB_EXPORT unknown_schema: exception
+  {
+    unknown_schema (const std::string& name);
+    ~unknown_schema () throw ();
+
+    const std::string&
+    name () const
+    {
+      return name_;
+    }
+
+    virtual const char*
+    what () const throw ();
+
+  private:
+    std::string name_;
+    std::string what_;
+  };
+
   namespace core
   {
     using odb::null_pointer;
@@ -126,6 +149,8 @@ namespace odb
     using odb::object_already_persistent;
     using odb::result_not_cached;
     using odb::database_exception;
+
+    using odb::unknown_schema;
   }
 }
 

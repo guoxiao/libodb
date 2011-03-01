@@ -3,7 +3,11 @@
 // copyright : Copyright (c) 2009-2011 Code Synthesis Tools CC
 // license   : GNU GPL v2; see accompanying LICENSE file
 
+#include <sstream>
+
 #include <odb/exceptions.hxx>
+
+using namespace std;
 
 namespace odb
 {
@@ -83,5 +87,25 @@ namespace odb
   what () const throw ()
   {
     return "object already persistent";
+  }
+
+  unknown_schema::
+  unknown_schema (const std::string& name)
+      : name_ (name)
+  {
+    ostringstream ostr;
+    ostr << "unknown database schema '" << name << "'";
+    what_ = ostr.str ();
+  }
+
+  unknown_schema::
+  ~unknown_schema () throw ()
+  {
+  }
+
+  const char* unknown_schema::
+  what () const throw ()
+  {
+    return what_.c_str ();
   }
 }
