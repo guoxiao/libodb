@@ -26,10 +26,7 @@ namespace odb
       bool r (--counter_ == 0);
 
       if (r)
-      {
-        callback_->zero_counter (callback_->arg);
-        r = (counter_ == 0);
-      }
+        r = callback_->zero_counter (callback_->arg);
 
       return r;
     }

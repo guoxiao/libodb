@@ -80,7 +80,10 @@ namespace odb
       struct refcount_callback
       {
         void* arg;
-        void (*zero_counter) (void*);
+
+        // Return true if the object should be deleted, false otherwise.
+        //
+        bool (*zero_counter) (void*);
       };
 
     private:
