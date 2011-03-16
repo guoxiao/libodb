@@ -66,21 +66,22 @@ namespace odb
 
       InitializeCriticalSection (&cs_);
 
-      proc_data_ = static_cast<process_data*> (
-        operator new (
-          sizeof (process_data) + sizeof (dtor_func) * init_capacity));
+      process_data* pd (
+        static_cast<process_data*> (
+          operator new (
+            sizeof (process_data) + sizeof (dtor_func) * init_capacity)));
 
-      proc_data_->size = 0;
-      proc_data_->capacity = init_capacity;
-      memset (proc_data_->dtors, 0, sizeof (dtor_func) * init_capacity);
+      pd->size = 0;
+      pd->capacity = init_capacity;
+      memset (pd->dtors, 0, sizeof (dtor_func) * init_capacity);
+
+      proc_data_ = pd;
     }
 
     void
-    tls_process_end (bool safe)
+    tls_process_end (bool)
     {
-      if (safe)
-        operator delete (proc_data_);
-
+      operator delete (proc_data_);
       DeleteCriticalSection (&cs_);
 
       if (index_ != TLS_OUT_OF_INDEXES)
@@ -134,6 +135,10 @@ namespace odb
       {
         c *= 2;
 
+        // Try to do "atomic" switch-over so that proc_data_ always points
+        // to memory that can be freed even if this thread is killed in the
+        // middle.
+        //
         process_data* pd (
           static_cast<process_data*> (
             operator new (sizeof (process_data) + sizeof (dtor_func) * c)));
@@ -143,8 +148,10 @@ namespace odb
 
         pd->size = n;
         pd->capacity = c;
-        operator delete (proc_data_);
+
+        process_data* old (proc_data_);
         proc_data_ = pd;
+        operator delete (old);
       }
 
       proc_data_->dtors[n] = dtor;
