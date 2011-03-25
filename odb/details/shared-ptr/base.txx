@@ -68,7 +68,7 @@ namespace odb
       template <typename X>
       struct counter_type<X, sizeof (meta::no)>
       {
-        typedef X r;
+        typedef typename details::counter_type<X>::counter r;
       };
 
       template <typename X>

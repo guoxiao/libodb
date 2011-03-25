@@ -8,6 +8,8 @@
 
 #include <odb/pre.hxx>
 
+#include <odb/details/shared-ptr-fwd.hxx>
+
 namespace odb
 {
   class database;
@@ -45,12 +47,6 @@ namespace odb
 
   template <typename T>
   struct object_traits;
-
-  namespace details
-  {
-    template <typename X>
-    class shared_ptr;
-  }
 }
 
 #include <odb/post.hxx>

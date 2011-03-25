@@ -8,6 +8,7 @@
 
 #include <odb/pre.hxx>
 
+#include <odb/details/shared-ptr-fwd.hxx>
 #include <odb/details/shared-ptr/base.hxx>
 
 namespace odb

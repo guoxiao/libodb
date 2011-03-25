@@ -12,8 +12,8 @@
 #include <cstddef>   // std::size_t
 
 #include <odb/exception.hxx>
-
 #include <odb/details/export.hxx>
+#include <odb/details/shared-ptr/counter-type.hxx>
 
 namespace odb
 {
@@ -52,8 +52,9 @@ namespace odb
       what () const throw ();
     };
 
-    struct LIBODB_EXPORT shared_base
+    class LIBODB_EXPORT shared_base
     {
+    public:
       shared_base ();
       shared_base (const shared_base&);
       shared_base&
