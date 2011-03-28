@@ -16,11 +16,15 @@ namespace odb
   class transaction;
   class session;
 
+  template <typename T>
+  class result;
+
   namespace core
   {
     using odb::database;
     using odb::transaction;
     using odb::session;
+    using odb::result;
   }
 
   // Implementation details.
