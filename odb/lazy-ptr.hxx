@@ -53,7 +53,15 @@ namespace odb
   public:
     typedef odb::database database_type;
 
+    //  NULL      loaded()
+    //
+    //  true       true      NULL pointer to transient object
+    //  false      true      valid pointer to persistent object
+    //  true       false     unloaded pointer to persistent object
+    //  false      false     valid pointer to transient object
+    //
     bool loaded () const;
+
     T* load () const;
 
     // Unload the pointer. For transient objects this function is
@@ -154,7 +162,15 @@ namespace odb
   public:
     typedef odb::database database_type;
 
+    //  NULL      loaded()
+    //
+    //  true       true      NULL pointer to transient object
+    //  false      true      valid pointer to persistent object
+    //  true       false     unloaded pointer to persistent object
+    //  false      false     valid pointer to transient object
+    //
     bool loaded () const;
+
     std::auto_ptr<T>& load () const;
 
     // Unload the pointer. For transient objects this function is

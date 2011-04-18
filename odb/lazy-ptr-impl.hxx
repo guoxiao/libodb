@@ -63,7 +63,7 @@ namespace odb
     typedef void* lazy_ptr_base::*unspecified_bool_type;
     operator unspecified_bool_type () const
     {
-      return id_ != 0 ? &lazy_ptr_base::id_ : 0;
+      return db_ != 0 ? &lazy_ptr_base::id_ : 0;
     }
 
     operator lazy_ptr_impl_ref ();

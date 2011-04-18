@@ -16,12 +16,24 @@ namespace odb
     bool lazy_shared_ptr<T>::
     equal (const lazy_shared_ptr<Y>& r) const
     {
-      if (loaded () && r.loaded ())
+      bool t1 (!p_ == loaded ());
+      bool t2 (!r.p_ == r.loaded ());
+
+      // If both are transient, then compare the underlying pointers.
+      //
+      if (t1 && t2)
         return p_ == r.p_;
 
-      // If one of the object is not loaded, then we compare databases and
-      // object ids. Note that NULL pointers cannot have non-NULL databases
-      // and if both of them are NULL, we wouldn't have gotten here.
+      // If one is transient and the other is persistent, then compare
+      // the underlying pointers but only if they are non NULL. Note
+      // that an unloaded persistent object is always unequal to a
+      // transient object.
+      //
+      if (t1 || t2)
+        return p_ == r.p_ && p_;
+
+      // If both objects are persistent, then we compare databases and
+      // object ids.
       //
       typedef typename object_traits<T>::object_type object_type1;
       typedef typename object_traits<Y>::object_type object_type2;

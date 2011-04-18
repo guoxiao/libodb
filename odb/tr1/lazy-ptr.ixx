@@ -192,7 +192,8 @@ namespace odb
     inline bool lazy_shared_ptr<T>::
     loaded () const
     {
-      return p_ || !i_;
+      bool i (i_);
+      return !p_ != i; // !p_ XOR i_
     }
 
     template <class T>
@@ -524,7 +525,8 @@ namespace odb
     inline bool lazy_weak_ptr<T>::
     loaded () const
     {
-      return !expired () || !i_;
+      bool i (i_);
+      return expired () != i; // expired () XOR i_
     }
 
     template <class T>

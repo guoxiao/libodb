@@ -108,7 +108,8 @@ namespace odb
   inline bool lazy_ptr<T>::
   loaded () const
   {
-    return p_ || !i_;
+    bool i (i_);
+    return (p_ == 0) != i; // !p_ XOR i
   }
 
   template <class T>
@@ -361,7 +362,8 @@ namespace odb
   inline bool lazy_auto_ptr<T>::
   loaded () const
   {
-    return p_.get () != 0 || !i_;
+    bool i (i_);
+    return (p_.get () == 0) != i; // XOR
   }
 
   template <class T>
