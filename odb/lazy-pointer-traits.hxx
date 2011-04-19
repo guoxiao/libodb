@@ -17,8 +17,8 @@ namespace odb
   class pointer_traits< lazy_ptr<T> >
   {
   public:
-    static pointer_kind const kind = pk_raw;
-    static bool const lazy = true;
+    static const pointer_kind kind = pk_raw;
+    static const bool lazy = true;
 
     typedef T element_type;
     typedef lazy_ptr<element_type> pointer_type;
@@ -42,8 +42,8 @@ namespace odb
   class pointer_traits< lazy_auto_ptr<T> >
   {
   public:
-    static pointer_kind const kind = pk_unique;
-    static bool const lazy = true;
+    static const pointer_kind kind = pk_unique;
+    static const bool lazy = true;
 
     typedef T element_type;
     typedef lazy_auto_ptr<element_type> pointer_type;

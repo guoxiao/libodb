@@ -24,7 +24,7 @@ namespace odb
       template <typename X>
       struct class_p
       {
-        static bool const r = sizeof (class_p_test<X> (0)) == sizeof (yes);
+        static const bool r = sizeof (class_p_test<X> (0)) == sizeof (yes);
       };
     }
   }

@@ -17,8 +17,8 @@ namespace odb
   class pointer_traits<tr1::lazy_shared_ptr<T> >
   {
   public:
-    static pointer_kind const kind = pk_shared;
-    static bool const lazy = true;
+    static const pointer_kind kind = pk_shared;
+    static const bool lazy = true;
 
     typedef T element_type;
     typedef tr1::lazy_shared_ptr<element_type> pointer_type;
@@ -42,8 +42,8 @@ namespace odb
   class pointer_traits<tr1::lazy_weak_ptr<T> >
   {
   public:
-    static pointer_kind const kind = pk_weak;
-    static bool const lazy = true;
+    static const pointer_kind kind = pk_weak;
+    static const bool lazy = true;
 
     typedef T element_type;
     typedef tr1::lazy_weak_ptr<element_type> pointer_type;
