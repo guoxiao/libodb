@@ -17,31 +17,19 @@ namespace odb
 {
   namespace details
   {
-    class LIBODB_EXPORT buffer
+    class LIBODB_EXPORT basic_buffer_base
     {
     public:
-      ~buffer ()
+      ~basic_buffer_base ()
       {
         if (data_)
           operator delete (data_);
       }
 
-      buffer ()
-          : capacity_ (512)
+      basic_buffer_base ()
+        : capacity_ (512)
       {
-        data_ = static_cast<char*> (operator new (capacity_));
-      }
-
-      char*
-      data ()
-      {
-        return data_;
-      }
-
-      const char*
-      data () const
-      {
-        return data_;
+        data_ = operator new (capacity_);
       }
 
       std::size_t
@@ -50,13 +38,33 @@ namespace odb
         return capacity_;
       }
 
-      void
-      capacity (std::size_t, std::size_t data_size = 0);
+      void capacity (std::size_t, std::size_t data_size = 0);
 
-    private:
-      char* data_;
+    protected:
+      void* data_;
       std::size_t capacity_;
     };
+
+    template <typename T>
+    class basic_buffer: public basic_buffer_base
+    {
+    public:
+
+      T*
+      data ()
+      {
+        return static_cast<T*> (data_);
+      }
+
+      const T*
+      data () const
+      {
+        return static_cast<T*> (data_);
+      }
+    };
+
+    typedef basic_buffer<char> buffer;
+    typedef basic_buffer<unsigned char> ubuffer;
   }
 }
 

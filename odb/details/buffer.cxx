@@ -13,13 +13,13 @@ namespace odb
 {
   namespace details
   {
-    void buffer::
+    void basic_buffer_base::
     capacity (size_t c, size_t data_size)
     {
       if (c > capacity_)
       {
         size_t n (capacity_ * 2 > c ? capacity_ * 2 : c);
-        char* d (static_cast<char*> (operator new (n)));
+        void* d (operator new (n));
 
         if (data_ != 0)
         {
