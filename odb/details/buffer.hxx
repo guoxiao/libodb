@@ -38,7 +38,8 @@ namespace odb
         return capacity_;
       }
 
-      void capacity (std::size_t, std::size_t data_size = 0);
+      void
+      capacity (std::size_t, std::size_t data_size = 0);
 
     protected:
       void* data_;
