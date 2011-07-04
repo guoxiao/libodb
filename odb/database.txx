@@ -6,6 +6,7 @@
 #include <odb/exceptions.hxx>
 #include <odb/transaction.hxx>
 #include <odb/session.hxx>
+#include <odb/callback.hxx>
 #include <odb/cache-traits.hxx>
 #include <odb/pointer-traits.hxx>
 
@@ -23,7 +24,10 @@ namespace odb
     if (!transaction::has_current ())
       throw not_in_transaction ();
 
+    object_traits::callback (*this, obj, callback_event::pre_persist);
     object_traits::persist (*this, obj);
+    object_traits::callback (*this, obj, callback_event::post_persist);
+
     const typename object_traits::id_type& id (object_traits::id (obj));
     reference_cache_traits<T>::insert (*this, id, obj);
     return id;
@@ -45,7 +49,11 @@ namespace odb
       throw not_in_transaction ();
 
     T& obj (pointer_traits::get_ref (pobj));
+
+    object_traits::callback (*this, obj, callback_event::pre_persist);
     object_traits::persist (*this, obj);
+    object_traits::callback (*this, obj, callback_event::post_persist);
+
     const typename object_traits::id_type& id (object_traits::id (obj));
     pointer_cache_traits<pointer_type>::insert (*this, id, pobj);
     return id;
@@ -132,7 +140,9 @@ namespace odb
     if (!transaction::has_current ())
       throw not_in_transaction ();
 
+    object_traits::callback (*this, obj,callback_event::pre_update);
     object_traits::update (*this, obj);
+    object_traits::callback (*this, obj, callback_event::post_update);
   }
 
   template <typename T>
@@ -150,7 +160,11 @@ namespace odb
     if (!transaction::has_current ())
       throw not_in_transaction ();
 
-    object_traits::update (*this, pointer_traits::get_ref (pobj));
+    T& obj (pointer_traits::get_ref (pobj));
+
+    object_traits::callback (*this, obj, callback_event::pre_update);
+    object_traits::update (*this, obj);
+    object_traits::callback (*this, obj, callback_event::post_update);
   }
 
   template <typename T>
@@ -169,6 +183,28 @@ namespace odb
 
     object_traits::erase (*this, id);
     pointer_cache_traits<pointer_type>::erase (*this, id);
+  }
+
+  template <typename T>
+  void database::
+  erase (T& obj)
+  {
+    // T can be const T while object_type will always be T.
+    //
+    typedef typename odb::object_traits<T>::object_type object_type;
+    typedef odb::object_traits<object_type> object_traits;
+
+    typedef typename odb::object_traits<T>::pointer_type pointer_type;
+
+    if (!transaction::has_current ())
+      throw not_in_transaction ();
+
+    typename object_traits::id_type id (object_traits::id (obj));
+
+    object_traits::callback (*this, obj, callback_event::pre_erase);
+    object_traits::erase (*this, id);
+    pointer_cache_traits<pointer_type>::erase (*this, id);
+    object_traits::callback (*this, obj, callback_event::post_erase);
   }
 
   template <typename T>

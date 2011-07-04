@@ -104,18 +104,6 @@ namespace odb
 
   template <typename T>
   inline void database::
-  erase (T& obj)
-  {
-    // T can be const T while object_type will always be T.
-    //
-    typedef typename odb::object_traits<T>::object_type object_type;
-    typedef odb::object_traits<object_type> object_traits;
-
-    erase<T> (object_traits::id (obj));
-  }
-
-  template <typename T>
-  inline void database::
   erase (T* p)
   {
     typedef typename object_traits<T>::pointer_type object_pointer;
@@ -163,15 +151,10 @@ namespace odb
   inline void database::
   erase_ (const typename object_traits<T>::pointer_type& pobj)
   {
-    // T can be const T while object_type will always be T.
-    //
-    typedef typename odb::object_traits<T>::object_type object_type;
-    typedef odb::object_traits<object_type> object_traits;
+    typedef typename object_traits<T>::pointer_type pointer_type;
+    typedef pointer_traits<pointer_type> pointer_traits;
 
-    typedef typename odb::object_traits<T>::pointer_type pointer_type;
-    typedef odb::pointer_traits<pointer_type> pointer_traits;
-
-    erase<T> (object_traits::id (pointer_traits::get_ref (pobj)));
+    erase<T> (pointer_traits::get_ref (pobj));
   }
 
   template <typename T>
