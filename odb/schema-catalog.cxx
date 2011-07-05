@@ -14,7 +14,7 @@ using namespace std;
 
 namespace odb
 {
-  typedef void (*create_function) (database&);
+  typedef bool (*create_function) (database&, unsigned short pass);
   typedef vector<create_function> create_functions;
   struct schema_catalog_impl: map<string, create_functions> {};
 
@@ -33,9 +33,23 @@ namespace odb
 
     const create_functions& fs (i->second);
 
-    for (create_functions::const_iterator j (fs.begin ()), e (fs.end ());
-         j != e; ++j)
-      (*j) (db);
+    // Run the passes until we ran them all or all the functions
+    // return false, which means no more passes necessary.
+    //
+    for (unsigned short pass (0); pass < 3; ++pass)
+    {
+      bool done (true);
+
+      for (create_functions::const_iterator j (fs.begin ()), e (fs.end ());
+           j != e; ++j)
+      {
+        if ((*j) (db, pass))
+          done = false;
+      }
+
+      if (done)
+        break;
+    }
   }
 
   // schema_catalog_init
