@@ -8,7 +8,7 @@
 
 #include <odb/pre.hxx>
 
-#define ODB_POTENTIALLY_UNUSED(x) (void)x
+#define ODB_POTENTIALLY_UNUSED(x) (void*)&x
 
 #include <odb/post.hxx>
 
