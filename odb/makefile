@@ -8,6 +8,7 @@ include $(dir $(lastword $(MAKEFILE_LIST)))../build/bootstrap.make
 cxx :=             \
 exceptions.cxx     \
 database.cxx       \
+connection.cxx     \
 lazy-ptr-impl.cxx  \
 schema-catalog.cxx \
 session.cxx        \

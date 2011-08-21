@@ -11,6 +11,12 @@ namespace odb
     return impl_->database ();
   }
 
+  inline transaction::connection_type& transaction::
+  connection ()
+  {
+    return impl_->connection ();
+  }
+
   inline transaction_impl& transaction::
   implementation ()
   {

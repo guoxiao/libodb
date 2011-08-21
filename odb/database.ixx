@@ -12,6 +12,18 @@ namespace odb
   {
   }
 
+  inline transaction_impl* database::
+  begin ()
+  {
+    return connection ()->begin ();
+  }
+
+  inline connection_ptr database::
+  connection ()
+  {
+    return connection_ptr (connection_ ());
+  }
+
   template <typename T>
   inline typename object_traits<T>::id_type database::
   persist (T* p)

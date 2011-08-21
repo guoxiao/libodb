@@ -15,6 +15,7 @@
 #include <odb/forward.hxx>
 #include <odb/query.hxx>
 #include <odb/result.hxx>
+#include <odb/connection.hxx>
 #include <odb/exceptions.hxx>
 
 #include <odb/details/export.hxx>
@@ -152,17 +153,29 @@ namespace odb
     unsigned long long
     execute (const std::string& statement);
 
-    virtual unsigned long long
-    execute (const char* statement, std::size_t length) = 0;
+    unsigned long long
+    execute (const char* statement, std::size_t length);
 
-    // Transaction API.
+    // Transactions.
     //
   public:
-    virtual transaction_impl*
-    begin () = 0;
+    transaction_impl*
+    begin ();
+
+    // Connections.
+    //
+  public:
+    connection_ptr
+    connection ();
 
   protected:
     database ();
+
+  protected:
+    typedef odb::connection connection_type;
+
+    virtual connection_type*
+    connection_ () = 0;
 
   protected:
     template <typename T>

@@ -13,6 +13,8 @@
 namespace odb
 {
   class database;
+  class connection;
+  typedef details::shared_ptr<connection> connection_ptr;
   class transaction;
   class session;
 
@@ -22,6 +24,8 @@ namespace odb
   namespace core
   {
     using odb::database;
+    using odb::connection;
+    using odb::connection_ptr;
     using odb::transaction;
     using odb::session;
     using odb::result;
@@ -51,6 +55,15 @@ namespace odb
 
   template <typename T>
   struct object_traits;
+
+  namespace details
+  {
+    template <>
+    struct counter_type<connection>
+    {
+      typedef shared_base counter;
+    };
+  }
 }
 
 #include <odb/post.hxx>

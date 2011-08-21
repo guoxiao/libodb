@@ -20,6 +20,7 @@ namespace odb
   {
   public:
     typedef odb::database database_type;
+    typedef odb::connection connection_type;
 
     explicit
     transaction (transaction_impl*);
@@ -39,6 +40,11 @@ namespace odb
     //
     database_type&
     database ();
+
+    // Return the connection this transaction is on.
+    //
+    connection_type&
+    connection ();
 
     // Return current transaction or throw if there is no transaction
     // in effect.
@@ -72,9 +78,10 @@ namespace odb
     friend class transaction;
 
     typedef odb::database database_type;
+    typedef odb::connection connection_type;
 
-    transaction_impl (database_type& db)
-        : database_ (db)
+    transaction_impl (database_type& db, connection_type& c)
+      : database_ (db), connection_ (c)
     {
     }
 
@@ -93,8 +100,15 @@ namespace odb
       return database_;
     }
 
+    connection_type&
+    connection ()
+    {
+      return connection_;
+    }
+
   protected:
     database_type& database_;
+    connection_type& connection_;
   };
 }
 
