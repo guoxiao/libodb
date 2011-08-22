@@ -208,6 +208,21 @@ namespace odb
   }
 
   template <typename T>
+  unsigned long long database::
+  erase_query (const odb::query<typename object_traits<T>::object_type>& q)
+  {
+    // T can be const T while object_type will always be T.
+    //
+    typedef typename odb::object_traits<T>::object_type object_type;
+    typedef odb::object_traits<object_type> object_traits;
+
+    if (!transaction::has_current ())
+      throw not_in_transaction ();
+
+    return object_traits::erase_query (*this, q);
+  }
+
+  template <typename T>
   result<T> database::
   query (const odb::query<typename object_traits<T>::object_type>& q,
          bool cache)

@@ -125,6 +125,24 @@ namespace odb
     void
     erase (const typename object_traits<T>::pointer_type& obj_ptr);
 
+    // Erase multiple objects matching a query predicate.
+    //
+    template <typename T>
+    unsigned long long
+    erase_query ();
+
+    template <typename T>
+    unsigned long long
+    erase_query (const char*);
+
+    template <typename T>
+    unsigned long long
+    erase_query (const std::string&);
+
+    template <typename T>
+    unsigned long long
+    erase_query (const odb::query<typename object_traits<T>::object_type>&);
+
     // Query API.
     //
     template <typename T>

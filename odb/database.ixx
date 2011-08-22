@@ -170,6 +170,39 @@ namespace odb
   }
 
   template <typename T>
+  inline unsigned long long database::
+  erase_query ()
+  {
+    // T can be const T while object_type will always be T.
+    //
+    typedef typename odb::object_traits<T>::object_type object_type;
+
+    return erase_query<T> (odb::query<object_type> ());
+  }
+
+  template <typename T>
+  inline unsigned long long database::
+  erase_query (const char* q)
+  {
+    // T can be const T while object_type will always be T.
+    //
+    typedef typename odb::object_traits<T>::object_type object_type;
+
+    return erase_query<T> (odb::query<object_type> (q));
+  }
+
+  template <typename T>
+  inline unsigned long long database::
+  erase_query (const std::string& q)
+  {
+    // T can be const T while object_type will always be T.
+    //
+    typedef typename odb::object_traits<T>::object_type object_type;
+
+    return erase_query<T> (odb::query<object_type> (q));
+  }
+
+  template <typename T>
   inline result<T> database::
   query (bool cache)
   {
