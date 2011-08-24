@@ -22,8 +22,11 @@ namespace odb
     typedef odb::database database_type;
     typedef odb::connection connection_type;
 
+    // If the second argument is false, then this transaction is not
+    // made the current transaction of the thread.
+    //
     explicit
-    transaction (transaction_impl*);
+    transaction (transaction_impl*, bool make_current = true);
 
     // Unless the transaction has already been finalized (explicitly
     // committed or rolled back), the destructor will roll it back.
@@ -46,16 +49,26 @@ namespace odb
     connection_type&
     connection ();
 
+    // Return true if there is a transaction in effect.
+    //
+    static bool
+    has_current ();
+
     // Return current transaction or throw if there is no transaction
     // in effect.
     //
     static transaction&
     current ();
 
-    // Return true if there is a transaction in effect.
+    // Set the current thread's transaction.
     //
-    static bool
-    has_current ();
+    static void
+    current (transaction&);
+
+    // Revert to the no transaction in effect state for the current thread.
+    //
+    static void
+    reset_current ();
 
   public:
     transaction_impl&
@@ -74,19 +87,15 @@ namespace odb
 
   class LIBODB_EXPORT transaction_impl
   {
-  protected:
-    friend class transaction;
-
+  public:
     typedef odb::database database_type;
     typedef odb::connection connection_type;
 
-    transaction_impl (database_type& db, connection_type& c)
-      : database_ (db), connection_ (c)
-    {
-    }
-
     virtual
     ~transaction_impl ();
+
+    virtual void
+    start () = 0;
 
     virtual void
     commit () = 0;
@@ -103,12 +112,23 @@ namespace odb
     connection_type&
     connection ()
     {
-      return connection_;
+      return *connection_;
+    }
+
+  protected:
+    transaction_impl (database_type& db)
+        : database_ (db), connection_ (0)
+    {
+    }
+
+    transaction_impl (database_type& db, connection_type& c)
+        : database_ (db), connection_ (&c)
+    {
     }
 
   protected:
     database_type& database_;
-    connection_type& connection_;
+    connection_type* connection_;
   };
 }
 

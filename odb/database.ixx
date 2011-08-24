@@ -12,12 +12,6 @@ namespace odb
   {
   }
 
-  inline transaction_impl* database::
-  begin ()
-  {
-    return connection ()->begin ();
-  }
-
   inline connection_ptr database::
   connection ()
   {

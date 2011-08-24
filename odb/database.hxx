@@ -177,8 +177,8 @@ namespace odb
     // Transactions.
     //
   public:
-    transaction_impl*
-    begin ();
+    virtual transaction_impl*
+    begin () = 0;
 
     // Connections.
     //
