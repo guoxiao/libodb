@@ -102,9 +102,7 @@ namespace odb
   {
     if (this != &y)
     {
-      if (!y.null_)
-        value_ = y.value_;
-
+      value_ = y.value_;
       null_ = y.null_;
     }
 
@@ -116,9 +114,7 @@ namespace odb
   inline nullable<T>& nullable<T>::
   operator= (const nullable<Y>& y)
   {
-    if (!y.null_)
-      value_ = y.value_;
-
+    value_ = y.value_;
     null_ = y.null_;
     return *this;
   }
@@ -190,6 +186,7 @@ namespace odb
   inline void nullable<T>::
   reset ()
   {
+    value_ = T ();
     null_ = true;
   }
 }
