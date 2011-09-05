@@ -18,9 +18,6 @@ namespace odb
   class transaction;
   class session;
 
-  template <typename T>
-  class result;
-
   namespace core
   {
     using odb::database;
@@ -28,7 +25,6 @@ namespace odb
     using odb::connection_ptr;
     using odb::transaction;
     using odb::session;
-    using odb::result;
   }
 
   // Implementation details.
@@ -43,6 +39,12 @@ namespace odb
     template <typename T, typename P>
     class object_factory;
 
+    template <typename T>
+    class view_traits;
+
+    template <typename T, typename P>
+    class view_factory;
+
     template <typename T, typename P>
     class pointer_factory;
 
@@ -55,6 +57,9 @@ namespace odb
 
   template <typename T>
   struct object_traits;
+
+  template <typename T>
+  struct view_traits;
 
   namespace details
   {

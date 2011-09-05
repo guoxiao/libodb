@@ -223,19 +223,43 @@ namespace odb
   }
 
   template <typename T>
-  result<T> database::
-  query (const odb::query<typename object_traits<T>::object_type>& q,
-         bool cache)
+  struct database::query_<T, class_object>
   {
     // T can be const T while object_type will always be T.
     //
     typedef typename odb::object_traits<T>::object_type object_type;
     typedef odb::object_traits<object_type> object_traits;
 
+    static result<T>
+    call (database& db, const odb::query<object_type>& q)
+    {
+      return object_traits::template query<T> (db, q);
+    }
+  };
+
+  template <typename T>
+  struct database::query_<T, class_view>
+  {
+    // Const views are not supported.
+    //
+    typedef odb::view_traits<T> view_traits;
+
+    static result<T>
+    call (database& db, const odb::query<T>& q)
+    {
+      return view_traits::query (db, q);
+    }
+  };
+
+  template <typename T>
+  result<T> database::
+  query (const odb::query<typename details::meta::remove_const<T>::result>& q,
+         bool cache)
+  {
     if (!transaction::has_current ())
       throw not_in_transaction ();
 
-    result<T> r (object_traits::template query<T> (*this, q));
+    result<T> r (query_<T, class_traits<T>::kind>::call (*this, q));
 
     if (cache)
       r.cache ();

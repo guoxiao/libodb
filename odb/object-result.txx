@@ -1,4 +1,4 @@
-// file      : odb/result.txx
+// file      : odb/object-result.txx
 // author    : Boris Kolpackov <boris@codesynthesis.com>
 // copyright : Copyright (c) 2009-2011 Code Synthesis Tools CC
 // license   : GNU GPL v2; see accompanying LICENSE file
@@ -8,14 +8,19 @@
 
 namespace odb
 {
+  //
+  // result_impl
+  //
+
   template <typename T>
-  result_impl<T>::
+  result_impl<T, class_object>::
   ~result_impl ()
   {
   }
 
   template <typename T>
-  typename result_impl<T>::pointer_type& result_impl<T>::
+  typename result_impl<T, class_object>::pointer_type&
+  result_impl<T, class_object>::
   current ()
   {
     typedef typename object_traits::pointer_type unrestricted_pointer_type;
@@ -66,7 +71,7 @@ namespace odb
   //
 
   template <typename T>
-  void result_iterator<T>::
+  void result_iterator<T, class_object>::
   load (object_type& obj)
   {
     if (res_->end ())

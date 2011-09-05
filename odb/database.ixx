@@ -200,33 +200,33 @@ namespace odb
   inline result<T> database::
   query (bool cache)
   {
-    // T can be const T while object_type will always be T.
+    // T can be const T.
     //
-    typedef typename odb::object_traits<T>::object_type object_type;
+    typedef typename details::meta::remove_const<T>::result type;
 
-    return query<T> (odb::query<object_type> (), cache);
+    return query<T> (odb::query<type> (), cache);
   }
 
   template <typename T>
   inline result<T> database::
   query (const char* q, bool cache)
   {
-    // T can be const T while object_type will always be T.
+    // T can be const T.
     //
-    typedef typename odb::object_traits<T>::object_type object_type;
+    typedef typename details::meta::remove_const<T>::result type;
 
-    return query<T> (odb::query<object_type> (q), cache);
+    return query<T> (odb::query<type> (q), cache);
   }
 
   template <typename T>
   inline result<T> database::
   query (const std::string& q, bool cache)
   {
-    // T can be const T while object_type will always be T.
+    // T can be const T.
     //
-    typedef typename odb::object_traits<T>::object_type object_type;
+    typedef typename details::meta::remove_const<T>::result type;
 
-    return query<T> (odb::query<object_type> (q), cache);
+    return query<T> (odb::query<type> (q), cache);
   }
 
   inline unsigned long long database::

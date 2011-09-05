@@ -12,8 +12,36 @@
 
 namespace odb
 {
-  template <typename T,
-            typename Q = typename object_traits<T>::query_base_type>
+  template <typename T, class_kind kind = class_traits<T>::kind>
+  struct query_selector;
+
+  template <typename T>
+  struct query_selector<T, class_object>
+  {
+    typedef typename object_traits<T>::query_base_type base_type;
+    typedef typename object_traits<T>::query_type type;
+
+    static const char*
+    table_name ()
+    {
+      return object_traits<T>::table_name;
+    }
+  };
+
+  template <typename T>
+  struct query_selector<T, class_view>
+  {
+    typedef typename view_traits<T>::query_base_type base_type;
+    typedef typename view_traits<T>::query_type type;
+
+    static const char*
+    table_name ()
+    {
+      return "";
+    }
+  };
+
+  template <typename T, typename Q = typename query_selector<T>::base_type>
   class query;
 
   namespace core

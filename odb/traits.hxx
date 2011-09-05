@@ -13,22 +13,6 @@
 
 namespace odb
 {
-  // template <typename T>
-  // class access::object_traits;
-  //
-  // Specializations should define the following members:
-  //
-  // id_type               - object id (primary key) type
-  // id_type id (const T&) - get object id
-  //
-  // void persist (database&, T&)
-  // void update (database&, T&)
-  // void erase (database&, const id_type&)
-  // pointer_type find (database&, const id_type&)
-  // bool find (database&, const id_type&, T&)
-  //
-  //
-
   template <typename T, typename P>
   class access::object_factory
   {
@@ -46,10 +30,26 @@ namespace odb
   };
 
   template <typename T, typename P>
+  class access::view_factory
+  {
+  public:
+    typedef T view_type;
+    typedef P pointer_type;
+
+    static P
+    create ()
+    {
+      // By default use pointer-specific construction.
+      //
+      return pointer_factory<T, P>::create ();
+    }
+  };
+
+  template <typename T, typename P>
   class access::pointer_factory
   {
   public:
-    typedef T object_type;
+    typedef T value_type;
     typedef P pointer_type;
 
     static P
@@ -61,6 +61,7 @@ namespace odb
       g.release ();
       return p;
     }
+
   private:
     struct mem_guard
     {
@@ -70,6 +71,33 @@ namespace odb
       void* p_;
     };
   };
+
+  //
+  // class_traits
+  //
+  enum class_kind
+  {
+    class_object,
+    class_view,
+    class_composite,
+    class_other
+  };
+
+  template <typename T>
+  struct class_traits
+  {
+    static const class_kind kind = class_other;
+  };
+
+  template <typename T>
+  struct class_traits<const T>
+  {
+    static const class_kind kind = class_traits<T>::kind;
+  };
+
+  //
+  // object_traits
+  //
 
   template <typename T>
   struct object_traits:
@@ -141,6 +169,34 @@ namespace odb
   {
     struct id_type {};
   };
+
+  //
+  // view_traits
+  //
+
+  template <typename T>
+  struct view_traits:
+    access::view_traits<T>,
+    access::view_factory<T, typename access::view_traits<T>::pointer_type>
+  {
+    //
+    // If a C++ compiler issues an error pointing to this struct and
+    // saying that it is incomplete, then you are most likely trying to
+    // perform a database operation on a C++ type that is not a view
+    // Or you forgot to include the corresponding -odb.hxx file.
+    //
+
+    typedef
+    odb::pointer_traits<typename access::view_traits<T>::pointer_type>
+    pointer_traits;
+
+    typedef typename access::view_traits<T>::view_type view_type;
+    typedef typename access::view_traits<T>::pointer_type pointer_type;
+  };
+
+  //
+  // composite_value_traits
+  //
 
   template <typename T>
   struct composite_value_traits: access::composite_value_traits<T>
