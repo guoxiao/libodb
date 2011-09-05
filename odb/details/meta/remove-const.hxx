@@ -1,10 +1,10 @@
-// file      : odb/details/meta/remove-p.hxx
+// file      : odb/details/meta/remove-const.hxx
 // author    : Boris Kolpackov <boris@codesynthesis.com>
 // copyright : Copyright (c) 2009-2011 Code Synthesis Tools CC
 // license   : GNU GPL v2; see accompanying LICENSE file
 
-#ifndef ODB_DETAILS_META_REMOVE_P_HXX
-#define ODB_DETAILS_META_REMOVE_P_HXX
+#ifndef ODB_DETAILS_META_REMOVE_CONST_HXX
+#define ODB_DETAILS_META_REMOVE_CONST_HXX
 
 #include <odb/pre.hxx>
 
@@ -15,15 +15,15 @@ namespace odb
     namespace meta
     {
       template <typename X>
-      struct remove_p
+      struct remove_const
       {
-        typedef X r;
+        typedef X result;
       };
 
       template <typename X>
-      struct remove_p<X*>
+      struct remove_const<const X>
       {
-        typedef X r;
+        typedef X result;
       };
     }
   }
@@ -31,4 +31,4 @@ namespace odb
 
 #include <odb/post.hxx>
 
-#endif // ODB_DETAILS_META_REMOVE_P_HXX
+#endif // ODB_DETAILS_META_REMOVE_CONST_HXX

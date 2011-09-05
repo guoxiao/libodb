@@ -14,7 +14,7 @@ namespace odb
     {
       // Support for locating the counter in the memory block.
       //
-      template <typename X, bool poly = meta::polymorphic_p<X>::r>
+      template <typename X, bool poly = meta::polymorphic_p<X>::result>
       struct locator;
 
       template <typename X>

@@ -1,10 +1,10 @@
-// file      : odb/details/meta/remove-v.hxx
+// file      : odb/details/meta/remove-volatile.hxx
 // author    : Boris Kolpackov <boris@codesynthesis.com>
 // copyright : Copyright (c) 2009-2011 Code Synthesis Tools CC
 // license   : GNU GPL v2; see accompanying LICENSE file
 
-#ifndef ODB_DETAILS_META_REMOVE_V_HXX
-#define ODB_DETAILS_META_REMOVE_V_HXX
+#ifndef ODB_DETAILS_META_REMOVE_VOLATILE_HXX
+#define ODB_DETAILS_META_REMOVE_VOLATILE_HXX
 
 #include <odb/pre.hxx>
 
@@ -15,15 +15,15 @@ namespace odb
     namespace meta
     {
       template <typename X>
-      struct remove_v
+      struct remove_volatile
       {
-        typedef X r;
+        typedef X result;
       };
 
       template <typename X>
-      struct remove_v<X volatile>
+      struct remove_volatile<volatile X>
       {
-        typedef X r;
+        typedef X result;
       };
     }
   }
@@ -31,4 +31,4 @@ namespace odb
 
 #include <odb/post.hxx>
 
-#endif // ODB_DETAILS_META_REMOVE_V_HXX
+#endif // ODB_DETAILS_META_REMOVE_VOLATILE_HXX

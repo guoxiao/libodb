@@ -9,7 +9,7 @@
 #include <odb/pre.hxx>
 
 #include <odb/details/meta/class-p.hxx>
-#include <odb/details/meta/remove-cv.hxx>
+#include <odb/details/meta/remove-const-volatile.hxx>
 
 namespace odb
 {
@@ -20,12 +20,12 @@ namespace odb
       template <typename CVX>
       struct polymorphic_p
       {
-        typedef typename remove_cv<CVX>::r X;
+        typedef typename remove_const_volatile<CVX>::result X;
 
         template <typename Y, bool C>
         struct impl
         {
-          static const bool r = false;
+          static const bool result = false;
         };
 
         template <typename Y>
@@ -44,10 +44,10 @@ namespace odb
             ~t2 () throw ();
           };
 
-          static const bool r = sizeof (t1) == sizeof (t2);
+          static const bool result = sizeof (t1) == sizeof (t2);
         };
 
-        static const bool r = impl<X, class_p<X>::r>::r;
+        static const bool result = impl<X, class_p<X>::result>::result;
       };
     }
   }

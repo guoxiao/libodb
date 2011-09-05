@@ -18,13 +18,14 @@ namespace odb
     {
       // g++ cannot have these inside class_p.
       //
-      template <typename Y> no class_p_test (...);
-      template <typename Y> yes class_p_test (void (Y::*) ());
+      template <typename X> no class_p_test (...);
+      template <typename X> yes class_p_test (void (X::*) ());
 
       template <typename X>
       struct class_p
       {
-        static const bool r = sizeof (class_p_test<X> (0)) == sizeof (yes);
+        static const bool result =
+          sizeof (class_p_test<X> (0)) == sizeof (yes);
       };
     }
   }
