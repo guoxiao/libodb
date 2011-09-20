@@ -23,6 +23,24 @@ namespace odb
   template <typename T, const char* table>
   struct pointer_query_columns;
 
+  // Object pointer syntax wrapper.
+  //
+  template <typename T>
+  struct query_pointer
+  {
+    query_pointer ()
+    {
+      // For some reason GCC needs this dummy c-tor if we make a static
+      // data member of this type const.
+    }
+
+    T*
+    operator-> () const
+    {
+      return 0; // All members in T are static.
+    }
+  };
+
   //
   //
   template <typename T, class_kind kind = class_traits<T>::kind>
