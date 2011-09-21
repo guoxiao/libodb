@@ -167,66 +167,48 @@ namespace odb
   inline unsigned long long database::
   erase_query ()
   {
-    // T can be const T while object_type will always be T.
+    // T is always object_type.
     //
-    typedef typename odb::object_traits<T>::object_type object_type;
-
-    return erase_query<T> (odb::query<object_type> ());
+    return erase_query<T> (odb::query<T> ());
   }
 
   template <typename T>
   inline unsigned long long database::
   erase_query (const char* q)
   {
-    // T can be const T while object_type will always be T.
+    // T is always object_type.
     //
-    typedef typename odb::object_traits<T>::object_type object_type;
-
-    return erase_query<T> (odb::query<object_type> (q));
+    return erase_query<T> (odb::query<T> (q));
   }
 
   template <typename T>
   inline unsigned long long database::
   erase_query (const std::string& q)
   {
-    // T can be const T while object_type will always be T.
+    // T is always object_type.
     //
-    typedef typename odb::object_traits<T>::object_type object_type;
-
-    return erase_query<T> (odb::query<object_type> (q));
+    return erase_query<T> (odb::query<T> (q));
   }
 
   template <typename T>
   inline result<T> database::
   query (bool cache)
   {
-    // T can be const T.
-    //
-    typedef typename details::meta::remove_const<T>::result type;
-
-    return query<T> (odb::query<type> (), cache);
+    return query<T> (odb::query<T> (), cache);
   }
 
   template <typename T>
   inline result<T> database::
   query (const char* q, bool cache)
   {
-    // T can be const T.
-    //
-    typedef typename details::meta::remove_const<T>::result type;
-
-    return query<T> (odb::query<type> (q), cache);
+    return query<T> (odb::query<T> (q), cache);
   }
 
   template <typename T>
   inline result<T> database::
   query (const std::string& q, bool cache)
   {
-    // T can be const T.
-    //
-    typedef typename details::meta::remove_const<T>::result type;
-
-    return query<T> (odb::query<type> (q), cache);
+    return query<T> (odb::query<T> (q), cache);
   }
 
   inline unsigned long long database::

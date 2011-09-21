@@ -13,28 +13,20 @@ namespace odb
           const typename object_traits<T>::id_type& id,
           const typename object_traits<T>::pointer_type& obj)
   {
-    // T can be const T while object_type will always be T.
-    //
-    typedef typename object_traits<T>::object_type object_type;
-    typedef odb::object_traits<object_type> object_traits;
-
-    typedef typename odb::object_traits<T>::pointer_type pointer_type;
+    typedef odb::object_traits<T> object_traits;
+    typedef typename object_traits::pointer_type pointer_type;
     typedef odb::pointer_traits<pointer_type> pointer_traits;
 
     type_map& tm (db_map_[&db]);
-    details::shared_ptr<object_map_base>& pom (tm[&typeid (object_type)]);
+    details::shared_ptr<object_map_base>& pom (tm[&typeid (T)]);
 
     if (!pom)
-      pom.reset (new (details::shared) object_map<object_type>);
+      pom.reset (new (details::shared) object_map<T>);
 
-    object_map<object_type>& om (
-      static_cast<object_map<object_type>&> (*pom));
+    object_map<T>& om (static_cast<object_map<T>&> (*pom));
 
-    typename object_map<object_type>::value_type vt (
-      id, object_pointers<object_type> ());
-    vt.second.set (obj);
-    std::pair<typename object_map<object_type>::iterator, bool> r (
-      om.insert (vt));
+    typename object_map<T>::value_type vt (id, obj);
+    std::pair<typename object_map<T>::iterator, bool> r (om.insert (vt));
 
     // In what situation may we possibly attempt to reinsert the object?
     // For example, when the user loads the same object in to different
@@ -42,7 +34,7 @@ namespace odb
     // we should probably update our entries accordingly.
     //
     if (!r.second)
-      r.first->second.set (obj);
+      r.first->second = obj;
 
     return object_position<T> (om, r.first);
   }
@@ -51,9 +43,6 @@ namespace odb
   typename object_traits<T>::pointer_type session::
   find (database_type& db, const typename object_traits<T>::id_type& id) const
   {
-    // T can be const T while object_type will always be T.
-    //
-    typedef typename object_traits<T>::object_type object_type;
     typedef typename object_traits<T>::pointer_type pointer_type;
 
     database_map::const_iterator di (db_map_.find (&db));
@@ -62,45 +51,37 @@ namespace odb
       return pointer_type ();
 
     const type_map& tm (di->second);
-    type_map::const_iterator ti (tm.find (&typeid (object_type)));
+    type_map::const_iterator ti (tm.find (&typeid (T)));
 
     if (ti == tm.end ())
       return pointer_type ();
 
-    const object_map<object_type>& om (
-      static_cast<const object_map<object_type>&> (*ti->second));
-    typename object_map<object_type>::const_iterator oi (om.find (id));
+    const object_map<T>& om (static_cast<const object_map<T>&> (*ti->second));
+    typename object_map<T>::const_iterator oi (om.find (id));
 
     if (oi == om.end ())
       return pointer_type ();
 
-    pointer_type r;
-    oi->second.get (r);
-    return r;
+    return oi->second;
   }
 
   template <typename T>
   void session::
   erase (database_type& db, const typename object_traits<T>::id_type& id)
   {
-    // T can be const T while object_type will always be T.
-    //
-    typedef typename object_traits<T>::object_type object_type;
-
     database_map::iterator di (db_map_.find (&db));
 
     if (di == db_map_.end ())
       return;
 
     type_map& tm (di->second);
-    type_map::iterator ti (tm.find (&typeid (object_type)));
+    type_map::iterator ti (tm.find (&typeid (T)));
 
     if (ti == tm.end ())
       return;
 
-    object_map<object_type>& om (
-      static_cast<object_map<object_type>&> (*ti->second));
-    typename object_map<object_type>::iterator oi (om.find (id));
+    object_map<T>& om (static_cast<object_map<T>&> (*ti->second));
+    typename object_map<T>::iterator oi (om.find (id));
 
     if (oi == om.end ())
       return;

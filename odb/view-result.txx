@@ -22,8 +22,6 @@ namespace odb
   {
     if (pointer_traits::null_ptr (current_) && !end_)
     {
-      // For views, pointer_type is unrestricted_pointer_type.
-      //
       pointer_type p (view_traits::create ());
       view_type& view (pointer_traits::get_ref (p));
       current (p);

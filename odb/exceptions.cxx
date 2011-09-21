@@ -47,12 +47,6 @@ namespace odb
     return "session not in effect in this thread";
   }
 
-  const char* const_object::
-  what () const throw ()
-  {
-    return "object cached in session is const";
-  }
-
   const char* deadlock::
   what () const throw ()
   {

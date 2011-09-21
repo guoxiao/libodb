@@ -194,6 +194,26 @@ namespace odb
     typedef typename access::view_traits<T>::pointer_type pointer_type;
   };
 
+  // Specialization for const views. It only defines the view, pointer,
+  // and const_pointer types with pointer and const_pointer being the
+  // same. Similar to objects, the idea is to only use this specialization
+  // in the interfaces, with the implementations detecting this situation
+  // and using the non-const view_traits version.
+  //
+  template <typename T>
+  struct view_traits<const T>
+  {
+  private:
+    typedef
+    odb::pointer_traits<typename access::view_traits<T>::pointer_type>
+    pointer_traits;
+
+  public:
+    typedef typename access::view_traits<T>::view_type view_type;
+    typedef typename pointer_traits::const_pointer_type const_pointer_type;
+    typedef const_pointer_type pointer_type;
+  };
+
   //
   // composite_value_traits
   //

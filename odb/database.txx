@@ -63,6 +63,8 @@ namespace odb
   typename object_traits<T>::pointer_type database::
   load (const typename object_traits<T>::id_type& id)
   {
+    // T is always object_type.
+    //
     typedef typename object_traits<T>::pointer_type pointer_type;
     typedef odb::pointer_traits<pointer_type> pointer_traits;
 
@@ -86,12 +88,10 @@ namespace odb
   typename object_traits<T>::pointer_type database::
   find (const typename object_traits<T>::id_type& id)
   {
-    // T can be const T while object_type will always be T.
+    // T is always object_type.
     //
-    typedef typename odb::object_traits<T>::object_type object_type;
-    typedef odb::object_traits<object_type> object_traits;
-
-    typedef typename odb::object_traits<T>::pointer_type pointer_type;
+    typedef odb::object_traits<T> object_traits;
+    typedef typename object_traits::pointer_type pointer_type;
     typedef odb::pointer_traits<pointer_type> pointer_traits;
 
     // First check the session.
@@ -117,15 +117,12 @@ namespace odb
   bool database::
   find (const typename object_traits<T>::id_type& id, T& obj)
   {
-    // T can be const T while object_type will always be T.
+    // T is always object_type.
     //
-    typedef typename odb::object_traits<T>::object_type object_type;
-    typedef odb::object_traits<object_type> object_traits;
-
     if (!transaction::has_current ())
       throw not_in_transaction ();
 
-    return object_traits::find (*this, id, obj);
+    return object_traits<T>::find (*this, id, obj);
   }
 
   template <typename T>
@@ -171,12 +168,10 @@ namespace odb
   void database::
   erase (const typename object_traits<T>::id_type& id)
   {
-    // T can be const T while object_type will always be T.
+    // T is always object_type.
     //
-    typedef typename odb::object_traits<T>::object_type object_type;
-    typedef odb::object_traits<object_type> object_traits;
-
-    typedef typename odb::object_traits<T>::pointer_type pointer_type;
+    typedef odb::object_traits<T> object_traits;
+    typedef typename object_traits::pointer_type pointer_type;
 
     if (!transaction::has_current ())
       throw not_in_transaction ();
@@ -193,8 +188,7 @@ namespace odb
     //
     typedef typename odb::object_traits<T>::object_type object_type;
     typedef odb::object_traits<object_type> object_traits;
-
-    typedef typename odb::object_traits<T>::pointer_type pointer_type;
+    typedef typename object_traits::pointer_type pointer_type;
 
     if (!transaction::has_current ())
       throw not_in_transaction ();
@@ -209,53 +203,42 @@ namespace odb
 
   template <typename T>
   unsigned long long database::
-  erase_query (const odb::query<typename object_traits<T>::object_type>& q)
+  erase_query (const odb::query<T>& q)
   {
-    // T can be const T while object_type will always be T.
+    // T is always object_type.
     //
-    typedef typename odb::object_traits<T>::object_type object_type;
-    typedef odb::object_traits<object_type> object_traits;
-
     if (!transaction::has_current ())
       throw not_in_transaction ();
 
-    return object_traits::erase_query (*this, q);
+    return object_traits<T>::erase_query (*this, q);
   }
 
   template <typename T>
   struct database::query_<T, class_object>
   {
-    // T can be const T while object_type will always be T.
-    //
-    typedef typename odb::object_traits<T>::object_type object_type;
-    typedef odb::object_traits<object_type> object_traits;
-
     static result<T>
-    call (database& db, const odb::query<object_type>& q)
+    call (database& db, const odb::query<T>& q)
     {
-      return object_traits::template query<T> (db, q);
+      return object_traits<T>::query (db, q);
     }
   };
 
   template <typename T>
   struct database::query_<T, class_view>
   {
-    // Const views are not supported.
-    //
-    typedef odb::view_traits<T> view_traits;
-
     static result<T>
     call (database& db, const odb::query<T>& q)
     {
-      return view_traits::query (db, q);
+      return view_traits<T>::query (db, q);
     }
   };
 
   template <typename T>
   result<T> database::
-  query (const odb::query<typename details::meta::remove_const<T>::result>& q,
-         bool cache)
+  query (const odb::query<T>& q, bool cache)
   {
+    // T is always object_type.
+    //
     if (!transaction::has_current ())
       throw not_in_transaction ();
 

@@ -21,9 +21,14 @@ namespace odb
   struct pointer_cache_traits
   {
     typedef P pointer_type;
-    typedef typename pointer_traits<pointer_type>::element_type element_type;
+    typedef odb::pointer_traits<pointer_type> pointer_traits;
+    typedef typename pointer_traits::element_type element_type;
+
+    // element_type can be const while object_type is always non-const.
+    //
+    typedef typename object_traits<element_type>::object_type object_type;
     typedef typename object_traits<element_type>::id_type id_type;
-    typedef session::object_position<element_type> position_type;
+    typedef session::object_position<object_type> position_type;
 
     struct insert_guard
     {
@@ -46,7 +51,10 @@ namespace odb
     insert (odb::database& db, const id_type& id, const pointer_type& p)
     {
       if (session::has_current ())
-        return session::current ().insert<element_type> (db, id, p);
+        // Cast away constness if any.
+        //
+        return session::current ().insert<object_type> (
+          db, id, pointer_traits::cast (p));
       else
         return position_type ();
     }
@@ -55,7 +63,7 @@ namespace odb
     find (odb::database& db, const id_type& id)
     {
       if (session::has_current ())
-        return session::current ().find<element_type> (db, id);
+        return session::current ().find<object_type> (db, id);
       else
         return pointer_type ();
     }
@@ -64,14 +72,14 @@ namespace odb
     erase (odb::database& db, const id_type& id)
     {
       if (session::has_current ())
-        session::current ().erase<element_type> (db, id);
+        session::current ().erase<object_type> (db, id);
     }
 
     static void
     erase (const position_type& p)
     {
       if (p.map_ != 0)
-        session::current ().erase<element_type> (p);
+        session::current ().erase<object_type> (p);
     }
   };
 

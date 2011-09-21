@@ -56,12 +56,6 @@ namespace odb
     what () const throw ();
   };
 
-  struct LIBODB_EXPORT const_object: exception
-  {
-    virtual const char*
-    what () const throw ();
-  };
-
   // Database operations exceptions.
   //
   struct LIBODB_EXPORT recoverable: exception
@@ -139,7 +133,6 @@ namespace odb
 
     using odb::already_in_session;
     using odb::not_in_session;
-    using odb::const_object;
 
     using odb::recoverable;
     using odb::deadlock;

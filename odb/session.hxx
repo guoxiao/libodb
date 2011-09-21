@@ -67,31 +67,6 @@ namespace odb
     session& operator= (const session&);
 
   protected:
-    template <typename T>
-    struct object_pointers
-    {
-      typedef typename object_traits<T>::pointer_type pointer_type;
-      typedef typename object_traits<T>::const_pointer_type const_pointer_type;
-
-      object_pointers ();
-
-      void
-      set (const pointer_type&);
-
-      void
-      set (const const_pointer_type&);
-
-      void
-      get (pointer_type& p) const;
-
-      void
-      get (const_pointer_type& cp) const;
-
-    private:
-      pointer_type p_;
-      const_pointer_type cp_;
-    };
-
     struct LIBODB_EXPORT object_map_base: details::shared_base
     {
       virtual
@@ -101,7 +76,8 @@ namespace odb
     template <typename T>
     struct object_map:
       object_map_base,
-      std::map< typename object_traits<T>::id_type, object_pointers<T> >
+      std::map<typename object_traits<T>::id_type,
+               typename object_traits<T>::pointer_type>
     {
     };
 
@@ -111,7 +87,7 @@ namespace odb
     template <typename T>
     struct object_position
     {
-      typedef typename object_traits<T>::object_type object_type;
+      typedef T object_type;
       typedef object_map<object_type> map;
       typedef typename map::iterator iterator;
 

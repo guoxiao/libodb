@@ -12,6 +12,8 @@
 #include <memory>  // std::auto_ptr
 #include <cstddef> // std::size_t
 
+#include <odb/details/meta/remove-const.hxx>
+
 namespace odb
 {
   enum pointer_kind
@@ -81,6 +83,8 @@ namespace odb
     typedef T element_type;
     typedef T* pointer_type;
     typedef const T* const_pointer_type;
+    typedef typename details::meta::remove_const<T>::result*
+    unrestricted_pointer_type;
     typedef raw_ptr_guard<pointer_type> guard;
 
     // Return raw pointer to the pointed-to element, including NULL.
@@ -105,6 +109,14 @@ namespace odb
     null_ptr (pointer_type p)
     {
       return p == 0;
+    }
+
+    // Cast away constness.
+    //
+    static unrestricted_pointer_type
+    cast (pointer_type p)
+    {
+      return const_cast<unrestricted_pointer_type> (p);
     }
 
   public:
@@ -161,6 +173,9 @@ namespace odb
     {
       return p.get () == 0;
     }
+
+    // cast() is not provided since it transfers the ownership.
+    //
 
   public:
     static void*

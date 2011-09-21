@@ -19,7 +19,6 @@
 #include <odb/exceptions.hxx>
 
 #include <odb/details/export.hxx>
-#include <odb/details/meta/remove-const.hxx>
 
 namespace odb
 {
@@ -142,7 +141,7 @@ namespace odb
 
     template <typename T>
     unsigned long long
-    erase_query (const odb::query<typename object_traits<T>::object_type>&);
+    erase_query (const odb::query<T>&);
 
     // Query API.
     //
@@ -160,8 +159,7 @@ namespace odb
 
     template <typename T>
     result<T>
-    query (const odb::query<typename details::meta::remove_const<T>::result>&,
-           bool cache = true);
+    query (const odb::query<T>&, bool cache = true);
 
     // Native database statement execution.
     //

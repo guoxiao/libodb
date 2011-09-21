@@ -23,16 +23,13 @@ namespace odb
   result_impl<T, class_object>::
   current ()
   {
-    typedef typename object_traits::pointer_type unrestricted_pointer_type;
-    typedef typename object_traits::pointer_traits unrestricted_pointer_traits;
-
     if (pointer_traits::null_ptr (current_) && !end_)
     {
       if (!session::has_current ())
       {
-        unrestricted_pointer_type up (object_traits::create ());
-        object_type& obj (unrestricted_pointer_traits::get_ref (up));
-        current (pointer_type (up));
+        pointer_type p (object_traits::create ());
+        object_type& obj (pointer_traits::get_ref (p));
+        current (p);
         load (obj);
       }
       else
@@ -48,15 +45,13 @@ namespace odb
           current (p);
         else
         {
-          unrestricted_pointer_type up (object_traits::create ());
+          pointer_type p (object_traits::create ());
 
-          typename
-            pointer_cache_traits<unrestricted_pointer_type>::insert_guard ig (
-              pointer_cache_traits<unrestricted_pointer_type>::insert (
-                database (), id, up));
+          typename pointer_cache_traits<pointer_type>::insert_guard ig (
+            pointer_cache_traits<pointer_type>::insert (database (), id, p));
 
-          object_type& obj (unrestricted_pointer_traits::get_ref (up));
-          current (pointer_type (up));
+          object_type& obj (pointer_traits::get_ref (p));
+          current (p);
           load (obj);
           ig.release ();
         }

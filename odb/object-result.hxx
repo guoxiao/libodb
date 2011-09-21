@@ -28,16 +28,20 @@ namespace odb
 
   protected:
     friend class result<T, class_object>;
+    friend class result<const T, class_object>;
     friend class result_iterator<T, class_object>;
+    friend class result_iterator<const T, class_object>;
 
     typedef odb::database database_type;
 
-    typedef typename odb::object_traits<T>::pointer_type pointer_type;
-    typedef odb::pointer_traits<pointer_type> pointer_traits;
-
-    typedef typename odb::object_traits<T>::object_type object_type;
-    typedef typename odb::object_traits<T>::id_type id_type;
+    // In result_impl, T is always non-const and the same as object_type.
+    //
+    typedef T object_type;
     typedef odb::object_traits<object_type> object_traits;
+    typedef typename object_traits::id_type id_type;
+
+    typedef typename object_traits::pointer_type pointer_type;
+    typedef odb::pointer_traits<pointer_type> pointer_traits;
 
     result_impl (database_type& db)
         : begin_ (true), end_ (false), db_ (db), current_ ()
@@ -123,12 +127,12 @@ namespace odb
     typedef std::ptrdiff_t difference_type;
     typedef std::input_iterator_tag iterator_category;
 
-    // T might be const T, but object_type is always T.
+    // T can be const T while object_type is always non-const.
     //
     typedef typename object_traits<T>::object_type object_type;
     typedef typename object_traits<T>::id_type id_type;
 
-    typedef result_impl<T, class_object> result_impl_type;
+    typedef result_impl<object_type, class_object> result_impl_type;
 
   public:
     explicit
@@ -192,8 +196,11 @@ namespace odb
     }
 
   private:
+    // Use unrestricted pointer traits since that's what is returned by
+    // result_impl.
+    //
     typedef
-    odb::pointer_traits<typename object_traits<T>::pointer_type>
+    odb::pointer_traits<typename object_traits<object_type>::pointer_type>
     pointer_traits;
 
     result_impl_type* res_;
@@ -234,7 +241,10 @@ namespace odb
     typedef std::size_t    size_type;
     typedef std::ptrdiff_t difference_type;
 
-    typedef result_impl<T, class_object> result_impl_type;
+    // T can be const T while object_type is always non-const.
+    //
+    typedef typename object_traits<T>::object_type object_type;
+    typedef result_impl<object_type, class_object> result_impl_type;
 
   public:
     result ()
@@ -261,6 +271,35 @@ namespace odb
     result&
     operator= (const result& r)
     {
+      if (impl_ != r.impl_)
+        impl_ = r.impl_;
+
+      return *this;
+    }
+
+    // Conversion from result<T> to result<const T>.
+    //
+    template <typename UT>
+    result (const result<UT, class_object>& r)
+        //
+        // If you get a compiler error pointing to the line below saying
+        // that the impl_ member is inaccessible, then you are most likely
+        // trying to perform an illegal result conversion, for example,
+        // from result<const obj> to result<obj>.
+        //
+        : impl_ (r.impl_)
+    {
+    }
+
+    template <typename UT>
+    result&
+    operator= (const result<UT, class_object>& r)
+    {
+      // If you get a compiler error pointing to the line below saying
+      // that the impl_ member is inaccessible, then you are most likely
+      // trying to perform an illegal result conversion, for example,
+      // from result<const obj> to result<obj>.
+      //
       if (impl_ != r.impl_)
         impl_ = r.impl_;
 
@@ -325,6 +364,8 @@ namespace odb
     }
 
   private:
+    friend class result<const T, class_object>;
+
     details::shared_ptr<result_impl_type> impl_;
   };
 }
