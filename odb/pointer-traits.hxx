@@ -83,7 +83,7 @@ namespace odb
     typedef T element_type;
     typedef T* pointer_type;
     typedef const T* const_pointer_type;
-    typedef typename details::meta::remove_const<T>::result*
+    typedef typename odb::details::meta::remove_const<T>::result*
     unrestricted_pointer_type;
     typedef raw_ptr_guard<pointer_type> guard;
 
