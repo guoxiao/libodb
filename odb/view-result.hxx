@@ -359,7 +359,7 @@ namespace odb
     }
 
   private:
-    friend class result<const T, class_view>;
+    friend class result<const T>;
 
     details::shared_ptr<result_impl_type> impl_;
   };
