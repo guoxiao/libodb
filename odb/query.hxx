@@ -41,23 +41,31 @@ namespace odb
     }
   };
 
+  // VC9 cannot handle certain cases of non-type arguments with default
+  // values in template functions (e.g., database::query()). As a result,
+  // we have to use the impl trick below instead of simply having kind
+  // as a second template argument with a default value.
   //
-  //
-  template <typename T, class_kind kind = class_traits<T>::kind>
-  struct query_selector;
+  template <typename T, class_kind kind>
+  struct query_selector_impl;
 
   template <typename T>
-  struct query_selector<T, class_object>
+  struct query_selector_impl<T, class_object>
   {
     typedef typename object_traits<T>::query_base_type base_type;
     typedef typename object_traits<T>::query_type type;
   };
 
   template <typename T>
-  struct query_selector<T, class_view>
+  struct query_selector_impl<T, class_view>
   {
     typedef typename view_traits<T>::query_base_type base_type;
     typedef typename view_traits<T>::query_type type;
+  };
+
+  template <typename T>
+  struct query_selector: query_selector_impl<T, class_traits<T>::kind>
+  {
   };
 
   template <typename T, typename Q = typename query_selector<T>::base_type>
