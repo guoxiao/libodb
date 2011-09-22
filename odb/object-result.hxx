@@ -27,8 +27,8 @@ namespace odb
     ~result_impl ();
 
   protected:
-    friend class result<T, class_object>;
-    friend class result<const T, class_object>;
+    friend class result<T>;
+    friend class result<const T>;
     friend class result_iterator<T, class_object>;
     friend class result_iterator<const T, class_object>;
 
@@ -206,167 +206,18 @@ namespace odb
     result_impl_type* res_;
   };
 
-  // Input iterator requirements.
-  //
-  template <typename T>
-  inline bool
-  operator== (result_iterator<T, class_object> i,
-              result_iterator<T, class_object> j)
-  {
-    return i.equal (j);
-  }
-
-  template <typename T>
-  inline bool
-  operator!= (result_iterator<T, class_object> i,
-              result_iterator<T, class_object> j)
-  {
-    return !i.equal (j);
-  }
-
   //
   //
   template <typename T>
-  class result<T, class_object>
+  class result_base<T, class_object>
   {
   public:
     typedef typename object_traits<T>::pointer_type value_type;
-    typedef value_type*       pointer;
-    typedef const value_type* const_pointer;
-    typedef value_type&       reference;
-    typedef const value_type& const_reference;
-
-    typedef result_iterator<T, class_object> iterator;
-
-    typedef std::size_t    size_type;
-    typedef std::ptrdiff_t difference_type;
 
     // T can be const T while object_type is always non-const.
     //
     typedef typename object_traits<T>::object_type object_type;
     typedef result_impl<object_type, class_object> result_impl_type;
-
-  public:
-    result ()
-    {
-    }
-
-    explicit
-    result (details::shared_ptr<result_impl_type> impl)
-        : impl_ (impl)
-    {
-    }
-
-    // Copying or assignment of a result object leads to one instance
-    // being an alias for another. Think of copying a result as copying
-    // a file handle -- the file you access through either of them is
-    // still the same.
-    //
-  public:
-    result (const result& r)
-        : impl_ (r.impl_)
-    {
-    }
-
-    result&
-    operator= (const result& r)
-    {
-      if (impl_ != r.impl_)
-        impl_ = r.impl_;
-
-      return *this;
-    }
-
-    // Conversion from result<T> to result<const T>.
-    //
-    template <typename UT>
-    result (const result<UT, class_object>& r)
-        //
-        // If you get a compiler error pointing to the line below saying
-        // that the impl_ member is inaccessible, then you are most likely
-        // trying to perform an illegal result conversion, for example,
-        // from result<const obj> to result<obj>.
-        //
-        : impl_ (r.impl_)
-    {
-    }
-
-    template <typename UT>
-    result&
-    operator= (const result<UT, class_object>& r)
-    {
-      // If you get a compiler error pointing to the line below saying
-      // that the impl_ member is inaccessible, then you are most likely
-      // trying to perform an illegal result conversion, for example,
-      // from result<const obj> to result<obj>.
-      //
-      if (impl_ != r.impl_)
-        impl_ = r.impl_;
-
-      return *this;
-    }
-
-    void
-    swap (result& r)
-    {
-      // @@ add swap() to shared_ptr.
-      //
-      details::shared_ptr<result_impl_type> p (impl_);
-      impl_ = r.impl_;
-      r.impl_ = p;
-    }
-
-  public:
-    iterator
-    begin ()
-    {
-      if (impl_)
-        impl_->begin ();
-
-      return iterator (impl_.get ());
-    }
-
-    iterator
-    end ()
-    {
-      return iterator ();
-    }
-
-    // Cache the result instead of fetching the data from the database
-    // one object at a time. This is necessary if you plan on performing
-    // database operations while iterating over the result.
-    //
-  public:
-    void
-    cache ()
-    {
-      if (impl_)
-        impl_->cache ();
-    }
-
-  public:
-    bool
-    empty () const
-    {
-      if (impl_ == 0)
-        return true;
-
-      impl_->begin ();
-      return impl_->end ();
-    }
-
-    // Size is only known in cached results.
-    //
-    size_type
-    size () const
-    {
-      return impl_ ? impl_->size () : 0;
-    }
-
-  private:
-    friend class result<const T>;
-
-    details::shared_ptr<result_impl_type> impl_;
   };
 }
 
