@@ -26,8 +26,8 @@ namespace odb
           operator delete (data_);
       }
 
-      basic_buffer_base ()
-        : capacity_ (512)
+      basic_buffer_base (std::size_t capacity)
+        : capacity_ (capacity)
       {
         data_ = operator new (capacity_);
       }
@@ -50,6 +50,11 @@ namespace odb
     class basic_buffer: public basic_buffer_base
     {
     public:
+
+      basic_buffer (std::size_t capacity = 256)
+          : basic_buffer_base (capacity)
+      {
+      }
 
       T*
       data ()
