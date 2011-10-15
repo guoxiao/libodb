@@ -138,7 +138,12 @@ namespace odb
       throw not_in_transaction ();
 
     object_traits::callback (*this, obj,callback_event::pre_update);
+
+    // Compiler error pointing here? Perhaps the object is readonly and
+    // therefore does not provide the update() function?
+    //
     object_traits::update (*this, obj);
+
     object_traits::callback (*this, obj, callback_event::post_update);
   }
 
@@ -160,7 +165,12 @@ namespace odb
     T& obj (pointer_traits::get_ref (pobj));
 
     object_traits::callback (*this, obj, callback_event::pre_update);
+
+    // Compiler error pointing here? Perhaps the object is readonly and
+    // therefore does not provide the update() function?
+    //
     object_traits::update (*this, obj);
+
     object_traits::callback (*this, obj, callback_event::post_update);
   }
 
