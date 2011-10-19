@@ -12,6 +12,8 @@
 
 #include <odb/nullable.hxx>
 
+#include <odb/details/meta/remove-const.hxx>
+
 namespace odb
 {
   template <typename T>
@@ -34,6 +36,12 @@ namespace odb
     typedef T wrapped_type;
     typedef T* wrapper_type;
 
+    // T can be const.
+    //
+    typedef
+    typename details::meta::remove_const<T>::result
+    unrestricted_wrapped_type;
+
     static const bool null_handler = true;
     static const bool null_default = false;
 
@@ -50,19 +58,19 @@ namespace odb
       p = 0;
     }
 
-    static const type&
+    static const wrapped_type&
     get_ref (const wrapper_type& p)
     {
       return *p;
     }
 
-    static type&
+    static unrestricted_wrapped_type&
     set_ref (wrapper_type& p)
     {
       if (p == 0)
-        p = new type;
+        p = new unrestricted_wrapped_type;
 
-      return *p;
+      return const_cast<unrestricted_wrapped_type&> (*p);
     }
   };
 #endif
@@ -73,8 +81,16 @@ namespace odb
   class wrapper_traits< std::auto_ptr<T> >
   {
   public:
+    // T can be const.
+    //
     typedef T wrapped_type;
     typedef std::auto_ptr<T> wrapper_type;
+
+    // T can be const.
+    //
+    typedef
+    typename details::meta::remove_const<T>::result
+    unrestricted_wrapped_type;
 
     static const bool null_handler = true;
     static const bool null_default = false;
@@ -97,13 +113,13 @@ namespace odb
       return *p;
     }
 
-    static wrapped_type&
+    static unrestricted_wrapped_type&
     set_ref (wrapper_type& p)
     {
       if (p.get () == 0)
-        p.reset (new wrapped_type);
+        p.reset (new unrestricted_wrapped_type ());
 
-      return *p;
+      return const_cast<unrestricted_wrapped_type&> (*p);
     }
   };
 
@@ -113,8 +129,16 @@ namespace odb
   class wrapper_traits< nullable<T> >
   {
   public:
+    // T can be const.
+    //
     typedef T wrapped_type;
     typedef nullable<T> wrapper_type;
+
+    // T can be const.
+    //
+    typedef
+    typename details::meta::remove_const<T>::result
+    unrestricted_wrapped_type;
 
     static const bool null_handler = true;
     static const bool null_default = true;
@@ -137,13 +161,13 @@ namespace odb
       return *n;
     }
 
-    static wrapped_type&
+    static unrestricted_wrapped_type&
     set_ref (wrapper_type& n)
     {
       if (n.null ())
-        n = T ();
+        n = unrestricted_wrapped_type ();
 
-      return *n;
+      return const_cast<unrestricted_wrapped_type&> (*n);
     }
   };
 }
