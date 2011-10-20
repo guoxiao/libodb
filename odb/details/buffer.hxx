@@ -22,14 +22,14 @@ namespace odb
     public:
       ~basic_buffer_base ()
       {
-        if (data_)
+        if (data_ != 0)
           operator delete (data_);
       }
 
       basic_buffer_base (std::size_t capacity)
         : capacity_ (capacity)
       {
-        data_ = operator new (capacity_);
+        data_ = capacity_ == 0 ? 0 : operator new (capacity_);
       }
 
       std::size_t
