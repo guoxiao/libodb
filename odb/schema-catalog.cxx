@@ -14,6 +14,11 @@ using namespace std;
 
 namespace odb
 {
+  // It is important we use vector to store the list of create
+  // functions since schema generators for some databases may
+  // rely on the DDL statements executing in a specific order,
+  // for example, for foreign key generation.
+  //
   typedef bool (*create_function) (database&, unsigned short pass, bool drop);
   typedef vector<create_function> create_functions;
   struct schema_catalog_impl: map<string, create_functions> {};
