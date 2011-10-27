@@ -9,18 +9,18 @@
 namespace odb
 {
   //
-  // result_impl
+  // object_result_impl
   //
 
   template <typename T>
-  result_impl<T, class_object>::
-  ~result_impl ()
+  object_result_impl<T>::
+  ~object_result_impl ()
   {
   }
 
   template <typename T>
-  typename result_impl<T, class_object>::pointer_type&
-  result_impl<T, class_object>::
+  typename object_result_impl<T>::pointer_type&
+  object_result_impl<T>::
   current ()
   {
     if (pointer_traits::null_ptr (current_) && !end_)
@@ -62,11 +62,38 @@ namespace odb
   }
 
   //
-  // result_iterator
+  // object_result_impl_no_id
   //
+  template <typename T>
+  object_result_impl_no_id<T>::
+  ~object_result_impl_no_id ()
+  {
+  }
 
   template <typename T>
-  void result_iterator<T, class_object>::
+  typename object_result_impl_no_id<T>::pointer_type&
+  object_result_impl_no_id<T>::
+  current ()
+  {
+    if (pointer_traits::null_ptr (current_) && !end_)
+    {
+      // Objects without ids are not stored in session cache.
+      //
+      pointer_type p (object_traits::create ());
+      object_type& obj (pointer_traits::get_ref (p));
+      current (p);
+      load (obj);
+    }
+
+    return current_;
+  }
+
+  //
+  // object_result_iterator
+  //
+
+  template <typename T, typename ID>
+  void object_result_iterator<T, ID>::
   load (object_type& obj)
   {
     if (res_->end ())

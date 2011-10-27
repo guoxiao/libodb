@@ -18,9 +18,6 @@ namespace odb
   template <typename T, class_kind kind>
   class result_base;
 
-  template <typename T, class_kind kind>
-  class result_impl;
-
   template <typename T, class_kind kind = class_traits<T>::kind>
   class result_iterator;
 
@@ -59,8 +56,6 @@ namespace odb
     typedef std::size_t               size_type;
     typedef std::ptrdiff_t            difference_type;
 
-    // T can be const T while result_impl's argument is always non-const.
-    //
     typedef typename base::result_impl_type result_impl_type;
 
   public:

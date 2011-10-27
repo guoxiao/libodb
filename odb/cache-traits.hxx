@@ -17,8 +17,19 @@ namespace odb
 {
   // Caching traits for objects passed by pointer.
   //
-  template <typename P, pointer_kind = pointer_traits<P>::kind>
-  struct pointer_cache_traits
+  template <typename P, typename ID, pointer_kind kind>
+  struct pointer_cache_traits_impl;
+
+  template <typename P>
+  struct pointer_cache_traits: pointer_cache_traits_impl<
+    P,
+    typename object_traits<typename pointer_traits<P>::element_type>::id_type,
+    pointer_traits<P>::kind>
+  {
+  };
+
+  template <typename P, typename ID, pointer_kind kind>
+  struct pointer_cache_traits_impl
   {
     typedef P pointer_type;
     typedef odb::pointer_traits<pointer_type> pointer_traits;
@@ -45,18 +56,34 @@ namespace odb
       position_type pos_;
     };
 
+    // We need the insert() overload with explicit id to handle self-
+    // references. In such cases the object is not yet loaded and the
+    // id member does not contain the correct id.
+    //
     // Qualify the database type to resolve a phony ambiguity in VC 10.
     //
     static position_type
     insert (odb::database& db, const id_type& id, const pointer_type& p)
     {
       if (session::has_current ())
+      {
         // Cast away constness if any.
         //
         return session::current ().insert<object_type> (
           db, id, pointer_traits::cast (p));
+      }
       else
         return position_type ();
+    }
+
+    static position_type
+    insert (odb::database& db, const pointer_type& p)
+    {
+      const id_type& id (
+        object_traits<object_type>::id (
+          pointer_traits::get_ref (p)));
+
+      return insert (db, id, p);
     }
 
     static pointer_type
@@ -83,10 +110,23 @@ namespace odb
     }
   };
 
+  template <typename P, pointer_kind kind>
+  struct pointer_cache_traits_impl<P, void, kind>
+  {
+    typedef P pointer_type;
+    struct position_type {};
+
+    static position_type
+    insert (odb::database&, const pointer_type&)
+    {
+      return position_type ();
+    }
+  };
+
   // Unique pointers don't work with the object cache.
   //
-  template <typename P>
-  struct pointer_cache_traits<P, pk_unique>
+  template <typename P, typename ID>
+  struct pointer_cache_traits_impl<P, ID, pk_unique>
   {
     typedef P pointer_type;
     typedef typename pointer_traits<pointer_type>::element_type element_type;
@@ -110,6 +150,12 @@ namespace odb
       return position_type ();
     }
 
+    static position_type
+    insert (odb::database&, const pointer_type&)
+    {
+      return position_type ();
+    }
+
     static pointer_type
     find (odb::database&, const id_type&) { return pointer_type (); }
 
@@ -120,13 +166,35 @@ namespace odb
     erase (const position_type&) {}
   };
 
+  template <typename P>
+  struct pointer_cache_traits_impl<P, void, pk_unique>
+  {
+    typedef P pointer_type;
+    struct position_type {};
+
+    static position_type
+    insert (odb::database&, const pointer_type&)
+    {
+      return position_type ();
+    }
+  };
+
   // Caching traits for objects passed by reference. Only if the object
   // pointer kind is raw do we add the object to the session.
   //
-  template <typename T,
-            pointer_kind =
-              pointer_traits<typename object_traits<T>::pointer_type>::kind>
-  struct reference_cache_traits
+  template <typename T, typename ID, pointer_kind kind>
+  struct reference_cache_traits_impl;
+
+  template <typename T>
+  struct reference_cache_traits: reference_cache_traits_impl<
+    T,
+    typename object_traits<T>::id_type,
+    pointer_traits<typename object_traits<T>::pointer_type>::kind>
+  {
+  };
+
+  template <typename T, typename ID, pointer_kind kind>
+  struct reference_cache_traits_impl
   {
     typedef T element_type;
     typedef typename object_traits<element_type>::pointer_type pointer_type;
@@ -152,10 +220,29 @@ namespace odb
     {
       return position_type ();
     }
+
+    static position_type
+    insert (odb::database&, element_type&)
+    {
+      return position_type ();
+    }
   };
 
-  template <typename T>
-  struct reference_cache_traits<T, pk_raw>
+  template <typename T, pointer_kind kind>
+  struct reference_cache_traits_impl<T, void, kind>
+  {
+    typedef T element_type;
+    struct position_type {};
+
+    static position_type
+    insert (odb::database&, element_type&)
+    {
+      return position_type ();
+    }
+  };
+
+  template <typename T, typename ID>
+  struct reference_cache_traits_impl<T, ID, pk_raw>
   {
     typedef T element_type;
     typedef typename object_traits<element_type>::pointer_type pointer_type;
@@ -174,6 +261,26 @@ namespace odb
     {
       pointer_type p (&obj);
       return pointer_cache_traits<pointer_type>::insert (db, id, p);
+    }
+
+    static position_type
+    insert (odb::database& db, element_type& obj)
+    {
+      pointer_type p (&obj);
+      return pointer_cache_traits<pointer_type>::insert (db, p);
+    }
+  };
+
+  template <typename T>
+  struct reference_cache_traits_impl<T, void, pk_raw>
+  {
+    typedef T element_type;
+    struct position_type {};
+
+    static position_type
+    insert (odb::database&, element_type&)
+    {
+      return position_type ();
     }
   };
 }

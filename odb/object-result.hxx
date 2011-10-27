@@ -20,18 +20,36 @@
 namespace odb
 {
   template <typename T>
-  class result_impl<T, class_object>: public details::shared_base
+  class object_result_impl;
+
+  template <typename T>
+  class object_result_impl_no_id;
+
+  template <typename T, typename ID>
+  class object_result_iterator;
+
+  template <typename T, typename ID = typename object_traits<T>::id_type>
+  struct object_result_impl_selector
+  {
+    typedef object_result_impl<T> type;
+  };
+
+  template <typename T>
+  struct object_result_impl_selector<T, void>
+  {
+    typedef object_result_impl_no_id<T> type;
+  };
+
+  // Implementation for objects with object id.
+  //
+  template <typename T>
+  class object_result_impl: public details::shared_base
   {
   public:
     virtual
-    ~result_impl ();
+    ~object_result_impl ();
 
   protected:
-    friend class result<T>;
-    friend class result<const T>;
-    friend class result_iterator<T, class_object>;
-    friend class result_iterator<const T, class_object>;
-
     typedef odb::database database_type;
 
     // In result_impl, T is always non-const and the same as object_type.
@@ -43,7 +61,15 @@ namespace odb
     typedef typename object_traits::pointer_type pointer_type;
     typedef odb::pointer_traits<pointer_type> pointer_traits;
 
-    result_impl (database_type& db)
+    friend class result<T>;
+    friend class result<const T>;
+    friend class result_iterator<T, class_object>;
+    friend class result_iterator<const T, class_object>;
+    friend class object_result_iterator<T, id_type>;
+    friend class object_result_iterator<const T, id_type>;
+
+  protected:
+    object_result_impl (database_type& db)
         : begin_ (true), end_ (false), db_ (db), current_ ()
     {
     }
@@ -117,63 +143,124 @@ namespace odb
     typename pointer_traits::guard guard_;
   };
 
+  // Implementation for objects without object id.
+  //
   template <typename T>
-  class result_iterator<T, class_object>
+  class object_result_impl_no_id: public details::shared_base
   {
   public:
-    typedef T value_type;
-    typedef value_type& reference;
-    typedef value_type* pointer;
-    typedef std::ptrdiff_t difference_type;
-    typedef std::input_iterator_tag iterator_category;
+    virtual
+    ~object_result_impl_no_id ();
 
+  protected:
+    typedef odb::database database_type;
+
+    // In result_impl, T is always non-const and the same as object_type.
+    //
+    typedef T object_type;
+    typedef odb::object_traits<object_type> object_traits;
+
+    typedef typename object_traits::pointer_type pointer_type;
+    typedef odb::pointer_traits<pointer_type> pointer_traits;
+
+    friend class result<T>;
+    friend class result<const T>;
+    friend class result_iterator<T, class_object>;
+    friend class result_iterator<const T, class_object>;
+    friend class object_result_iterator<T, void>;
+    friend class object_result_iterator<const T, void>;
+
+  protected:
+    object_result_impl_no_id (database_type& db)
+        : begin_ (true), end_ (false), db_ (db), current_ ()
+    {
+    }
+
+    database_type&
+    database () const
+    {
+      return db_;
+    }
+
+    // To make this work with all kinds of pointers (raw, std::auto_ptr,
+    // shared), we need to make sure we don't make any copies of the
+    // pointer on the return path.
+    //
+    pointer_type&
+    current ();
+
+    void
+    release ()
+    {
+      current_ = pointer_type ();
+      guard_.release ();
+    }
+
+    void
+    begin ()
+    {
+      if (begin_)
+      {
+        next ();
+        begin_ = false;
+      }
+    }
+
+    bool
+    end () const
+    {
+      return end_;
+    }
+
+  protected:
+    virtual void
+    load (object_type&) = 0;
+
+    virtual void
+    next () = 0;
+
+    virtual void
+    cache () = 0;
+
+    virtual std::size_t
+    size () = 0;
+
+  protected:
+    void
+    current (pointer_type p)
+    {
+      current_ = p;
+      guard_.reset (current_);
+    }
+
+    bool begin_;
+    bool end_;
+
+  private:
+    database_type& db_;
+    pointer_type current_;
+    typename pointer_traits::guard guard_;
+  };
+
+  //
+  // result_iterator
+  //
+
+  template <typename T, typename ID>
+  class object_result_iterator
+  {
+  public:
     // T can be const T while object_type is always non-const.
     //
     typedef typename object_traits<T>::object_type object_type;
     typedef typename object_traits<T>::id_type id_type;
 
-    typedef result_impl<object_type, class_object> result_impl_type;
+    typedef object_result_impl<object_type> result_impl_type;
 
   public:
-    explicit
-    result_iterator (result_impl_type* res = 0)
+    object_result_iterator (result_impl_type* res)
         : res_ (res)
     {
-    }
-
-    // Input iterator requirements.
-    //
-  public:
-    reference
-    operator* () const
-    {
-      return pointer_traits::get_ref (res_->current ());
-    }
-
-    // Our value_type is already a pointer so return it instead of
-    // a pointer to it (operator-> will just have to go one deeper
-    // in the latter case).
-    //
-    pointer
-    operator-> () const
-    {
-      return pointer_traits::get_ptr (res_->current ());
-    }
-
-    result_iterator&
-    operator++ ()
-    {
-      res_->next ();
-      return *this;
-    }
-
-    result_iterator
-    operator++ (int)
-    {
-      // All non-end iterators for a result object move together.
-      //
-      res_->next ();
-      return *this;
     }
 
   public:
@@ -188,11 +275,114 @@ namespace odb
     void
     load (object_type&);
 
+  protected:
+    result_impl_type* res_;
+  };
+
+  template <typename T>
+  class object_result_iterator<T, void>
+  {
+  public:
+    // T can be const T while object_type is always non-const.
+    //
+    typedef typename object_traits<T>::object_type object_type;
+
+    typedef object_result_impl_no_id<object_type> result_impl_type;
+
+  public:
+    object_result_iterator (result_impl_type* res)
+        : res_ (res)
+    {
+    }
+
+  public:
+    typename object_traits<T>::pointer_type
+    load ()
+    {
+      typename object_traits<T>::pointer_type r (res_->current ());
+      res_->release ();
+      return r;
+    }
+
+    void
+    load (object_type& obj)
+    {
+      // Objects without ids are not stored in session cache.
+      //
+      if (!res_->end ())
+        res_->load (obj);
+    }
+
+  protected:
+    result_impl_type* res_;
+  };
+
+  template <typename T>
+  class result_iterator<T, class_object>: public object_result_iterator<
+    T,
+    typename object_traits<T>::id_type>
+  {
+  public:
+    typedef T value_type;
+    typedef value_type& reference;
+    typedef value_type* pointer;
+    typedef std::ptrdiff_t difference_type;
+    typedef std::input_iterator_tag iterator_category;
+
+    // T can be const T while object_type is always non-const.
+    //
+    typedef
+    object_result_iterator<T, typename object_traits<T>::id_type>
+    base_type;
+
+  public:
+    explicit
+    result_iterator (typename base_type::result_impl_type* res = 0)
+        : base_type (res)
+    {
+    }
+
+    // Input iterator requirements.
+    //
+  public:
+    reference
+    operator* () const
+    {
+      return pointer_traits::get_ref (this->res_->current ());
+    }
+
+    // Our value_type is already a pointer so return it instead of
+    // a pointer to it (operator-> will just have to go one deeper
+    // in the latter case).
+    //
+    pointer
+    operator-> () const
+    {
+      return pointer_traits::get_ptr (this->res_->current ());
+    }
+
+    result_iterator&
+    operator++ ()
+    {
+      this->res_->next ();
+      return *this;
+    }
+
+    result_iterator
+    operator++ (int)
+    {
+      // All non-end iterators for a result object move together.
+      //
+      this->res_->next ();
+      return *this;
+    }
+
   public:
     bool
     equal (result_iterator j) const
     {
-      return  (res_ ? res_->end () : true) == (j.res_ ? j.res_->end () : true);
+      return  (this->res_ ? this->res_->end () : true) ==
+        (j.res_ ? j.res_->end () : true);
     }
 
   private:
@@ -200,10 +390,10 @@ namespace odb
     // result_impl.
     //
     typedef
-    odb::pointer_traits<typename object_traits<object_type>::pointer_type>
+    odb::pointer_traits<
+      typename object_traits<
+        typename base_type::object_type>::pointer_type>
     pointer_traits;
-
-    result_impl_type* res_;
   };
 
   //
@@ -217,7 +407,9 @@ namespace odb
     // T can be const T while object_type is always non-const.
     //
     typedef typename object_traits<T>::object_type object_type;
-    typedef result_impl<object_type, class_object> result_impl_type;
+    typedef
+    typename object_result_impl_selector<object_type>::type
+    result_impl_type;
   };
 }
 

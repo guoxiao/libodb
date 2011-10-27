@@ -28,9 +28,9 @@ namespace odb
     object_traits::persist (*this, obj);
     object_traits::callback (*this, obj, callback_event::post_persist);
 
-    const typename object_traits::id_type& id (object_traits::id (obj));
-    reference_cache_traits<T>::insert (*this, id, obj);
-    return id;
+    reference_cache_traits<T>::insert (*this, obj);
+
+    return object_traits::id (obj);
   }
 
   template <typename T>
@@ -54,9 +54,9 @@ namespace odb
     object_traits::persist (*this, obj);
     object_traits::callback (*this, obj, callback_event::post_persist);
 
-    const typename object_traits::id_type& id (object_traits::id (obj));
-    pointer_cache_traits<pointer_type>::insert (*this, id, pobj);
-    return id;
+    pointer_cache_traits<pointer_type>::insert (*this, pobj);
+
+    return object_traits::id (obj);
   }
 
   template <typename T>
@@ -139,8 +139,8 @@ namespace odb
 
     object_traits::callback (*this, obj,callback_event::pre_update);
 
-    // Compiler error pointing here? Perhaps the object is readonly and
-    // therefore does not provide the update() function?
+    // Compiler error pointing here? Perhaps the object is readonly or
+    // doesn't have an object id? Such objects cannot be updated.
     //
     object_traits::update (*this, obj);
 
@@ -166,8 +166,8 @@ namespace odb
 
     object_traits::callback (*this, obj, callback_event::pre_update);
 
-    // Compiler error pointing here? Perhaps the object is readonly and
-    // therefore does not provide the update() function?
+    // Compiler error pointing here? Perhaps the object is readonly or
+    // doesn't have an object id? Such objects cannot be updated.
     //
     object_traits::update (*this, obj);
 

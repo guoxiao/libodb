@@ -6,18 +6,18 @@
 namespace odb
 {
   //
-  // result_impl
+  // view_result_impl
   //
 
   template <typename T>
-  result_impl<T, class_view>::
-  ~result_impl ()
+  view_result_impl<T>::
+  ~view_result_impl ()
   {
   }
 
   template <typename T>
-  typename result_impl<T, class_view>::pointer_type&
-  result_impl<T, class_view>::
+  typename view_result_impl<T>::pointer_type&
+  view_result_impl<T>::
   current ()
   {
     if (pointer_traits::null_ptr (current_) && !end_)

@@ -20,11 +20,11 @@
 namespace odb
 {
   template <typename T>
-  class result_impl<T, class_view>: public details::shared_base
+  class view_result_impl: public details::shared_base
   {
   public:
     virtual
-    ~result_impl ();
+    ~view_result_impl ();
 
   protected:
     friend class result<T>;
@@ -42,7 +42,7 @@ namespace odb
     typedef typename view_traits::pointer_type pointer_type;
     typedef odb::pointer_traits<pointer_type> pointer_traits;
 
-    result_impl (database_type& db)
+    view_result_impl (database_type& db)
         : begin_ (true), end_ (false), db_ (db), current_ ()
     {
     }
@@ -127,7 +127,7 @@ namespace odb
     //
     typedef typename view_traits<T>::view_type view_type;
 
-    typedef result_impl<view_type, class_view> result_impl_type;
+    typedef view_result_impl<view_type> result_impl_type;
 
   public:
     explicit
@@ -212,7 +212,7 @@ namespace odb
     // T can be const T while view_type is always non-const.
     //
     typedef typename view_traits<T>::view_type view_type;
-    typedef result_impl<view_type, class_view> result_impl_type;
+    typedef view_result_impl<view_type> result_impl_type;
   };
 }
 
