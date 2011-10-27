@@ -61,7 +61,7 @@ $(odb.l): $(cxx_obj) -lpthread
 $(cxx_obj) $(cxx_od): $(odb.l.cpp-options) $(out_base)/details/config.h
 $(odb.l.cpp-options): value := -I$(out_root) -I$(src_root)
 
-$(out_base)/details/config.h:
+$(out_base)/details/config.h: | $(out_base)/details/.
 	@echo '/* file      : odb/details/config.h'                      >$@
 	@echo ' * author    : automatically generated'                  >>$@
 	@echo ' */'                                                     >>$@
