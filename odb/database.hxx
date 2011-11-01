@@ -66,6 +66,10 @@ namespace odb
     void
     load (const typename object_traits<T>::id_type& id, T& object);
 
+    template <typename T>
+    void
+    reload (T& object);
+
     // Return NULL/false if not found.
     //
     template <typename T>

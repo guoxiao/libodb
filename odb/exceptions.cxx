@@ -71,16 +71,22 @@ namespace odb
     return "object not persistent";
   }
 
-  const char* result_not_cached::
-  what () const throw ()
-  {
-    return "query result is not cached";
-  }
-
   const char* object_already_persistent::
   what () const throw ()
   {
     return "object already persistent";
+  }
+
+  const char* object_changed::
+  what () const throw ()
+  {
+    return "object changed concurrently";
+  }
+
+  const char* result_not_cached::
+  what () const throw ()
+  {
+    return "query result is not cached";
   }
 
   unknown_schema::

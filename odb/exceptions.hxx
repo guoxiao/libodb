@@ -92,6 +92,12 @@ namespace odb
     what () const throw ();
   };
 
+  struct LIBODB_EXPORT object_changed: exception
+  {
+    virtual const char*
+    what () const throw ();
+  };
+
   struct LIBODB_EXPORT result_not_cached: exception
   {
     virtual const char*
@@ -140,6 +146,7 @@ namespace odb
     using odb::timeout;
     using odb::object_not_persistent;
     using odb::object_already_persistent;
+    using odb::object_changed;
     using odb::result_not_cached;
     using odb::database_exception;
 

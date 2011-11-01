@@ -85,6 +85,18 @@ namespace odb
   }
 
   template <typename T>
+  void database::
+  reload (T& obj)
+  {
+    // T should be object_type (cannot be const).
+    //
+    typedef odb::object_traits<T> object_traits;
+
+    if (!object_traits::reload (*this, obj))
+      throw object_not_persistent ();
+  }
+
+  template <typename T>
   typename object_traits<T>::pointer_type database::
   find (const typename object_traits<T>::id_type& id)
   {
@@ -206,7 +218,7 @@ namespace odb
     typename object_traits::id_type id (object_traits::id (obj));
 
     object_traits::callback (*this, obj, callback_event::pre_erase);
-    object_traits::erase (*this, id);
+    object_traits::erase (*this, obj);
     pointer_cache_traits<pointer_type>::erase (*this, id);
     object_traits::callback (*this, obj, callback_event::post_erase);
   }
