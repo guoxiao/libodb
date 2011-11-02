@@ -111,8 +111,14 @@ namespace odb
     }
 
   protected:
+    // The fetch argument is a hint to the implementation. If it is
+    // false then it means load_id() was already called (and presumably
+    // fetched the data into the object image) and the object image
+    // is still valid (so the implementation doesn't need to fetch
+    // the data again).
+    //
     virtual void
-    load (object_type&) = 0;
+    load (object_type&, bool fetch = true) = 0;
 
     virtual id_type
     load_id () = 0;

@@ -52,7 +52,7 @@ namespace odb
 
           object_type& obj (pointer_traits::get_ref (p));
           current (p);
-          load (obj);
+          load (obj, false);
           ig.release ();
         }
       }
@@ -106,7 +106,7 @@ namespace odb
       typename reference_cache_traits<object_type>::insert_guard ig (
         reference_cache_traits<object_type>::insert (
           res_->database (), res_->load_id (), obj));
-      res_->load (obj);
+      res_->load (obj, false);
       ig.release ();
     }
   }
