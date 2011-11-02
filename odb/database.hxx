@@ -70,6 +70,22 @@ namespace odb
     void
     reload (T& object);
 
+    template <typename T>
+    void
+    reload (T* obj_ptr);
+
+    template <typename T, template <typename> class P>
+    void
+    reload (const P<T>& obj_ptr);
+
+    template <typename T, template <typename> class P>
+    void
+    reload (P<T>& obj_ptr);
+
+    template <typename T>
+    void
+    reload (const typename object_traits<T>::pointer_type& obj_ptr);
+
     // Return NULL/false if not found.
     //
     template <typename T>

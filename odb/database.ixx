@@ -65,6 +65,36 @@ namespace odb
 
   template <typename T>
   inline void database::
+  reload (T* p)
+  {
+    reload<T> (*p);
+  }
+
+  template <typename T, template <typename> class P>
+  inline void database::
+  reload (const P<T>& p)
+  {
+    reload (odb::pointer_traits< P<T> >::get_ref (p));
+  }
+
+  template <typename T, template <typename> class P>
+  inline void database::
+  reload (P<T>& p)
+  {
+    reload (odb::pointer_traits< P<T> >::get_ref (p));
+  }
+
+  template <typename T>
+  inline void database::
+  reload (const typename object_traits<T>::pointer_type& pobj)
+  {
+    typedef typename object_traits<T>::pointer_type pointer_type;
+
+    reload (odb::pointer_traits<pointer_type>::get_ref (pobj));
+  }
+
+  template <typename T>
+  inline void database::
   update (T* p)
   {
     typedef typename object_traits<T>::pointer_type object_pointer;
