@@ -281,6 +281,12 @@ namespace odb
     void
     load (object_type&);
 
+    id_type
+    id ()
+    {
+      return res_->load_id ();
+    }
+
   protected:
     result_impl_type* res_;
   };
