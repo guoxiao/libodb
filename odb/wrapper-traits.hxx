@@ -89,7 +89,7 @@ namespace odb
     // T can be const.
     //
     typedef
-    typename details::meta::remove_const<T>::result
+    typename odb::details::meta::remove_const<T>::result
     unrestricted_wrapped_type;
 
     static const bool null_handler = true;
@@ -137,7 +137,7 @@ namespace odb
     // T can be const.
     //
     typedef
-    typename details::meta::remove_const<T>::result
+    typename odb::details::meta::remove_const<T>::result
     unrestricted_wrapped_type;
 
     static const bool null_handler = true;
