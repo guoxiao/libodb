@@ -3,8 +3,8 @@
 // copyright : Copyright (c) 2009-2011 Code Synthesis Tools CC
 // license   : GNU GPL v2; see accompanying LICENSE file
 
-#include <odb/exceptions.hxx>
 #include <odb/transaction.hxx>
+#include <odb/exceptions.hxx>
 
 #include <odb/details/tls.hxx>
 
@@ -85,6 +85,7 @@ namespace odb
       throw transaction_already_finalized ();
 
     finalized_ = true;
+    impl_->connection ().transaction_tracer_ = 0;
 
     if (tls_get (current_transaction) == this)
     {
@@ -102,6 +103,7 @@ namespace odb
       throw transaction_already_finalized ();
 
     finalized_ = true;
+    impl_->connection ().transaction_tracer_ = 0;
 
     if (tls_get (current_transaction) == this)
     {

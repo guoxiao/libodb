@@ -12,6 +12,8 @@ connection.cxx     \
 lazy-ptr-impl.cxx  \
 schema-catalog.cxx \
 session.cxx        \
+statement.cxx      \
+tracer.cxx         \
 transaction.cxx
 
 

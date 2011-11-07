@@ -49,6 +49,7 @@ namespace odb
     connection_type&
     connection ();
 
+  public:
     // Return true if there is a transaction in effect.
     //
     static bool
@@ -69,6 +70,20 @@ namespace odb
     //
     static void
     reset_current ();
+
+    // SQL statement tracing.
+    //
+  public:
+    typedef odb::tracer tracer_type;
+
+    void
+    tracer (tracer_type&);
+
+    void
+    tracer (tracer_type*);
+
+    tracer_type*
+    tracer () const;
 
   public:
     transaction_impl&

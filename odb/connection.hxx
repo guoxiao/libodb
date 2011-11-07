@@ -51,6 +51,30 @@ namespace odb
     virtual unsigned long long
     execute (const char* statement, std::size_t length) = 0;
 
+    // SQL statement tracing.
+    //
+  public:
+    typedef odb::tracer tracer_type;
+
+    void
+    tracer (tracer_type&);
+
+    void
+    tracer (tracer_type*);
+
+    tracer_type*
+    tracer () const;
+
+   public:
+    // Store the transaction-spacific tracer in the connection. If we
+    // were to store it in the transaction, then in order to check if
+    // it was set, we would need to get the transaction instance using
+    // the current() API. But that requires a TLS lookup, which can be
+    // slow.
+    //
+    tracer_type*
+    transaction_tracer () const;
+
   public:
     virtual
     ~connection ();
@@ -62,8 +86,13 @@ namespace odb
     connection (const connection&);
     connection& operator= (const connection&);
 
-  private:
+  protected:
     database_type& database_;
+    tracer_type* tracer_;
+
+  protected:
+    friend class transaction;
+    tracer_type* transaction_tracer_;
   };
 }
 

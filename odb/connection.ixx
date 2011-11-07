@@ -9,7 +9,7 @@ namespace odb
 {
   inline connection::
   connection (database_type& database)
-      : database_ (database)
+      : database_ (database), tracer_ (0), transaction_tracer_ (0)
   {
   }
 
@@ -29,5 +29,29 @@ namespace odb
   execute (const std::string& st)
   {
     return execute (st.c_str (), st.size ());
+  }
+
+  inline void connection::
+  tracer (tracer_type& t)
+  {
+    tracer_ = &t;
+  }
+
+  inline void connection::
+  tracer (tracer_type* t)
+  {
+    tracer_ = t;
+  }
+
+  inline connection::tracer_type* connection::
+  tracer () const
+  {
+    return tracer_;
+  }
+
+  inline connection::tracer_type* connection::
+  transaction_tracer () const
+  {
+    return transaction_tracer_;
   }
 }

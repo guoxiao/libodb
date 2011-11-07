@@ -205,8 +205,26 @@ namespace odb
     connection_ptr
     connection ();
 
+    // SQL statement tracing.
+    //
+  public:
+    typedef odb::tracer tracer_type;
+
+    void
+    tracer (tracer_type&);
+
+    void
+    tracer (tracer_type*);
+
+    tracer_type*
+    tracer () const;
+
   protected:
     database ();
+
+  private:
+    database (const database&);
+    database& operator= (const database&);
 
   protected:
     typedef odb::connection connection_type;
@@ -230,9 +248,8 @@ namespace odb
     template <typename T, class_kind kind>
     struct query_;
 
-  private:
-    database (const database&);
-    database& operator= (const database&);
+  protected:
+    tracer_type* tracer_;
   };
 }
 

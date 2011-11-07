@@ -8,6 +8,7 @@
 
 #include <odb/pre.hxx>
 
+#include <odb/details/export.hxx>
 #include <odb/details/shared-ptr-fwd.hxx>
 
 namespace odb
@@ -16,6 +17,7 @@ namespace odb
   class connection;
   typedef details::shared_ptr<connection> connection_ptr;
   class transaction;
+  class statement;
   class session;
 
   namespace core
@@ -24,7 +26,18 @@ namespace odb
     using odb::connection;
     using odb::connection_ptr;
     using odb::transaction;
+    using odb::statement;
     using odb::session;
+  }
+
+  // Tracing.
+  //
+  class tracer; // Not in core.
+  extern LIBODB_EXPORT tracer& stderr_tracer;
+
+  namespace core
+  {
+    using odb::stderr_tracer;
   }
 
   // Implementation details.

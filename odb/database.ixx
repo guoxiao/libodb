@@ -9,6 +9,7 @@ namespace odb
 {
   inline database::
   database ()
+      : tracer_ (0)
   {
   }
 
@@ -16,6 +17,24 @@ namespace odb
   connection ()
   {
     return connection_ptr (connection_ ());
+  }
+
+  inline void database::
+  tracer (tracer_type& t)
+  {
+    tracer_ = &t;
+  }
+
+  inline void database::
+  tracer (tracer_type* t)
+  {
+    tracer_ = t;
+  }
+
+  inline database::tracer_type* database::
+  tracer () const
+  {
+    return tracer_;
   }
 
   template <typename T>
