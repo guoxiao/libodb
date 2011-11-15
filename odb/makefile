@@ -44,7 +44,22 @@ details/win32/exceptions.cxx
 
 win32_dll_cxx := details/win32/dll.cxx
 
-cxx_tun := $(cxx) $(posix_cxx)
+cxx_tun := $(cxx)
+
+ifeq ($(libodb_threads),posix)
+cxx_tun += $(posix_cxx)
+endif
+
+ifeq ($(libodb_threads),win32)
+cxx_tun += $(win32_cxx)
+
+$(call include,$(bld_root)/ld/configuration-lib.make) # ld_lib_type
+
+ifeq ($(ld_lib_type),shared)
+cxx_tun += $(win32_dll_cxx)
+endif
+endif
+
 cxx_obj := $(addprefix $(out_base)/,$(cxx_tun:.cxx=.o))
 cxx_od  := $(cxx_obj:.o=.o.d)
 
@@ -58,7 +73,11 @@ clean   := $(out_base)/.clean
 
 # Build.
 #
-$(odb.l): $(cxx_obj) -lpthread
+$(odb.l): $(cxx_obj)
+
+ifeq ($(libodb_threads),posix)
+$(odb.l): -lpthread
+endif
 
 $(cxx_obj) $(cxx_od): $(odb.l.cpp-options) $(out_base)/details/config.h
 $(odb.l.cpp-options): value := -I$(out_root) -I$(src_root)
@@ -71,7 +90,15 @@ $(out_base)/details/config.h: | $(out_base)/details/.
 	@echo '#ifndef ODB_DETAILS_CONFIG_H'                            >>$@
 	@echo '#define ODB_DETAILS_CONFIG_H'                            >>$@
 	@echo ''                                                        >>$@
+ifeq ($(libodb_threads),posix)
 	@echo '#define ODB_THREADS_POSIX 1'                             >>$@
+endif
+ifeq ($(libodb_threads),win32)
+	@echo '#define ODB_THREADS_WIN32 1'                             >>$@
+endif
+ifeq ($(libodb_threads),none)
+	@echo '#define ODB_THREADS_NONE 1'                              >>$@
+endif
 	@echo ''                                                        >>$@
 	@echo '#endif /* ODB_DETAILS_CONFIG_H */'                       >>$@
 

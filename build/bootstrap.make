@@ -16,6 +16,9 @@ ifeq ($(patsubst %build/bootstrap.make,,$(lastword $(MAKEFILE_LIST))),)
 include $(build)/bootstrap.make
 endif
 
+# Configuration
+#
+$(call include,$(scf_root)/configuration.make)
 
 # Aliases
 #

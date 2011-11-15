@@ -1,0 +1,26 @@
+#! /usr/bin/env bash
+
+# file      : build/configure
+# author    : Boris Kolpackov <boris@codesynthesis.com>
+# copyright : Copyright (c) 2005-2011 Code Synthesis Tools CC
+# license   : GNU GPL v2; see accompanying LICENSE file
+
+# $1  out file
+#
+# bld_root     - build root
+# project_name - project name
+#
+
+source $bld_root/dialog.bash
+
+$echo
+$echo "Please select the threading implementation:"
+$echo
+$echo "(1) POSIX"
+$echo "(2) Win32"
+$echo "(3) None"
+$echo
+
+threads=`read_option "posix win32 none" "posix"`
+
+echo "libodb_threads := $threads" >$1
