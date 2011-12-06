@@ -45,12 +45,23 @@ namespace odb
   {
     virtual void
     execute (connection&, const char* statement);
+
+    // Override the other version to get rid of a Sun CC warning.
+    //
+    virtual void
+    execute (connection&, const statement&);
   };
 
   void stderr_tracer_type::
   execute (connection&, const char* s)
   {
     cerr << s << endl;
+  }
+
+  void stderr_tracer_type::
+  execute (connection& c, const statement& s)
+  {
+    execute (c, s.text ());
   }
 
   static stderr_tracer_type stderr_tracer_;
