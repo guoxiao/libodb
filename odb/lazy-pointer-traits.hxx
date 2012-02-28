@@ -9,6 +9,7 @@
 
 #include <odb/pointer-traits.hxx>
 #include <odb/lazy-ptr.hxx>
+#include <odb/details/config.hxx> // ODB_CXX11
 
 namespace odb
 {
@@ -61,6 +62,52 @@ namespace odb
       return p.object_id<O> ();
     }
   };
+
+#ifdef ODB_CXX11
+  template <typename T>
+  class pointer_traits<lazy_shared_ptr<T> >
+  {
+  public:
+    static const pointer_kind kind = pk_shared;
+    static const bool lazy = true;
+
+    typedef T element_type;
+    typedef lazy_shared_ptr<element_type> pointer_type;
+    typedef std::shared_ptr<element_type> eager_pointer_type;
+
+    static bool
+    null_ptr (const pointer_type& p)
+    {
+      return !p;
+    }
+
+    template <class O /* = T */>
+    static typename object_traits<O>::id_type
+    object_id (const pointer_type& p)
+    {
+      return p.object_id<O> ();
+    }
+  };
+
+  template <typename T>
+  class pointer_traits<lazy_weak_ptr<T> >
+  {
+  public:
+    static const pointer_kind kind = pk_weak;
+    static const bool lazy = true;
+
+    typedef T element_type;
+    typedef lazy_weak_ptr<element_type> pointer_type;
+    typedef lazy_shared_ptr<element_type> strong_pointer_type;
+    typedef std::weak_ptr<element_type> eager_pointer_type;
+
+    static strong_pointer_type
+    lock (const pointer_type& p)
+    {
+      return p.lock ();
+    }
+  };
+#endif // ODB_CXX11
 }
 
 #include <odb/post.hxx>

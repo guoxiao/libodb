@@ -7,14 +7,18 @@
 
 #include <odb/pre.hxx>
 
-#include <memory> // std::auto_ptr
+#include <memory>  // std::auto_ptr, std::shared_ptr/weak_ptr
+#include <utility> // std::move
 
-#include <odb/forward.hxx> // odb::database
+#include <odb/forward.hxx>        // odb::database
 #include <odb/traits.hxx>
 #include <odb/lazy-ptr-impl.hxx>
+#include <odb/details/config.hxx> // ODB_CXX11
 
 namespace odb
 {
+  // Raw pointer lazy version.
+  //
   template <class T>
   class lazy_ptr
   {
@@ -74,7 +78,11 @@ namespace odb
     template <class ID> void reset (database_type&, const ID&);
     template <class Y> void reset (database_type&, Y*);
 
+#ifdef ODB_CXX11
+    template <class O = T>
+#else
     template <class O /* = T */>
+#endif
     typename object_traits<O>::id_type object_id () const;
 
     database_type& database () const;
@@ -101,7 +109,7 @@ namespace odb
 
   template<class T> void swap (lazy_ptr<T>&, lazy_ptr<T>&);
 
-  //
+  // std::auto_ptr lazy version.
   //
   template <class T>
   struct lazy_auto_ptr_ref
@@ -185,7 +193,11 @@ namespace odb
     void reset (database_type&, T*);
     template <class Y> void reset (database_type&, std::auto_ptr<Y>&);
 
+#ifdef ODB_CXX11
+    template <class O = T>
+#else
     template <class O /* = T */>
+#endif
     typename object_traits<O>::id_type object_id () const;
 
     database_type& database () const;
@@ -202,10 +214,256 @@ namespace odb
     mutable lazy_ptr_impl<T> i_;
   };
 
+#ifdef ODB_CXX11
+
+  // C++11 std::shared_ptr lazy version.
+  //
+  template <class T>
+  class lazy_weak_ptr;
+
+  template <class T>
+  class lazy_shared_ptr
+  {
+    // The standard shared_ptr interface.
+    //
+  public:
+    typedef T element_type;
+
+    /*constexpr*/ lazy_shared_ptr () /*noexcept*/;
+    /*constexpr*/ lazy_shared_ptr (std::nullptr_t) /*noexcept*/;
+    template <class Y> explicit lazy_shared_ptr (Y*);
+    template <class Y, class D> lazy_shared_ptr (Y*, D);
+    template <class Y, class D, class A> lazy_shared_ptr (Y*, D, A);
+    template <class D> lazy_shared_ptr (std::nullptr_t, D);
+    template <class D, class A> lazy_shared_ptr (std::nullptr_t, D, A);
+    template <class Y> lazy_shared_ptr (const lazy_shared_ptr<Y>&, T*) /*noexcept*/;
+
+    lazy_shared_ptr (const lazy_shared_ptr&) /*noexcept*/;
+    template <class Y> lazy_shared_ptr (const lazy_shared_ptr<Y>&) /*noexcept*/;
+    lazy_shared_ptr (lazy_shared_ptr&&) /*noexcept*/;
+    template <class Y> lazy_shared_ptr (lazy_shared_ptr<Y>&&) /*noexcept*/;
+    template <class Y> explicit lazy_shared_ptr (const lazy_weak_ptr<Y>&);
+    template <class Y> explicit lazy_shared_ptr (std::auto_ptr<Y>&&);
+    template <class Y, class D> lazy_shared_ptr (std::unique_ptr<Y, D>&&);
+
+    ~lazy_shared_ptr ();
+
+    lazy_shared_ptr& operator= (const lazy_shared_ptr&) /*noexcept*/;
+    template <class Y> lazy_shared_ptr& operator= (const lazy_shared_ptr<Y>&) /*noexcept*/;
+    lazy_shared_ptr& operator= (lazy_shared_ptr&&) /*noexcept*/;
+    template <class Y> lazy_shared_ptr& operator= (lazy_shared_ptr<Y>&&) /*noexcept*/;
+    template <class Y> lazy_shared_ptr& operator= (std::auto_ptr<Y>&&);
+    template <class Y, class D> lazy_shared_ptr& operator= (std::unique_ptr<Y, D>&&);
+
+    void swap (lazy_shared_ptr&) /*noexcept*/;
+    void reset () /*noexcept*/;
+    template <class Y> void reset (Y*);
+    template <class Y, class D> void reset (Y*, D);
+    template <class Y, class D, class A> void reset (Y*, D, A);
+
+    T* get () const /*noexcept*/;
+    T& operator* () const /*noexcept*/;
+    T* operator-> () const /*noexcept*/;
+    long use_count () const /*noexcept*/;
+    bool unique () const /*noexcept*/;
+
+    explicit operator bool () const /*noexcept*/;
+
+    // owner_before () is not provded.
+
+    // Initialization/assignment from shared_ptr and weak_ptr.
+    //
+  public:
+    template <class Y> lazy_shared_ptr (const std::shared_ptr<Y>&);
+    template <class Y> lazy_shared_ptr (std::shared_ptr<Y>&&);
+    template <class Y> explicit lazy_shared_ptr (const std::weak_ptr<Y>&);
+
+    template <class Y> lazy_shared_ptr& operator= (const std::shared_ptr<Y>&);
+    template <class Y> lazy_shared_ptr& operator= (std::shared_ptr<Y>&&);
+
+    // Lazy loading interface.
+    //
+  public:
+    typedef odb::database database_type;
+
+    //  NULL      loaded()
+    //
+    //  true       true      NULL pointer to transient object
+    //  false      true      valid pointer to persistent object
+    //  true       false     unloaded pointer to persistent object
+    //  false      false     valid pointer to transient object
+    //
+    bool loaded () const;
+
+    std::shared_ptr<T> load () const;
+
+    // Unload the pointer. For transient objects this function is
+    // equivalent to reset().
+    //
+    void unload () const;
+
+    template <class ID> lazy_shared_ptr (database_type&, const ID&);
+    template <class Y> lazy_shared_ptr (database_type&, Y*);
+    template <class Y, class D> lazy_shared_ptr (database_type&, Y*, D);
+    template <class Y, class D, class A> lazy_shared_ptr (database_type&, Y*, D, A);
+    template <class Y> lazy_shared_ptr (database_type&, std::auto_ptr<Y>&&);
+    template <class Y> lazy_shared_ptr (database_type&, const std::shared_ptr<Y>&);
+    template <class Y> lazy_shared_ptr (database_type&, std::shared_ptr<Y>&&);
+    template <class Y> lazy_shared_ptr (database_type&, const std::weak_ptr<Y>&);
+
+    template <class ID> void reset (database_type&, const ID&);
+    template <class Y> void reset (database_type&, Y*);
+    template <class Y, class D> void reset (database_type&, Y*, D);
+    template <class Y, class D, class A> void reset (database_type&, Y*, D, A);
+    template <class Y> void reset (database_type&, std::auto_ptr<Y>&&);
+    template <class Y> void reset (database_type&, const std::shared_ptr<Y>&);
+    template <class Y> void reset (database_type&, std::shared_ptr<Y>&&);
+
+    template <class O = T>
+    typename object_traits<O>::id_type object_id () const;
+
+    database_type& database () const;
+
+    // Helpers.
+    //
+  public:
+    template <class Y> bool equal (const lazy_shared_ptr<Y>&) const;
+
+  private:
+    template <class Y> friend class lazy_shared_ptr;
+    template <class Y> friend class lazy_weak_ptr;
+
+    mutable std::shared_ptr<T> p_;
+    mutable lazy_ptr_impl<T> i_;
+  };
+
+  template<class T> void swap (lazy_shared_ptr<T>&, lazy_shared_ptr<T>&) /*noexcept*/;
+
+  template<class D, class T>
+  D* get_deleter (const lazy_shared_ptr<T>&) /*noexcept*/;
+
+  // operator< and operator<< are not provided.
+  //
+  template<class T, class Y>
+  bool operator== (const lazy_shared_ptr<T>&, const lazy_shared_ptr<Y>&) /*noexcept*/;
+
+  template<class T>
+  bool operator== (const lazy_shared_ptr<T>&, std::nullptr_t) /*noexcept*/;
+
+  template<class T>
+  bool operator== (std::nullptr_t, const lazy_shared_ptr<T>&) /*noexcept*/;
+
+  template<class T, class Y>
+  bool operator!= (const lazy_shared_ptr<T>&, const lazy_shared_ptr<Y>&) /*noexcept*/;
+
+  template<class T>
+  bool operator!= (const lazy_shared_ptr<T>&, std::nullptr_t) /*noexcept*/;
+
+  template<class T>
+  bool operator!= (std::nullptr_t, const lazy_shared_ptr<T>&) /*noexcept*/;
+
+  // C++11 std::weak_ptr lazy version.
+  //
+  template <class T>
+  class lazy_weak_ptr
+  {
+    // The standard weak_ptr interface.
+    //
+  public:
+    typedef T element_type;
+
+    /*constexpr*/ lazy_weak_ptr () /*noexcept*/;
+    template <class Y> lazy_weak_ptr (const lazy_shared_ptr<Y>&) /*noexcept*/;
+    lazy_weak_ptr (const lazy_weak_ptr&) /*noexcept*/;
+    template <class Y> lazy_weak_ptr (const lazy_weak_ptr<Y>&) /*noexcept*/;
+
+    ~lazy_weak_ptr ();
+
+    lazy_weak_ptr& operator= (const lazy_weak_ptr&) /*noexcept*/;
+    template <class Y> lazy_weak_ptr& operator= (const lazy_weak_ptr<Y>&) /*noexcept*/;
+    template <class Y> lazy_weak_ptr& operator= (const lazy_shared_ptr<Y>&) /*noexcept*/;
+
+    void swap (lazy_weak_ptr<T>&) /*noexcept*/;
+    void reset () /*noexcept*/;
+
+    long use_count () const /*noexcept*/;
+    bool expired () const /*noexcept*/;
+
+    lazy_shared_ptr<T> lock () const /*noexcept*/;
+
+    // owner_before () is not provded.
+
+    // Initialization/assignment from shared_ptr and weak_ptr.
+    //
+  public:
+    template <class Y> lazy_weak_ptr (const std::weak_ptr<Y>&);
+    template <class Y> lazy_weak_ptr (const std::shared_ptr<Y>&);
+
+    template <class Y> lazy_weak_ptr& operator= (const std::weak_ptr<Y>&);
+    template <class Y> lazy_weak_ptr& operator= (const std::shared_ptr<Y>&);
+
+    // Lazy loading interface.
+    //
+  public:
+    typedef odb::database database_type;
+
+    // expired()  loaded()
+    //
+    //  true       true      expired pointer to transient object
+    //  false      true      valid pointer to persistent object
+    //  true       false     expired pointer to persistent object
+    //  false      false     valid pointer to transient object
+    //
+    bool loaded () const;
+
+    // Performs both lock and load.
+    //
+    std::shared_ptr<T> load () const;
+
+    // Unload the pointer. For transient objects this function is
+    // equivalent to reset().
+    //
+    void unload () const;
+
+    template <class ID> lazy_weak_ptr (database_type&, const ID&);
+    template <class Y> lazy_weak_ptr (database_type&, const std::shared_ptr<Y>&);
+    template <class Y> lazy_weak_ptr (database_type&, const std::weak_ptr<Y>&);
+
+    template <class ID> void reset (database_type&, const ID&);
+    template <class Y> void reset (database_type&, const std::shared_ptr<Y>&);
+    template <class Y> void reset (database_type&, const std::weak_ptr<Y>&);
+
+    // The object_id() function can only be called when the object is
+    // persistent, or: expired() XOR loaded() (can use != for XOR).
+    //
+    template <class O = T>
+    typename object_traits<O>::id_type object_id () const;
+
+    database_type& database () const;
+
+  private:
+    template <class Y> friend class lazy_shared_ptr;
+    template <class Y> friend class lazy_weak_ptr;
+
+    mutable std::weak_ptr<T> p_;
+    mutable lazy_ptr_impl<T> i_;
+  };
+
+  // operator< is not provided.
+  //
+  template<class T> void swap (lazy_weak_ptr<T>&, lazy_weak_ptr<T>&);
+
+#endif // ODB_CXX11
+
   namespace core
   {
     using odb::lazy_ptr;
     using odb::lazy_auto_ptr;
+
+#ifdef ODB_CXX11
+    using odb::lazy_shared_ptr;
+    using odb::lazy_weak_ptr;
+#endif
   }
 }
 

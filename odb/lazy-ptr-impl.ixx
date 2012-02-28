@@ -28,6 +28,32 @@ namespace odb
   {
   }
 
+#ifdef ODB_CXX11
+  inline lazy_ptr_base::
+  lazy_ptr_base (lazy_ptr_base&& r)
+      : id_ (r.id_), db_ (r.db_), free_ (r.free_), copy_ (r.copy_)
+  {
+    r.id_ = 0;
+  }
+
+  inline lazy_ptr_base& lazy_ptr_base::
+  operator= (lazy_ptr_base&& r)
+  {
+    if (id_ != r.id_)
+    {
+      reset_id ();
+      id_ = r.id_;
+      db_ = r.db_;
+      free_ = r.free_;
+      copy_ = r.copy_;
+
+      r.id_ = 0;
+    }
+
+    return *this;
+  }
+#endif
+
   inline void lazy_ptr_base::
   reset_id ()
   {
@@ -213,6 +239,42 @@ namespace odb
     b = r;
     return *this;
   }
+
+#ifdef ODB_CXX11
+  template <typename T>
+  inline lazy_ptr_impl<T>::
+  lazy_ptr_impl (lazy_ptr_impl&& r)
+      : lazy_ptr_base (std::move (r))
+  {
+  }
+
+  template <typename T>
+  template <typename Y>
+  inline lazy_ptr_impl<T>::
+  lazy_ptr_impl (lazy_ptr_impl<Y>&& r)
+      : lazy_ptr_base (std::move (r))
+  {
+  }
+
+  template <typename T>
+  inline lazy_ptr_impl<T>& lazy_ptr_impl<T>::
+  operator= (lazy_ptr_impl&& r)
+  {
+    lazy_ptr_base& b (*this);
+    b = std::move (r);
+    return *this;
+  }
+
+  template <typename T>
+  template <typename Y>
+  inline lazy_ptr_impl<T>& lazy_ptr_impl<T>::
+  operator= (lazy_ptr_impl<Y>&& r)
+  {
+    lazy_ptr_base& b (*this);
+    b = std::move (r);
+    return *this;
+  }
+#endif
 
   template <typename T>
   template <typename ID>

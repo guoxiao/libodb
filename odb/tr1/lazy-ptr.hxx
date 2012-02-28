@@ -17,6 +17,7 @@
 #include <odb/forward.hxx> // odb::database
 #include <odb/traits.hxx>
 #include <odb/lazy-ptr-impl.hxx>
+#include <odb/details/config.hxx> // ODB_CXX11
 
 namespace odb
 {
@@ -114,7 +115,11 @@ namespace odb
       template <class Y> void reset (database_type&, const std::auto_ptr<Y>&);
       template <class Y> void reset (database_type&, const std::tr1::shared_ptr<Y>&);
 
+#ifdef ODB_CXX11
+      template <class O = T>
+#else
       template <class O /* = T */>
+#endif
       typename object_traits<O>::id_type object_id () const;
 
       database_type& database () const;
@@ -217,7 +222,11 @@ namespace odb
       // The object_id() function can only be called when the object is
       // persistent, or: expired() XOR loaded() (can use != for XOR).
       //
+#ifdef ODB_CXX11
+      template <class O = T>
+#else
       template <class O /* = T */>
+#endif
       typename object_traits<O>::id_type object_id () const;
 
       database_type& database () const;

@@ -7,9 +7,12 @@
 
 #include <odb/pre.hxx>
 
+#include <utility> // std::move
+
 #include <odb/forward.hxx> // odb::database
 #include <odb/traits.hxx>
 
+#include <odb/details/config.hxx> // ODB_CXX11
 #include <odb/details/export.hxx>
 
 namespace odb
@@ -38,6 +41,17 @@ namespace odb
     lazy_ptr_base&
     operator= (const lazy_ptr_impl_ref&);
 
+    // C++11 support.
+    //
+  public:
+#ifdef ODB_CXX11
+    lazy_ptr_base (lazy_ptr_base&&);
+
+    lazy_ptr_base&
+    operator= (lazy_ptr_base&&);
+#endif
+
+  public:
     // Reset both the id and database.
     //
     void
@@ -119,6 +133,24 @@ namespace odb
     lazy_ptr_impl&
     operator= (const lazy_ptr_impl_ref&);
 
+    // C++11 support.
+    //
+  public:
+#ifdef ODB_CXX11
+    lazy_ptr_impl (lazy_ptr_impl&&);
+
+    template <typename Y>
+    lazy_ptr_impl (lazy_ptr_impl<Y>&&);
+
+    lazy_ptr_impl&
+    operator= (lazy_ptr_impl&&);
+
+    template <typename Y>
+    lazy_ptr_impl&
+    operator= (lazy_ptr_impl<Y>&&);
+#endif
+
+  public:
     using lazy_ptr_base::reset;
     using lazy_ptr_base::reset_id;
 

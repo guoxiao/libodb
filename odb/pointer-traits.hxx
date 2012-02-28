@@ -8,9 +8,10 @@
 #include <odb/pre.hxx>
 
 #include <new>     // operators new/delete
-#include <memory>  // std::auto_ptr
+#include <memory>  // std::auto_ptr, std::shared_ptr (C++11)
 #include <cstddef> // std::size_t
 
+#include <odb/details/config.hxx>            // ODB_CXX11
 #include <odb/details/meta/remove-const.hxx>
 
 namespace odb
@@ -189,6 +190,87 @@ namespace odb
       operator delete (p);
     }
   };
+
+#ifdef ODB_CXX11
+
+  // Specialization for C++11 std::shared_ptr.
+  //
+  template <typename T>
+  class pointer_traits<std::shared_ptr<T> >
+  {
+  public:
+    static const pointer_kind kind = pk_shared;
+    static const bool lazy = false;
+
+    typedef T element_type;
+    typedef std::shared_ptr<element_type> pointer_type;
+    typedef std::shared_ptr<const element_type> const_pointer_type;
+    typedef typename odb::details::meta::remove_const<element_type>::result
+    unrestricted_element_type;
+    typedef std::shared_ptr<unrestricted_element_type>
+    unrestricted_pointer_type;
+    typedef smart_ptr_guard<pointer_type> guard;
+
+    static element_type*
+    get_ptr (const pointer_type& p)
+    {
+      return p.get ();
+    }
+
+    static element_type&
+    get_ref (const pointer_type& p)
+    {
+      return *p;
+    }
+
+    static bool
+    null_ptr (const pointer_type& p)
+    {
+      return !p;
+    }
+
+    static unrestricted_pointer_type
+    cast (const pointer_type& p)
+    {
+      return std::const_pointer_cast<unrestricted_element_type> (p);
+    }
+
+  public:
+    static void*
+    allocate (std::size_t n)
+    {
+      return operator new (n);
+    }
+
+    static void
+    free (void* p)
+    {
+      operator delete (p);
+    }
+  };
+
+  // Specialization for C++11 std::weak_ptr.
+  //
+  template <typename T>
+  class pointer_traits<std::weak_ptr<T> >
+  {
+  public:
+    static const pointer_kind kind = pk_weak;
+    static const bool lazy = false;
+
+    typedef T element_type;
+    typedef std::weak_ptr<element_type> pointer_type;
+    typedef std::shared_ptr<element_type> strong_pointer_type;
+
+    static strong_pointer_type
+    lock (const pointer_type& p)
+    {
+      return p.lock ();
+    }
+  };
+
+#endif // ODB_CXX11
+
 }
 
 #include <odb/post.hxx>
