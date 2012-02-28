@@ -25,11 +25,6 @@ namespace odb
     lazy_shared_ptr (Y* p, D d): p_ (p, d) {}
 
     template <class T>
-    template <class Y, class D, class A>
-    inline lazy_shared_ptr<T>::
-    lazy_shared_ptr (Y* p, D d, A a): p_ (p, d, a) {}
-
-    template <class T>
     inline lazy_shared_ptr<T>::
     lazy_shared_ptr (const lazy_shared_ptr& r): p_ (r.p_), i_ (r.i_) {}
 
@@ -120,15 +115,6 @@ namespace odb
     reset (Y* p, D d)
     {
       p_.reset (p, d);
-      i_.reset ();
-    }
-
-    template <class T>
-    template <class Y, class D, class A>
-    inline void lazy_shared_ptr<T>::
-    reset (Y* p, D d, A a)
-    {
-      p_.reset (p, d, a);
       i_.reset ();
     }
 
@@ -246,16 +232,6 @@ namespace odb
     }
 
     template <class T>
-    template <class Y, class D, class A>
-    inline lazy_shared_ptr<T>::
-    lazy_shared_ptr (database_type& db, Y* p, D d, A a)
-        : p_ (p, d, a)
-    {
-      if (p_)
-        i_.reset (db);
-    }
-
-    template <class T>
     template <class Y>
     inline lazy_shared_ptr<T>::
     lazy_shared_ptr (database_type& db, std::auto_ptr<Y>& r)
@@ -321,22 +297,9 @@ namespace odb
     }
 
     template <class T>
-    template <class Y, class D, class A>
-    inline void lazy_shared_ptr<T>::
-    reset (database_type& db, Y* p, D d, A a)
-    {
-      p_.reset (p, d, a);
-
-      if (p_)
-        i_.reset (db);
-      else
-        i_.reset ();
-    }
-
-    template <class T>
     template <class Y>
     inline void lazy_shared_ptr<T>::
-    reset (database_type& db, const std::auto_ptr<Y>& r)
+    reset (database_type& db, std::auto_ptr<Y>& r)
     {
       p_ = r;
 

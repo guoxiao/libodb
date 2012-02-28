@@ -39,7 +39,6 @@ namespace odb
       lazy_shared_ptr ();
       template <class Y> explicit lazy_shared_ptr (Y*);
       template <class Y, class D> lazy_shared_ptr (Y*, D);
-      template <class Y, class D, class A> lazy_shared_ptr (Y*, D, A);
 
       lazy_shared_ptr (const lazy_shared_ptr&);
       template <class Y> lazy_shared_ptr (const lazy_shared_ptr<Y>&);
@@ -56,7 +55,6 @@ namespace odb
       void reset ();
       template <class Y> void reset (Y*);
       template <class Y, class D> void reset (Y*, D);
-      template <class Y, class D, class A> void reset (Y*, D, A);
 
       T& operator* () const;
       T* operator-> () const;
@@ -103,7 +101,6 @@ namespace odb
       template <class ID> lazy_shared_ptr (database_type&, const ID&);
       template <class Y> lazy_shared_ptr (database_type&, Y*);
       template <class Y, class D> lazy_shared_ptr (database_type&, Y*, D);
-      template <class Y, class D, class A> lazy_shared_ptr (database_type&, Y*, D, A);
       template <class Y> lazy_shared_ptr (database_type&, std::auto_ptr<Y>&);
       template <class Y> lazy_shared_ptr (database_type&, const std::tr1::shared_ptr<Y>&);
       template <class Y> lazy_shared_ptr (database_type&, const std::tr1::weak_ptr<Y>&);
@@ -111,8 +108,7 @@ namespace odb
       template <class ID> void reset (database_type&, const ID&);
       template <class Y> void reset (database_type&, Y*);
       template <class Y, class D> void reset (database_type&, Y*, D);
-      template <class Y, class D, class A> void reset (database_type&, Y*, D, A);
-      template <class Y> void reset (database_type&, const std::auto_ptr<Y>&);
+      template <class Y> void reset (database_type&, std::auto_ptr<Y>&);
       template <class Y> void reset (database_type&, const std::tr1::shared_ptr<Y>&);
 
 #ifdef ODB_CXX11
