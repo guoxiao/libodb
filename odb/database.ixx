@@ -66,12 +66,35 @@ namespace odb
     return persist_<T> (pobj);
   }
 
+  template <typename T, typename A1, template <typename, typename> class P>
+  inline typename object_traits<T>::id_type database::
+  persist (const P<T, A1>& p)
+  {
+    typedef typename object_traits<T>::pointer_type object_pointer;
+
+    // The passed pointer should be the same or implicit-convertible
+    // to the object pointer. This way we make sure the object pointer
+    // does not assume ownership of the passed object.
+    //
+    const object_pointer& pobj (p);
+
+    return persist_<T> (pobj);
+  }
+
   template <typename T, template <typename> class P>
   inline typename object_traits<T>::id_type database::
   persist (P<T>& p)
   {
     const P<T>& cr (p);
     return persist<T, P> (cr);
+  }
+
+  template <typename T, typename A1, template <typename, typename> class P>
+  inline typename object_traits<T>::id_type database::
+  persist (P<T, A1>& p)
+  {
+    const P<T, A1>& cr (p);
+    return persist<T, A1, P> (cr);
   }
 
   template <typename T>
@@ -95,11 +118,25 @@ namespace odb
     reload (odb::pointer_traits< P<T> >::get_ref (p));
   }
 
+  template <typename T, typename A1, template <typename, typename> class P>
+  inline void database::
+  reload (const P<T, A1>& p)
+  {
+    reload (odb::pointer_traits< P<T, A1> >::get_ref (p));
+  }
+
   template <typename T, template <typename> class P>
   inline void database::
   reload (P<T>& p)
   {
     reload (odb::pointer_traits< P<T> >::get_ref (p));
+  }
+
+  template <typename T, typename A1, template <typename, typename> class P>
+  inline void database::
+  reload (P<T, A1>& p)
+  {
+    reload (odb::pointer_traits< P<T, A1> >::get_ref (p));
   }
 
   template <typename T>
@@ -141,12 +178,35 @@ namespace odb
     update_<T> (pobj);
   }
 
+  template <typename T, typename A1, template <typename, typename> class P>
+  inline void database::
+  update (const P<T, A1>& p)
+  {
+    typedef typename object_traits<T>::pointer_type object_pointer;
+
+    // The passed pointer should be the same or implicit-convertible
+    // to the object pointer. This way we make sure the object pointer
+    // does not assume ownership of the passed object.
+    //
+    const object_pointer& pobj (p);
+
+    update_<T> (pobj);
+  }
+
   template <typename T, template <typename> class P>
   inline void database::
   update (P<T>& p)
   {
     const P<T>& cr (p);
     update<T, P> (cr);
+  }
+
+  template <typename T, typename A1, template <typename, typename> class P>
+  inline void database::
+  update (P<T, A1>& p)
+  {
+    const P<T, A1>& cr (p);
+    update<T, A1, P> (cr);
   }
 
   template <typename T>
@@ -186,12 +246,35 @@ namespace odb
     erase_<T> (pobj);
   }
 
+  template <typename T, typename A1, template <typename, typename> class P>
+  inline void database::
+  erase (const P<T, A1>& p)
+  {
+    typedef typename object_traits<T>::pointer_type object_pointer;
+
+    // The passed pointer should be the same or implicit-convertible
+    // to the object pointer. This way we make sure the object pointer
+    // does not assume ownership of the passed object.
+    //
+    const object_pointer& pobj (p);
+
+    erase_<T> (pobj);
+  }
+
   template <typename T, template <typename> class P>
   inline void database::
   erase (P<T>& p)
   {
     const P<T>& cr (p);
     erase<T, P> (cr);
+  }
+
+  template <typename T, typename A1, template <typename, typename> class P>
+  inline void database::
+  erase (P<T, A1>& p)
+  {
+    const P<T, A1>& cr (p);
+    erase<T, A1, P> (cr);
   }
 
   template <typename T>

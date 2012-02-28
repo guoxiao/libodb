@@ -163,8 +163,20 @@ namespace odb
     struct id_type {};
   };
 
+  template <typename T, typename A1, template <typename, typename> class P>
+  struct object_traits< P<T, A1> >
+  {
+    struct id_type {};
+  };
+
   template <typename T, template <typename> class P>
   struct object_traits< const P<T> >
+  {
+    struct id_type {};
+  };
+
+  template <typename T, typename A1, template <typename, typename> class P>
+  struct object_traits< const P<T, A1> >
   {
     struct id_type {};
   };

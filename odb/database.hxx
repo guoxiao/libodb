@@ -47,9 +47,17 @@ namespace odb
     typename object_traits<T>::id_type
     persist (const P<T>& obj_ptr);
 
+    template <typename T, typename A1, template <typename, typename> class P>
+    typename object_traits<T>::id_type
+    persist (const P<T, A1>& obj_ptr);
+
     template <typename T, template <typename> class P>
     typename object_traits<T>::id_type
     persist (P<T>& obj_ptr);
+
+    template <typename T, typename A1, template <typename, typename> class P>
+    typename object_traits<T>::id_type
+    persist (P<T, A1>& obj_ptr);
 
     template <typename T>
     typename object_traits<T>::id_type
@@ -77,9 +85,17 @@ namespace odb
     void
     reload (const P<T>& obj_ptr);
 
+    template <typename T, typename A1, template <typename, typename> class P>
+    void
+    reload (const P<T, A1>& obj_ptr);
+
     template <typename T, template <typename> class P>
     void
     reload (P<T>& obj_ptr);
+
+    template <typename T, typename A1, template <typename, typename> class P>
+    void
+    reload (P<T, A1>& obj_ptr);
 
     template <typename T>
     void
@@ -109,9 +125,17 @@ namespace odb
     void
     update (const P<T>& obj_ptr);
 
+    template <typename T, typename A1, template <typename, typename> class P>
+    void
+    update (const P<T, A1>& obj_ptr);
+
     template <typename T, template <typename> class P>
     void
     update (P<T>& obj_ptr);
+
+    template <typename T, typename A1, template <typename, typename> class P>
+    void
+    update (P<T, A1>& obj_ptr);
 
     template <typename T>
     void
@@ -136,9 +160,17 @@ namespace odb
     void
     erase (const P<T>& obj_ptr);
 
+    template <typename T, typename A1, template <typename, typename> class P>
+    void
+    erase (const P<T, A1>& obj_ptr);
+
     template <typename T, template <typename> class P>
     void
     erase (P<T>& obj_ptr);
+
+    template <typename T, typename A1, template <typename, typename> class P>
+    void
+    erase (P<T, A1>& obj_ptr);
 
     template <typename T>
     void
