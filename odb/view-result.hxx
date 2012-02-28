@@ -9,11 +9,13 @@
 
 #include <cstddef>  // std::ptrdiff_t, std::size_t
 #include <iterator> // iterator categories
+#include <utility>  // std::move
 
 #include <odb/forward.hxx>
 #include <odb/result.hxx>
 #include <odb/pointer-traits.hxx>
 
+#include <odb/details/config.hxx>     // ODB_CXX11
 #include <odb/details/shared-ptr.hxx>
 
 namespace odb
@@ -96,12 +98,27 @@ namespace odb
     size () = 0;
 
   protected:
+#ifdef ODB_CXX11
+    void
+    current (pointer_type& p)
+    {
+      current_ = std::move (p);
+      guard_.reset (current_);
+    }
+
+    void
+    current (pointer_type&& p)
+    {
+      current (p);
+    }
+#else
     void
     current (pointer_type p)
     {
       current_ = p;
       guard_.reset (current_);
     }
+#endif
 
     bool begin_;
     bool end_;
