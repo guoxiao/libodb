@@ -15,7 +15,6 @@ statement.cxx      \
 tracer.cxx         \
 transaction.cxx
 
-
 # Implementation details.
 #
 cxx +=                      \
@@ -69,7 +68,6 @@ default := $(out_base)/
 dist    := $(out_base)/.dist
 clean   := $(out_base)/.clean
 
-
 # Build.
 #
 $(odb.l): $(cxx_obj)
@@ -81,6 +79,10 @@ endif
 $(cxx_obj) $(cxx_od): $(odb.l.cpp-options) $(out_base)/details/config.h
 $(odb.l.cpp-options): value := -I$(out_root) -I$(src_root)
 
+$(call include,$(bld_root)/cxx/standard.make) # cxx_standard
+
+ifdef libodb_threads
+ifdef cxx_standard
 $(out_base)/details/config.h: | $(out_base)/details/.
 	@echo '/* file      : odb/details/config.h'                      >$@
 	@echo ' * note      : automatically generated'                  >>$@
@@ -98,8 +100,13 @@ endif
 ifeq ($(libodb_threads),none)
 	@echo '#define ODB_THREADS_NONE 1'                              >>$@
 endif
+ifeq ($(cxx_standard),c++11)
+	@echo '#define ODB_CXX11 1'                                     >>$@
+endif
 	@echo ''                                                        >>$@
 	@echo '#endif /* ODB_DETAILS_CONFIG_H */'                       >>$@
+endif
+endif
 
 $(call include-dep,$(cxx_od),$(cxx_obj),$(out_base)/details/config.h)
 

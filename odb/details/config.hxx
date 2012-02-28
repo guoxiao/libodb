@@ -12,6 +12,9 @@
 #elif defined(ODB_COMPILER)
 #  define ODB_THREADS_NONE
 #  define LIBODB_STATIC_LIB
+#  if defined(__GXX_EXPERIMENTAL_CXX0X__) || __cplusplus >= 201103L
+#    define ODB_CXX11
+#  endif
 #else
 #  include <odb/details/config.h>
 #endif

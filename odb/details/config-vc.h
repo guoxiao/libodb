@@ -11,4 +11,10 @@
 #define ODB_THREADS_WIN32
 #define ODB_THREADS_TLS_DECLSPEC
 
+/* VC++10 has C++11 always enabled.
+ */
+#if _MSC_VER >= 1600
+#  define ODB_CXX11
+#endif
+
 #endif /* ODB_DETAILS_CONFIG_VC_H */
