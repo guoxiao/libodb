@@ -101,13 +101,13 @@ namespace odb
 
   // operator< and operator<< are not provided.
   //
-  template<class T, class Y>
+  template <class T, class Y>
   bool operator== (const lazy_ptr<T>&, const lazy_ptr<Y>&);
 
-  template<class T, class Y>
+  template <class T, class Y>
   bool operator!= (const lazy_ptr<T>&, const lazy_ptr<Y>&);
 
-  template<class T> void swap (lazy_ptr<T>&, lazy_ptr<T>&);
+  template <class T> void swap (lazy_ptr<T>&, lazy_ptr<T>&);
 
   // std::auto_ptr lazy version.
   //
@@ -130,10 +130,10 @@ namespace odb
 
     explicit lazy_auto_ptr (T* = 0);
     lazy_auto_ptr (lazy_auto_ptr&);
-    template<class Y> lazy_auto_ptr (lazy_auto_ptr<Y>&);
+    template <class Y> lazy_auto_ptr (lazy_auto_ptr<Y>&);
 
     lazy_auto_ptr& operator= (lazy_auto_ptr&);
-    template<class Y> lazy_auto_ptr& operator= (lazy_auto_ptr<Y>&);
+    template <class Y> lazy_auto_ptr& operator= (lazy_auto_ptr<Y>&);
 
     T& operator* () const;
     T* operator-> () const;
@@ -143,8 +143,8 @@ namespace odb
 
     lazy_auto_ptr (const lazy_auto_ptr_ref<T>&);
     lazy_auto_ptr& operator= (const lazy_auto_ptr_ref<T>&);
-    template<class Y> operator lazy_auto_ptr_ref<Y> ();
-    template<class Y> operator lazy_auto_ptr<Y> ();
+    template <class Y> operator lazy_auto_ptr_ref<Y> ();
+    template <class Y> operator lazy_auto_ptr<Y> ();
 
     // Extension: conversion to bool.
     //
@@ -215,6 +215,133 @@ namespace odb
   };
 
 #ifdef ODB_CXX11
+
+  // C++11 std::unique_ptr lazy version.
+  //
+  template <class T, class D = std::default_delete<T>>
+  class lazy_unique_ptr
+  {
+    // Standard lazy_unique_ptr interface.
+    //
+  public:
+    typedef T* pointer;     // For now assume it is T*.
+    typedef T element_type;
+    typedef D deleter_type;
+
+    /*constexpr*/ lazy_unique_ptr () /*noexcept*/;
+    /*constexpr*/ lazy_unique_ptr (std::nullptr_t) /*noexcept*/;
+    explicit lazy_unique_ptr (pointer) /*noexcept*/;
+
+    // For now assume D is non-reference.
+    //
+    lazy_unique_ptr (pointer, const deleter_type&) /*noexcept*/;
+    lazy_unique_ptr (pointer, deleter_type&&) /*noexcept*/;
+
+    lazy_unique_ptr (lazy_unique_ptr&&) /*noexcept*/;
+    template <class T1, class D1> lazy_unique_ptr (lazy_unique_ptr<T1, D1>&&) /*noexcept*/;
+    template <class T1> lazy_unique_ptr (std::auto_ptr<T1>&&) /*noexcept*/;
+
+    lazy_unique_ptr& operator= (std::nullptr_t) /*noexcept*/;
+    lazy_unique_ptr& operator= (lazy_unique_ptr&&) /*noexcept*/;
+    template <class T1, class D1> lazy_unique_ptr& operator= (lazy_unique_ptr<T1, D1>&&) /*noexcept*/;
+
+    T& operator* () const;
+    pointer operator-> () const /*noexcept*/;
+    pointer get () const /*noexcept*/;
+    explicit operator bool() const /*noexcept*/;
+
+    pointer release () /*noexcept*/;
+    void reset (pointer = pointer ()) /*noexcept*/;
+    void swap (lazy_unique_ptr&) /*noexcept*/;
+
+    deleter_type& get_deleter () /*noexcept*/;
+    const deleter_type& get_deleter () const /*noexcept*/;
+
+    lazy_unique_ptr (const lazy_unique_ptr&) = delete;
+    lazy_unique_ptr& operator= (const lazy_unique_ptr&) = delete;
+
+    // Initialization/assignment from unique_ptr.
+    //
+  public:
+    template <class T1, class D1> lazy_unique_ptr (std::unique_ptr<T1, D1>&&) /*noexcept*/;
+    template <class T1, class D1> lazy_unique_ptr& operator= (std::unique_ptr<T1, D1>&&) /*noexcept*/;
+
+    // Lazy loading interface.
+    //
+  public:
+    typedef odb::database database_type;
+
+    //  NULL      loaded()
+    //
+    //  true       true      NULL pointer to transient object
+    //  false      true      valid pointer to persistent object
+    //  true       false     unloaded pointer to persistent object
+    //  false      false     valid pointer to transient object
+    //
+    bool loaded () const;
+
+    std::unique_ptr<T, D>& load () const;
+
+    // Unload the pointer. For transient objects this function is
+    // equivalent to reset().
+    //
+    void unload () const;
+
+    template <class ID> lazy_unique_ptr (database_type&, const ID&);
+    lazy_unique_ptr (database_type&, pointer);
+    lazy_unique_ptr (database_type&, pointer, const deleter_type&);
+    lazy_unique_ptr (database_type&, pointer, deleter_type&&);
+    template <class T1, class D1> lazy_unique_ptr (database_type&, std::unique_ptr<T1, D1>&&);
+    template <class T1> lazy_unique_ptr (database_type&, std::auto_ptr<T1>&&);
+
+    template <class ID> void reset (database_type&, const ID&);
+    void reset (database_type&, pointer);
+    template <class T1, class D1> void reset (database_type&, std::unique_ptr<T1, D1>&&);
+    template <class T1> void reset (database_type&, std::auto_ptr<T1>&&);
+
+    template <class O = T>
+    typename object_traits<O>::id_type object_id () const;
+
+    database_type& database () const;
+
+    // Helpers.
+    //
+  public:
+    template <class T1, class D1> bool equal (const lazy_unique_ptr<T1, D1>&) const;
+
+  private:
+    template <class T1, class D1> friend class lazy_unique_ptr;
+
+    // Note that it is possible to have a situation where p_ is NULL,
+    // i_.id is NULL and i_.db is not NULL. This will happen if the
+    // unique_ptr reference returned by load() is transferred to
+    // another pointer or reset.
+    //
+    mutable std::unique_ptr<T, D> p_;
+    mutable lazy_ptr_impl<T> i_;
+  };
+
+  template <class T> void swap (lazy_unique_ptr<T>&, lazy_unique_ptr<T>&) /*noexcept*/;
+
+  // operator< and operator<< are not provided.
+  //
+  template <class T1, class D1, class T2, class D2>
+  bool operator== (const lazy_unique_ptr<T1, D1>&, const lazy_unique_ptr<T2, D2>&);
+
+  template <class T, class D>
+  bool operator== (const lazy_unique_ptr<T, D>&, std::nullptr_t) /*noexcept*/;
+
+  template <class T, class D>
+  bool operator== (std::nullptr_t, const lazy_unique_ptr<T, D>&) /*noexcept*/;
+
+  template <class T1, class D1, class T2, class D2>
+  bool operator!= (const lazy_unique_ptr<T1, D1>&, const lazy_unique_ptr<T2, D2>&);
+
+  template <class T, class D>
+  bool operator!= (const lazy_unique_ptr<T, D>&, std::nullptr_t) /*noexcept*/;
+
+  template <class T, class D>
+  bool operator!= (std::nullptr_t, const lazy_unique_ptr<T, D>&) /*noexcept*/;
 
   // C++11 std::shared_ptr lazy version.
   //
@@ -337,29 +464,29 @@ namespace odb
     mutable lazy_ptr_impl<T> i_;
   };
 
-  template<class T> void swap (lazy_shared_ptr<T>&, lazy_shared_ptr<T>&) /*noexcept*/;
+  template <class T> void swap (lazy_shared_ptr<T>&, lazy_shared_ptr<T>&) /*noexcept*/;
 
-  template<class D, class T>
+  template <class D, class T>
   D* get_deleter (const lazy_shared_ptr<T>&) /*noexcept*/;
 
   // operator< and operator<< are not provided.
   //
-  template<class T, class Y>
+  template <class T, class Y>
   bool operator== (const lazy_shared_ptr<T>&, const lazy_shared_ptr<Y>&) /*noexcept*/;
 
-  template<class T>
+  template <class T>
   bool operator== (const lazy_shared_ptr<T>&, std::nullptr_t) /*noexcept*/;
 
-  template<class T>
+  template <class T>
   bool operator== (std::nullptr_t, const lazy_shared_ptr<T>&) /*noexcept*/;
 
-  template<class T, class Y>
+  template <class T, class Y>
   bool operator!= (const lazy_shared_ptr<T>&, const lazy_shared_ptr<Y>&) /*noexcept*/;
 
-  template<class T>
+  template <class T>
   bool operator!= (const lazy_shared_ptr<T>&, std::nullptr_t) /*noexcept*/;
 
-  template<class T>
+  template <class T>
   bool operator!= (std::nullptr_t, const lazy_shared_ptr<T>&) /*noexcept*/;
 
   // C++11 std::weak_ptr lazy version.
@@ -451,7 +578,7 @@ namespace odb
 
   // operator< is not provided.
   //
-  template<class T> void swap (lazy_weak_ptr<T>&, lazy_weak_ptr<T>&);
+  template <class T> void swap (lazy_weak_ptr<T>&, lazy_weak_ptr<T>&);
 
 #endif // ODB_CXX11
 
@@ -461,6 +588,7 @@ namespace odb
     using odb::lazy_auto_ptr;
 
 #ifdef ODB_CXX11
+    using odb::lazy_unique_ptr;
     using odb::lazy_shared_ptr;
     using odb::lazy_weak_ptr;
 #endif

@@ -190,21 +190,21 @@ namespace odb
     return *i_.database ();
   }
 
-  template<class T, class Y>
+  template <class T, class Y>
   inline bool
   operator== (const lazy_ptr<T>& a, const lazy_ptr<Y>& b)
   {
     return a.equal (b);
   }
 
-  template<class T, class Y>
+  template <class T, class Y>
   inline bool
   operator!= (const lazy_ptr<T>& a, const lazy_ptr<Y>& b)
   {
     return !a.equal (b);
   }
 
-  template<class T>
+  template <class T>
   inline void
   swap (lazy_ptr<T>& a, lazy_ptr<T>& b)
   {
@@ -215,7 +215,7 @@ namespace odb
   // lazy_auto_ptr_ref
   //
 
-  template<class T>
+  template <class T>
   inline lazy_auto_ptr_ref<T>::
   lazy_auto_ptr_ref (T* p, const lazy_ptr_impl_ref& i): p_ (p), i_ (i) {}
 
@@ -223,26 +223,26 @@ namespace odb
   // lazy_auto_ptr
   //
 
-  template<class T>
+  template <class T>
   inline lazy_auto_ptr<T>::
   lazy_auto_ptr (T* p): p_ (p) {}
 
-  template<class T>
+  template <class T>
   inline lazy_auto_ptr<T>::
   lazy_auto_ptr (lazy_auto_ptr& r)
       : p_ (r.p_), i_ (static_cast<lazy_ptr_impl_ref> (r.i_))
   {
   }
 
-  template<class T>
-  template<class Y>
+  template <class T>
+  template <class Y>
   inline lazy_auto_ptr<T>::
   lazy_auto_ptr (lazy_auto_ptr<Y>& r)
       : p_ (r.p_), i_ (static_cast<lazy_ptr_impl_ref> (r.i_))
   {
   }
 
-  template<class T>
+  template <class T>
   inline lazy_auto_ptr<T>& lazy_auto_ptr<T>::
   operator= (lazy_auto_ptr& r)
   {
@@ -251,8 +251,8 @@ namespace odb
     return *this;
   }
 
-  template<class T>
-  template<class Y>
+  template <class T>
+  template <class Y>
   inline lazy_auto_ptr<T>& lazy_auto_ptr<T>::
   operator= (lazy_auto_ptr<Y>& r)
   {
@@ -261,28 +261,28 @@ namespace odb
     return *this;
   }
 
-  template<class T>
+  template <class T>
   inline T& lazy_auto_ptr<T>::
   operator* () const
   {
     return *p_;
   }
 
-  template<class T>
+  template <class T>
   inline T* lazy_auto_ptr<T>::
   operator-> () const
   {
     return p_.operator-> ();
   }
 
-  template<class T>
+  template <class T>
   inline T* lazy_auto_ptr<T>::
   get () const
   {
     return p_.get ();
   }
 
-  template<class T>
+  template <class T>
   inline T* lazy_auto_ptr<T>::
   release ()
   {
@@ -290,7 +290,7 @@ namespace odb
     return p_.release ();
   }
 
-  template<class T>
+  template <class T>
   inline void lazy_auto_ptr<T>::
   reset (T* p)
   {
@@ -298,11 +298,11 @@ namespace odb
     p_.reset (p);
   }
 
-  template<class T>
+  template <class T>
   inline lazy_auto_ptr<T>::
   lazy_auto_ptr (const lazy_auto_ptr_ref<T>& r): p_ (r.p_), i_ (r.i_) {}
 
-  template<class T>
+  template <class T>
   inline lazy_auto_ptr<T>& lazy_auto_ptr<T>::
   operator= (const lazy_auto_ptr_ref<T>& r)
   {
@@ -313,32 +313,32 @@ namespace odb
     return *this;
   }
 
-  template<class T>
-  template<class Y>
+  template <class T>
+  template <class Y>
   inline lazy_auto_ptr<T>::
   operator lazy_auto_ptr_ref<Y> ()
   {
     return lazy_auto_ptr_ref<Y> (p_.release (), i_);
   }
 
-  template<class T>
-  template<class Y>
+  template <class T>
+  template <class Y>
   inline lazy_auto_ptr<T>::
   operator lazy_auto_ptr<Y> ()
   {
     return lazy_auto_ptr<Y> (*this);
   }
 
-  template<class T>
+  template <class T>
   template <class Y>
   inline lazy_auto_ptr<T>::
   lazy_auto_ptr (std::auto_ptr<Y>& r): p_ (r) {}
 
-  template<class T>
+  template <class T>
   inline lazy_auto_ptr<T>::
   lazy_auto_ptr (std::auto_ptr_ref<T> r): p_ (r) {}
 
-  template<class T>
+  template <class T>
   template <class Y>
   inline lazy_auto_ptr<T>& lazy_auto_ptr<T>::
   operator= (std::auto_ptr<Y>& r)
@@ -348,7 +348,7 @@ namespace odb
     return *this;
   }
 
-  template<class T>
+  template <class T>
   inline lazy_auto_ptr<T>& lazy_auto_ptr<T>::
   operator= (std::auto_ptr_ref<T> r)
   {
@@ -413,7 +413,7 @@ namespace odb
   lazy_auto_ptr (database_type& db, std::auto_ptr<Y>& p)
       : p_ (p)
   {
-    if (p)
+    if (p_.get () != 0)
       i_.reset (db);
   }
 
@@ -471,6 +471,357 @@ namespace odb
   }
 
 #ifdef ODB_CXX11
+
+  //
+  // lazy_unique_ptr
+  //
+
+  template <class T, class D>
+  lazy_unique_ptr<T, D>::
+  lazy_unique_ptr () {}
+
+  template <class T, class D>
+  lazy_unique_ptr<T, D>::
+  lazy_unique_ptr (std::nullptr_t) {}
+
+  template <class T, class D>
+  lazy_unique_ptr<T, D>::
+  lazy_unique_ptr (pointer p): p_ (p) {}
+
+  template <class T, class D>
+  lazy_unique_ptr<T, D>::
+  lazy_unique_ptr (pointer p, const deleter_type& d): p_ (p, d) {}
+
+  template <class T, class D>
+  lazy_unique_ptr<T, D>::
+  lazy_unique_ptr (pointer p, deleter_type&& d): p_ (p, std::move (d)) {}
+
+  template <class T, class D>
+  lazy_unique_ptr<T, D>::
+  lazy_unique_ptr (lazy_unique_ptr&& r)
+      : p_ (std::move (r.p_)), i_ (std::move (r.i_)) {}
+
+  template <class T, class D>
+  template <class T1, class D1>
+  lazy_unique_ptr<T, D>::
+  lazy_unique_ptr (lazy_unique_ptr<T1, D1>&& r)
+      : p_ (std::move (r.p_)), i_ (std::move (r.i_)) {}
+
+  template <class T, class D>
+  template <class T1>
+  lazy_unique_ptr<T, D>::
+  lazy_unique_ptr (std::auto_ptr<T1>&& r): p_ (std::move (r)) {}
+
+  template <class T, class D>
+  lazy_unique_ptr<T, D>& lazy_unique_ptr<T, D>::
+  operator= (std::nullptr_t)
+  {
+    reset ();
+    return *this;
+  }
+
+  template <class T, class D>
+  lazy_unique_ptr<T, D>& lazy_unique_ptr<T, D>::
+  operator= (lazy_unique_ptr&& r)
+  {
+    p_ = std::move (r.p_);
+    i_ = std::move (r.i_);
+    return *this;
+  }
+
+  template <class T, class D>
+  template <class T1, class D1>
+  lazy_unique_ptr<T, D>& lazy_unique_ptr<T, D>::
+  operator= (lazy_unique_ptr<T1, D1>&& r)
+  {
+    p_ = std::move (r.p_);
+    i_ = std::move (r.i_);
+    return *this;
+  }
+
+  template <class T, class D>
+  T& lazy_unique_ptr<T, D>::
+  operator* () const
+  {
+    return *p_;
+  }
+
+  template <class T, class D>
+  typename lazy_unique_ptr<T, D>::pointer lazy_unique_ptr<T, D>::
+  operator-> () const
+  {
+    return p_.operator-> ();
+  }
+
+  template <class T, class D>
+  typename lazy_unique_ptr<T, D>::pointer lazy_unique_ptr<T, D>::
+  get () const
+  {
+    return p_.get ();
+  }
+
+  template <class T, class D>
+  lazy_unique_ptr<T, D>::
+  operator bool() const
+  {
+    return p_ || i_;
+  }
+
+  template <class T, class D>
+  typename lazy_unique_ptr<T, D>::pointer lazy_unique_ptr<T, D>::
+  release ()
+  {
+    i_.reset ();
+    return p_.release ();
+  }
+
+  template <class T, class D>
+  void lazy_unique_ptr<T, D>::
+  reset (pointer p)
+  {
+    p_.reset (p);
+    i_.reset ();
+  }
+
+  template <class T, class D>
+  void lazy_unique_ptr<T, D>::
+  swap (lazy_unique_ptr& b)
+  {
+    p_.swap (b.p_);
+    i_.swap (b.i_);
+  }
+
+  template <class T, class D>
+  typename lazy_unique_ptr<T, D>::deleter_type& lazy_unique_ptr<T, D>::
+  get_deleter ()
+  {
+    return p_.get_deleter ();
+  }
+
+  template <class T, class D>
+  const typename lazy_unique_ptr<T, D>::deleter_type& lazy_unique_ptr<T, D>::
+  get_deleter () const
+  {
+    return p_.get_deleter ();
+  }
+
+  template <class T, class D>
+  template <class T1, class D1>
+  inline lazy_unique_ptr<T, D>::
+  lazy_unique_ptr (std::unique_ptr<T1, D1>&& p)
+      : p_ (std::move (p))
+  {
+  }
+
+  template <class T, class D>
+  template <class T1, class D1>
+  inline lazy_unique_ptr<T, D>& lazy_unique_ptr<T, D>::
+  operator= (std::unique_ptr<T1, D1>&& p)
+  {
+    p_ = std::move (p);
+    i_.reset ();
+    return *this;
+  }
+
+  template <class T, class D>
+  inline bool lazy_unique_ptr<T, D>::
+  loaded () const
+  {
+    bool i (i_);
+    return !p_ != i; // !p_ XOR i_
+  }
+
+  template <class T, class D>
+  inline std::unique_ptr<T, D>& lazy_unique_ptr<T, D>::
+  load () const
+  {
+    if (!loaded ())
+      p_ = std::unique_ptr<T, D> (i_.template load<T> (true)); // Reset id.
+
+    return p_;
+  }
+
+  template <class T, class D>
+  inline void lazy_unique_ptr<T, D>::
+  unload () const
+  {
+    typedef typename object_traits<T>::object_type object_type;
+
+    if (p_)
+    {
+      if (i_.database () != 0)
+        i_.reset_id (object_traits<object_type>::id (*p_));
+
+      p_.reset ();
+    }
+  }
+
+  template <class T, class D>
+  template <class ID>
+  inline lazy_unique_ptr<T, D>::
+  lazy_unique_ptr (database_type& db, const ID& id): i_ (db, id) {}
+
+  template <class T, class D>
+  inline lazy_unique_ptr<T, D>::
+  lazy_unique_ptr (database_type& db, T* p)
+      : p_ (p)
+  {
+    if (p_)
+      i_.reset (db);
+  }
+
+  template <class T, class D>
+  inline lazy_unique_ptr<T, D>::
+  lazy_unique_ptr (database_type& db, T* p, const deleter_type& d)
+      : p_ (p, d)
+  {
+    if (p_)
+      i_.reset (db);
+  }
+
+  template <class T, class D>
+  inline lazy_unique_ptr<T, D>::
+  lazy_unique_ptr (database_type& db, T* p, deleter_type&& d)
+      : p_ (p, std::move (d))
+  {
+    if (p_)
+      i_.reset (db);
+  }
+
+  template <class T, class D>
+  template <class T1, class D1>
+  inline lazy_unique_ptr<T, D>::
+  lazy_unique_ptr (database_type& db, std::unique_ptr<T1, D1>&& p)
+      : p_ (std::move (p))
+  {
+    if (p_)
+      i_.reset (db);
+  }
+
+  template <class T, class D>
+  template <class T1>
+  inline lazy_unique_ptr<T, D>::
+  lazy_unique_ptr (database_type& db, std::auto_ptr<T1>&& p)
+      : p_ (std::move (p))
+  {
+    if (p_)
+      i_.reset (db);
+  }
+
+  template <class T, class D>
+  template <class ID>
+  inline void lazy_unique_ptr<T, D>::
+  reset (database_type& db, const ID& id)
+  {
+    p_.reset ();
+    i_.reset (db, id);
+  }
+
+  template <class T, class D>
+  inline void lazy_unique_ptr<T, D>::
+  reset (database_type& db, T* p)
+  {
+    p_.reset (p);
+
+    if (p)
+      i_.reset (db);
+    else
+      i_.reset ();
+  }
+
+  template <class T, class D>
+  template <class T1, class D1>
+  inline void lazy_unique_ptr<T, D>::
+  reset (database_type& db, std::unique_ptr<T1, D1>&& p)
+  {
+    p_ = std::move (p);
+
+    if (p_)
+      i_.reset (db);
+    else
+      i_.reset ();
+  }
+
+  template <class T, class D>
+  template <class T1>
+  inline void lazy_unique_ptr<T, D>::
+  reset (database_type& db, std::auto_ptr<T1>&& p)
+  {
+    p_ = std::unique_ptr<T, D> (std::move (p));
+
+    if (p_)
+      i_.reset (db);
+    else
+      i_.reset ();
+  }
+
+  template <class T, class D>
+  template <class O>
+  inline typename object_traits<O>::id_type lazy_unique_ptr<T, D>::
+  object_id () const
+  {
+    typedef typename object_traits<T>::object_type object_type;
+
+    return p_ ? object_traits<object_type>::id (*p_) : i_.object_id<O> ();
+  }
+
+  template <class T, class D>
+  inline typename lazy_unique_ptr<T, D>::database_type& lazy_unique_ptr<T, D>::
+  database () const
+  {
+    return *i_.database ();
+  }
+
+  template <class T>
+  inline void
+  swap (lazy_unique_ptr<T>& a, lazy_unique_ptr<T>& b)
+  {
+    a.swap (b);
+  }
+
+  template <class T1, class D1, class T2, class D2>
+  inline bool
+  operator== (const lazy_unique_ptr<T1, D1>& a,
+              const lazy_unique_ptr<T2, D2>& b)
+  {
+    return a.equal (b);
+  }
+
+  template <class T, class D>
+  inline bool
+  operator== (const lazy_unique_ptr<T, D>& a, std::nullptr_t)
+  {
+    return !a;
+  }
+
+  template <class T, class D>
+  inline bool
+  operator== (std::nullptr_t, const lazy_unique_ptr<T, D>& b)
+  {
+    return !b;
+  }
+
+  template <class T1, class D1, class T2, class D2>
+  inline bool
+  operator!= (const lazy_unique_ptr<T1, D1>& a,
+              const lazy_unique_ptr<T2, D2>& b)
+  {
+    return !a.equal (b);
+  }
+
+  template <class T, class D>
+  inline bool
+  operator!= (const lazy_unique_ptr<T, D>& a, std::nullptr_t)
+  {
+    return a;
+  }
+
+  template <class T, class D>
+  inline bool
+  operator!= (std::nullptr_t, const lazy_unique_ptr<T, D>& b)
+  {
+    return b;
+  }
 
   //
   // lazy_shared_ptr
@@ -953,56 +1304,56 @@ namespace odb
     return *i_.database ();
   }
 
-  template<class T, class Y>
+  template <class T, class Y>
   inline bool
   operator== (const lazy_shared_ptr<T>& a, const lazy_shared_ptr<Y>& b)
   {
     return a.equal (b);
   }
 
-  template<class T>
+  template <class T>
   inline bool
   operator== (const lazy_shared_ptr<T>& p, std::nullptr_t)
   {
     return !p;
   }
 
-  template<class T>
+  template <class T>
   inline bool
   operator== (std::nullptr_t, const lazy_shared_ptr<T>& p)
   {
     return !p;
   }
 
-  template<class T, class Y>
+  template <class T, class Y>
   inline bool
   operator!= (const lazy_shared_ptr<T>& a, const lazy_shared_ptr<Y>& b)
   {
     return !a.equal (b);
   }
 
-  template<class T>
+  template <class T>
   inline bool
   operator!= (const lazy_shared_ptr<T>& p, std::nullptr_t)
   {
     return p;
   }
 
-  template<class T>
+  template <class T>
   inline bool
   operator!= (std::nullptr_t, const lazy_shared_ptr<T>& p)
   {
     return p;
   }
 
-  template<class T>
+  template <class T>
   inline void
   swap (lazy_shared_ptr<T>& a, lazy_shared_ptr<T>& b)
   {
     a.swap (b);
   }
 
-  template<class D, class T>
+  template <class D, class T>
   inline D*
   get_deleter (const lazy_shared_ptr<T>& p)
   {
@@ -1244,7 +1595,7 @@ namespace odb
     return *i_.database ();
   }
 
-  template<class T>
+  template <class T>
   inline void
   swap (lazy_weak_ptr<T>& a, lazy_weak_ptr<T>& b)
   {

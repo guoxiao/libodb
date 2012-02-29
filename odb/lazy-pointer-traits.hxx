@@ -64,8 +64,33 @@ namespace odb
   };
 
 #ifdef ODB_CXX11
+  template <typename T, typename D>
+  class pointer_traits<lazy_unique_ptr<T, D>>
+  {
+  public:
+    static const pointer_kind kind = pk_unique;
+    static const bool lazy = true;
+
+    typedef T element_type;
+    typedef lazy_unique_ptr<element_type, D> pointer_type;
+    typedef std::unique_ptr<element_type, D> eager_pointer_type;
+
+    static bool
+    null_ptr (const pointer_type& p)
+    {
+      return !p;
+    }
+
+    template <class O /* = T */>
+    static typename object_traits<O>::id_type
+    object_id (const pointer_type& p)
+    {
+      return p.object_id<O> ();
+    }
+  };
+
   template <typename T>
-  class pointer_traits<lazy_shared_ptr<T> >
+  class pointer_traits<lazy_shared_ptr<T>>
   {
   public:
     static const pointer_kind kind = pk_shared;
@@ -90,7 +115,7 @@ namespace odb
   };
 
   template <typename T>
-  class pointer_traits<lazy_weak_ptr<T> >
+  class pointer_traits<lazy_weak_ptr<T>>
   {
   public:
     static const pointer_kind kind = pk_weak;

@@ -8,7 +8,7 @@
 #include <odb/pre.hxx>
 
 #include <new>     // operators new/delete
-#include <memory>  // std::auto_ptr, std::shared_ptr (C++11)
+#include <memory>  // std::auto_ptr, std::unique_ptr, std::shared_ptr/weak_ptr
 #include <cstddef> // std::size_t
 
 #include <odb/details/config.hxx>            // ODB_CXX11
@@ -193,10 +193,59 @@ namespace odb
 
 #ifdef ODB_CXX11
 
+  // Specialization for C++11 std::unique_ptr.
+  //
+  template <typename T, typename D>
+  class pointer_traits<std::unique_ptr<T, D>>
+  {
+  public:
+    static const pointer_kind kind = pk_unique;
+    static const bool lazy = false;
+
+    typedef T element_type;
+    typedef std::unique_ptr<element_type, D> pointer_type;
+    typedef std::unique_ptr<const element_type, D> const_pointer_type;
+    typedef smart_ptr_guard<pointer_type> guard;
+
+    static element_type*
+    get_ptr (const pointer_type& p)
+    {
+      return p.get ();
+    }
+
+    static element_type&
+    get_ref (const pointer_type& p)
+    {
+      return *p;
+    }
+
+    static bool
+    null_ptr (const pointer_type& p)
+    {
+      return !p;
+    }
+
+    // cast() is not provided since it transfers the ownership.
+    //
+
+  public:
+    static void*
+    allocate (std::size_t n)
+    {
+      return operator new (n);
+    }
+
+    static void
+    free (void* p)
+    {
+      operator delete (p);
+    }
+  };
+
   // Specialization for C++11 std::shared_ptr.
   //
   template <typename T>
-  class pointer_traits<std::shared_ptr<T> >
+  class pointer_traits<std::shared_ptr<T>>
   {
   public:
     static const pointer_kind kind = pk_shared;
@@ -252,7 +301,7 @@ namespace odb
   // Specialization for C++11 std::weak_ptr.
   //
   template <typename T>
-  class pointer_traits<std::weak_ptr<T> >
+  class pointer_traits<std::weak_ptr<T>>
   {
   public:
     static const pointer_kind kind = pk_weak;
