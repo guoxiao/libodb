@@ -1,28 +1,32 @@
-// file      : odb/std-set-traits.hxx
+// file      : odb/std-unordered-map-traits.hxx
 // copyright : Copyright (c) 2009-2012 Code Synthesis Tools CC
 // license   : GNU GPL v2; see accompanying LICENSE file
 
-#ifndef ODB_STD_SET_TRAITS_HXX
-#define ODB_STD_SET_TRAITS_HXX
+#ifndef ODB_STD_UNORDERED_MAP_TRAITS_HXX
+#define ODB_STD_UNORDERED_MAP_TRAITS_HXX
 
 #include <odb/pre.hxx>
 
-#include <set>
+#include <utility>       // std::move
+#include <unordered_map>
 
 #include <odb/container-traits.hxx>
 
 namespace odb
 {
-  template <typename V, typename C, typename A>
-  class access::container_traits<std::set<V, C, A> >
+  template <typename K, typename V, typename H, typename P, typename A>
+  class access::container_traits<std::unordered_map<K, V, H, P, A>>
   {
   public:
-    static container_kind const kind = ck_set;
+    static container_kind const kind = ck_map;
 
-    typedef std::set<V, C, A> container_type;
+    typedef std::unordered_map<K, V, H, P, A> container_type;
+
+    typedef K key_type;
     typedef V value_type;
+    typedef typename container_type::value_type pair_type;
 
-    typedef set_functions<value_type> functions;
+    typedef map_functions<key_type, value_type> functions;
 
   public:
     static void
@@ -30,7 +34,7 @@ namespace odb
     {
       for (typename container_type::const_iterator i (c.begin ()),
              e (c.end ()); i != e; ++i)
-        f.insert_one (*i);
+        f.insert_one (i->first, i->second);
     }
 
     static void
@@ -40,9 +44,10 @@ namespace odb
 
       while (more)
       {
+        key_type k;
         value_type v;
-        more = f.load_all (v);
-        c.insert (v);
+        more = f.load_all (k, v);
+        c.insert (pair_type (std::move (k), std::move (v)));
       }
     }
 
@@ -53,7 +58,7 @@ namespace odb
 
       for (typename container_type::const_iterator i (c.begin ()),
              e (c.end ()); i != e; ++i)
-        f.insert_one (*i);
+        f.insert_one (i->first, i->second);
     }
 
     static void
@@ -63,20 +68,23 @@ namespace odb
     }
   };
 
-  // C++03 does not guarantee insertion order of equal values but C++11
-  // changes that. The current implementation in the generated code does
-  // not guarantee this either.
+  // @@ Does multimap preserve insertion order of equal elements? The
+  // current implementation in the generated code does not guarantee
+  // this.
   //
-  template <typename V, typename C, typename A>
-  class access::container_traits<std::multiset<V, C, A> >
+  template <typename K, typename V, typename H, typename P, typename A>
+  class access::container_traits<std::unordered_multimap<K, V, H, P, A>>
   {
   public:
-    static container_kind const kind = ck_multiset;
+    static container_kind const kind = ck_multimap;
 
-    typedef std::multiset<V, C, A> container_type;
+    typedef std::unordered_multimap<K, V, H, P, A> container_type;
+
+    typedef K key_type;
     typedef V value_type;
+    typedef typename container_type::value_type pair_type;
 
-    typedef set_functions<value_type> functions;
+    typedef map_functions<key_type, value_type> functions;
 
   public:
     static void
@@ -84,7 +92,7 @@ namespace odb
     {
       for (typename container_type::const_iterator i (c.begin ()),
              e (c.end ()); i != e; ++i)
-        f.insert_one (*i);
+        f.insert_one (i->first, i->second);
     }
 
     static void
@@ -94,9 +102,10 @@ namespace odb
 
       while (more)
       {
+        key_type k;
         value_type v;
-        more = f.load_all (v);
-        c.insert (v);
+        more = f.load_all (k, v);
+        c.insert (pair_type (std::move (k), std::move (v)));
       }
     }
 
@@ -107,7 +116,7 @@ namespace odb
 
       for (typename container_type::const_iterator i (c.begin ()),
              e (c.end ()); i != e; ++i)
-        f.insert_one (*i);
+        f.insert_one (i->first, i->second);
     }
 
     static void
@@ -120,4 +129,4 @@ namespace odb
 
 #include <odb/post.hxx>
 
-#endif // ODB_STD_SET_TRAITS_HXX
+#endif // ODB_STD_UNORDERED_MAP_TRAITS_HXX

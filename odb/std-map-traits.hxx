@@ -67,7 +67,7 @@ namespace odb
     }
   };
 
-  // C++-03 does not guarantee insertion order of equal values but C++-0x
+  // C++03 does not guarantee insertion order of equal values but C++11
   // changes that. The current implementation in the generated code does
   // not guarantee this either.
   //

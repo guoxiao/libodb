@@ -1,25 +1,26 @@
-// file      : odb/std-set-traits.hxx
+// file      : odb/std-unordered-set-traits.hxx
 // copyright : Copyright (c) 2009-2012 Code Synthesis Tools CC
 // license   : GNU GPL v2; see accompanying LICENSE file
 
-#ifndef ODB_STD_SET_TRAITS_HXX
-#define ODB_STD_SET_TRAITS_HXX
+#ifndef ODB_STD_UNORDERED_SET_TRAITS_HXX
+#define ODB_STD_UNORDERED_SET_TRAITS_HXX
 
 #include <odb/pre.hxx>
 
-#include <set>
+#include <utility>       // std::move
+#include <unordered_set>
 
 #include <odb/container-traits.hxx>
 
 namespace odb
 {
-  template <typename V, typename C, typename A>
-  class access::container_traits<std::set<V, C, A> >
+  template <typename V, typename H, typename P, typename A>
+  class access::container_traits<std::unordered_set<V, H, P, A>>
   {
   public:
     static container_kind const kind = ck_set;
 
-    typedef std::set<V, C, A> container_type;
+    typedef std::unordered_set<V, H, P, A> container_type;
     typedef V value_type;
 
     typedef set_functions<value_type> functions;
@@ -42,7 +43,7 @@ namespace odb
       {
         value_type v;
         more = f.load_all (v);
-        c.insert (v);
+        c.insert (std::move (v));
       }
     }
 
@@ -63,17 +64,17 @@ namespace odb
     }
   };
 
-  // C++03 does not guarantee insertion order of equal values but C++11
-  // changes that. The current implementation in the generated code does
-  // not guarantee this either.
+  // @@ Does multiset preserve insertion order of equal elements? The
+  // current implementation in the generated code does not guarantee
+  // this.
   //
-  template <typename V, typename C, typename A>
-  class access::container_traits<std::multiset<V, C, A> >
+  template <typename V, typename H, typename P, typename A>
+  class access::container_traits<std::unordered_multiset<V, H, P, A>>
   {
   public:
     static container_kind const kind = ck_multiset;
 
-    typedef std::multiset<V, C, A> container_type;
+    typedef std::unordered_multiset<V, H, P, A> container_type;
     typedef V value_type;
 
     typedef set_functions<value_type> functions;
@@ -96,7 +97,7 @@ namespace odb
       {
         value_type v;
         more = f.load_all (v);
-        c.insert (v);
+        c.insert (std::move (v));
       }
     }
 
@@ -120,4 +121,4 @@ namespace odb
 
 #include <odb/post.hxx>
 
-#endif // ODB_STD_SET_TRAITS_HXX
+#endif // ODB_STD_UNORDERED_SET_TRAITS_HXX

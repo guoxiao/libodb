@@ -8,6 +8,7 @@
 #include <odb/pre.hxx>
 
 #include <odb/forward.hxx>
+#include <odb/details/config.hxx> // ODB_CXX11
 
 namespace odb
 {
@@ -193,5 +194,12 @@ namespace odb
 #include <odb/std-set-traits.hxx>
 #include <odb/std-list-traits.hxx>
 #include <odb/std-vector-traits.hxx>
+
+#ifdef ODB_CXX11
+#  include <odb/std-array-traits.hxx>
+#  include <odb/std-forward-list-traits.hxx>
+#  include <odb/std-unordered-map-traits.hxx>
+#  include <odb/std-unordered-set-traits.hxx>
+#endif
 
 #endif // ODB_CONTAINER_TRAITS_HXX
