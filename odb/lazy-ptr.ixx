@@ -480,9 +480,11 @@ namespace odb
   lazy_unique_ptr<T, D>::
   lazy_unique_ptr () {}
 
+#ifdef ODB_CXX11_NULLPTR
   template <class T, class D>
   lazy_unique_ptr<T, D>::
   lazy_unique_ptr (std::nullptr_t) {}
+#endif
 
   template <class T, class D>
   lazy_unique_ptr<T, D>::
@@ -512,6 +514,7 @@ namespace odb
   lazy_unique_ptr<T, D>::
   lazy_unique_ptr (std::auto_ptr<T1>&& r): p_ (std::move (r)) {}
 
+#ifdef ODB_CXX11_NULLPTR
   template <class T, class D>
   lazy_unique_ptr<T, D>& lazy_unique_ptr<T, D>::
   operator= (std::nullptr_t)
@@ -519,6 +522,7 @@ namespace odb
     reset ();
     return *this;
   }
+#endif
 
   template <class T, class D>
   lazy_unique_ptr<T, D>& lazy_unique_ptr<T, D>::
@@ -560,12 +564,14 @@ namespace odb
     return p_.get ();
   }
 
+#ifdef ODB_CXX11_EXPLICIT_CONVERSION_OPERATOR
   template <class T, class D>
   lazy_unique_ptr<T, D>::
   operator bool() const
   {
     return p_ || i_;
   }
+#endif
 
   template <class T, class D>
   typename lazy_unique_ptr<T, D>::pointer lazy_unique_ptr<T, D>::
@@ -787,6 +793,15 @@ namespace odb
     return a.equal (b);
   }
 
+  template <class T1, class D1, class T2, class D2>
+  inline bool
+  operator!= (const lazy_unique_ptr<T1, D1>& a,
+              const lazy_unique_ptr<T2, D2>& b)
+  {
+    return !a.equal (b);
+  }
+
+#ifdef ODB_CXX11_NULLPTR
   template <class T, class D>
   inline bool
   operator== (const lazy_unique_ptr<T, D>& a, std::nullptr_t)
@@ -799,14 +814,6 @@ namespace odb
   operator== (std::nullptr_t, const lazy_unique_ptr<T, D>& b)
   {
     return !b;
-  }
-
-  template <class T1, class D1, class T2, class D2>
-  inline bool
-  operator!= (const lazy_unique_ptr<T1, D1>& a,
-              const lazy_unique_ptr<T2, D2>& b)
-  {
-    return !a.equal (b);
   }
 
   template <class T, class D>
@@ -822,6 +829,7 @@ namespace odb
   {
     return b;
   }
+#endif
 
   //
   // lazy_shared_ptr
@@ -831,9 +839,11 @@ namespace odb
   inline lazy_shared_ptr<T>::
   lazy_shared_ptr () {}
 
+#ifdef ODB_CXX11_NULLPTR
   template <class T>
   inline lazy_shared_ptr<T>::
   lazy_shared_ptr (std::nullptr_t) {}
+#endif
 
   template <class T>
   template <class Y>
@@ -850,6 +860,7 @@ namespace odb
   inline lazy_shared_ptr<T>::
   lazy_shared_ptr (Y* p, D d, A a): p_ (p, d, a) {}
 
+#ifdef ODB_CXX11_NULLPTR
   template <class T>
   template <class D>
   inline lazy_shared_ptr<T>::
@@ -859,6 +870,7 @@ namespace odb
   template <class D, class A>
   inline lazy_shared_ptr<T>::
   lazy_shared_ptr (std::nullptr_t p, D d, A a): p_ (p, d, a) {}
+#endif
 
   template <class T>
   template <class Y>
@@ -1050,12 +1062,14 @@ namespace odb
     return p_.use_count ();
   }
 
+#ifdef ODB_CXX11_EXPLICIT_CONVERSION_OPERATOR
   template <class T>
   inline lazy_shared_ptr<T>::
   operator bool () const
   {
     return p_ || i_;
   }
+#endif
 
   template <class T>
   template <class Y>
@@ -1311,6 +1325,14 @@ namespace odb
     return a.equal (b);
   }
 
+  template <class T, class Y>
+  inline bool
+  operator!= (const lazy_shared_ptr<T>& a, const lazy_shared_ptr<Y>& b)
+  {
+    return !a.equal (b);
+  }
+
+#ifdef ODB_CXX11_NULLPTR
   template <class T>
   inline bool
   operator== (const lazy_shared_ptr<T>& p, std::nullptr_t)
@@ -1323,13 +1345,6 @@ namespace odb
   operator== (std::nullptr_t, const lazy_shared_ptr<T>& p)
   {
     return !p;
-  }
-
-  template <class T, class Y>
-  inline bool
-  operator!= (const lazy_shared_ptr<T>& a, const lazy_shared_ptr<Y>& b)
-  {
-    return !a.equal (b);
   }
 
   template <class T>
@@ -1345,6 +1360,7 @@ namespace odb
   {
     return p;
   }
+#endif
 
   template <class T>
   inline void

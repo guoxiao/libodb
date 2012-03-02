@@ -27,7 +27,9 @@ namespace odb
       transfer_ptr (std::auto_ptr<T1> p): p_ (p.release ()) {}
 
 #ifdef ODB_CXX11
+#ifdef ODB_CXX11_NULLPTR
       transfer_ptr (std::nullptr_t): p_ (0) {}
+#endif
 
       template <typename T1>
       transfer_ptr (std::unique_ptr<T1>&& p): p_ (p.release ()) {}

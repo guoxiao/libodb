@@ -14,9 +14,27 @@
 #  define LIBODB_STATIC_LIB
 #  if defined(__GXX_EXPERIMENTAL_CXX0X__) || __cplusplus >= 201103L
 #    define ODB_CXX11
+#    if __GNUC__ >= 4 && __GNUC_MINOR__ >= 6
+#      define ODB_CXX_NULLPTR
+#    endif
+#    define ODB_CXX11_DELETED_FUNCTION
+#    define ODB_CXX11_EXPLICIT_CONVERSION_OPERATOR
+#    define ODB_CXX11_FUNCTION_TEMPLATE_DEFAULT_ARGUMENT
 #  endif
 #else
 #  include <odb/details/config.h>
+#  ifdef ODB_CXX11
+#    ifdef __GNUC__
+#      if __GNUC__ >= 4 && __GNUC_MINOR__ >= 6
+#        define ODB_CXX_NULLPTR
+#      endif
+#    else
+#      define ODB_CXX_NULLPTR
+#    endif
+#    define ODB_CXX11_DELETED_FUNCTION
+#    define ODB_CXX11_EXPLICIT_CONVERSION_OPERATOR
+#    define ODB_CXX11_FUNCTION_TEMPLATE_DEFAULT_ARGUMENT
+#  endif
 #endif
 
 // no post

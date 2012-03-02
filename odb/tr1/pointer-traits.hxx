@@ -7,6 +7,13 @@
 
 #include <odb/pre.hxx>
 
+#include <odb/details/config.hxx> // ODB_CXX11
+
+// In VC++ std::shared_ptr and std::tr1::shared_ptr is the same class
+// template. One is just a using-declaration for the other.
+//
+#if !(defined(ODB_CXX11) && defined(_MSC_VER))
+
 //
 // This header assumes that the necessary TR1 header has already
 // been included.
@@ -93,6 +100,8 @@ namespace odb
     }
   };
 }
+
+#endif // !(ODB_CXX11 && _MSC_VER)
 
 #include <odb/post.hxx>
 

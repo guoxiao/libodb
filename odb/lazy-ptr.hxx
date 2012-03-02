@@ -78,7 +78,7 @@ namespace odb
     template <class ID> void reset (database_type&, const ID&);
     template <class Y> void reset (database_type&, Y*);
 
-#ifdef ODB_CXX11
+#ifdef ODB_CXX11_FUNCTION_TEMPLATE_DEFAULT_ARGUMENT
     template <class O = T>
 #else
     template <class O /* = T */>
@@ -193,7 +193,7 @@ namespace odb
     void reset (database_type&, T*);
     template <class Y> void reset (database_type&, std::auto_ptr<Y>&);
 
-#ifdef ODB_CXX11
+#ifdef ODB_CXX11_FUNCTION_TEMPLATE_DEFAULT_ARGUMENT
     template <class O = T>
 #else
     template <class O /* = T */>
@@ -229,7 +229,9 @@ namespace odb
     typedef D deleter_type;
 
     /*constexpr*/ lazy_unique_ptr () /*noexcept*/;
+#ifdef ODB_CXX11_NULLPTR
     /*constexpr*/ lazy_unique_ptr (std::nullptr_t) /*noexcept*/;
+#endif
     explicit lazy_unique_ptr (pointer) /*noexcept*/;
 
     // For now assume D is non-reference.
@@ -241,14 +243,24 @@ namespace odb
     template <class T1, class D1> lazy_unique_ptr (lazy_unique_ptr<T1, D1>&&) /*noexcept*/;
     template <class T1> lazy_unique_ptr (std::auto_ptr<T1>&&) /*noexcept*/;
 
+#ifdef ODB_CXX11_NULLPTR
     lazy_unique_ptr& operator= (std::nullptr_t) /*noexcept*/;
+#endif
     lazy_unique_ptr& operator= (lazy_unique_ptr&&) /*noexcept*/;
     template <class T1, class D1> lazy_unique_ptr& operator= (lazy_unique_ptr<T1, D1>&&) /*noexcept*/;
 
     T& operator* () const;
     pointer operator-> () const /*noexcept*/;
     pointer get () const /*noexcept*/;
+#ifdef ODB_CXX11_EXPLICIT_CONVERSION_OPERATOR
     explicit operator bool() const /*noexcept*/;
+#else
+    typedef std::unique_ptr<T, D> lazy_unique_ptr::*unspecified_bool_type;
+    operator unspecified_bool_type () const
+    {
+      return (p_ || i_) ? &lazy_unique_ptr::p_ : 0;
+    }
+#endif
 
     pointer release () /*noexcept*/;
     void reset (pointer = pointer ()) /*noexcept*/;
@@ -257,8 +269,14 @@ namespace odb
     deleter_type& get_deleter () /*noexcept*/;
     const deleter_type& get_deleter () const /*noexcept*/;
 
+#ifdef ODB_CXX11_DELETED_FUNCTION
     lazy_unique_ptr (const lazy_unique_ptr&) = delete;
     lazy_unique_ptr& operator= (const lazy_unique_ptr&) = delete;
+#else
+  private:
+    lazy_unique_ptr (const lazy_unique_ptr&);
+    lazy_unique_ptr& operator= (const lazy_unique_ptr&);
+#endif
 
     // Initialization/assignment from unique_ptr.
     //
@@ -299,7 +317,11 @@ namespace odb
     template <class T1, class D1> void reset (database_type&, std::unique_ptr<T1, D1>&&);
     template <class T1> void reset (database_type&, std::auto_ptr<T1>&&);
 
+#ifdef ODB_CXX11_FUNCTION_TEMPLATE_DEFAULT_ARGUMENT
     template <class O = T>
+#else
+    template <class O /*= T*/>
+#endif
     typename object_traits<O>::id_type object_id () const;
 
     database_type& database () const;
@@ -328,20 +350,22 @@ namespace odb
   template <class T1, class D1, class T2, class D2>
   bool operator== (const lazy_unique_ptr<T1, D1>&, const lazy_unique_ptr<T2, D2>&);
 
+  template <class T1, class D1, class T2, class D2>
+  bool operator!= (const lazy_unique_ptr<T1, D1>&, const lazy_unique_ptr<T2, D2>&);
+
+#ifdef ODB_CXX11_NULLPTR
   template <class T, class D>
   bool operator== (const lazy_unique_ptr<T, D>&, std::nullptr_t) /*noexcept*/;
 
   template <class T, class D>
   bool operator== (std::nullptr_t, const lazy_unique_ptr<T, D>&) /*noexcept*/;
 
-  template <class T1, class D1, class T2, class D2>
-  bool operator!= (const lazy_unique_ptr<T1, D1>&, const lazy_unique_ptr<T2, D2>&);
-
   template <class T, class D>
   bool operator!= (const lazy_unique_ptr<T, D>&, std::nullptr_t) /*noexcept*/;
 
   template <class T, class D>
   bool operator!= (std::nullptr_t, const lazy_unique_ptr<T, D>&) /*noexcept*/;
+#endif
 
   // C++11 std::shared_ptr lazy version.
   //
@@ -357,12 +381,16 @@ namespace odb
     typedef T element_type;
 
     /*constexpr*/ lazy_shared_ptr () /*noexcept*/;
+#ifdef ODB_CXX11_NULLPTR
     /*constexpr*/ lazy_shared_ptr (std::nullptr_t) /*noexcept*/;
+#endif
     template <class Y> explicit lazy_shared_ptr (Y*);
     template <class Y, class D> lazy_shared_ptr (Y*, D);
     template <class Y, class D, class A> lazy_shared_ptr (Y*, D, A);
+#ifdef ODB_CXX11_NULLPTR
     template <class D> lazy_shared_ptr (std::nullptr_t, D);
     template <class D, class A> lazy_shared_ptr (std::nullptr_t, D, A);
+#endif
     template <class Y> lazy_shared_ptr (const lazy_shared_ptr<Y>&, T*) /*noexcept*/;
 
     lazy_shared_ptr (const lazy_shared_ptr&) /*noexcept*/;
@@ -393,8 +421,15 @@ namespace odb
     T* operator-> () const /*noexcept*/;
     long use_count () const /*noexcept*/;
     bool unique () const /*noexcept*/;
-
+#ifdef ODB_CXX11_EXPLICIT_CONVERSION_OPERATOR
     explicit operator bool () const /*noexcept*/;
+#else
+    typedef std::shared_ptr<T> lazy_shared_ptr::*unspecified_bool_type;
+    operator unspecified_bool_type () const
+    {
+      return (p_ || i_) ? &lazy_shared_ptr::p_ : 0;
+    }
+#endif
 
     // owner_before () is not provded.
 
@@ -446,7 +481,11 @@ namespace odb
     template <class Y> void reset (database_type&, const std::shared_ptr<Y>&);
     template <class Y> void reset (database_type&, std::shared_ptr<Y>&&);
 
+#ifdef ODB_CXX11_FUNCTION_TEMPLATE_DEFAULT_ARGUMENT
     template <class O = T>
+#else
+    template <class O /*= T*/>
+#endif
     typename object_traits<O>::id_type object_id () const;
 
     database_type& database () const;
@@ -474,20 +513,22 @@ namespace odb
   template <class T, class Y>
   bool operator== (const lazy_shared_ptr<T>&, const lazy_shared_ptr<Y>&) /*noexcept*/;
 
+  template <class T, class Y>
+  bool operator!= (const lazy_shared_ptr<T>&, const lazy_shared_ptr<Y>&) /*noexcept*/;
+
+#ifdef ODB_CXX11_NULLPTR
   template <class T>
   bool operator== (const lazy_shared_ptr<T>&, std::nullptr_t) /*noexcept*/;
 
   template <class T>
   bool operator== (std::nullptr_t, const lazy_shared_ptr<T>&) /*noexcept*/;
 
-  template <class T, class Y>
-  bool operator!= (const lazy_shared_ptr<T>&, const lazy_shared_ptr<Y>&) /*noexcept*/;
-
   template <class T>
   bool operator!= (const lazy_shared_ptr<T>&, std::nullptr_t) /*noexcept*/;
 
   template <class T>
   bool operator!= (std::nullptr_t, const lazy_shared_ptr<T>&) /*noexcept*/;
+#endif
 
   // C++11 std::weak_ptr lazy version.
   //
@@ -563,7 +604,11 @@ namespace odb
     // The object_id() function can only be called when the object is
     // persistent, or: expired() XOR loaded() (can use != for XOR).
     //
+#ifdef ODB_CXX11_FUNCTION_TEMPLATE_DEFAULT_ARGUMENT
     template <class O = T>
+#else
+    template <class O /*= T*/>
+#endif
     typename object_traits<O>::id_type object_id () const;
 
     database_type& database () const;
