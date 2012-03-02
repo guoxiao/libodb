@@ -37,10 +37,6 @@ AS_IF([test x$threads = xposix], AC_DEFINE([ODB_THREADS_POSIX], [1], [Have POSIX
 
 AS_IF([test x$threads_thread_keyword = xyes], AC_DEFINE([ODB_THREADS_TLS_KEYWORD], [1], [Have __thread keyword.]))
 
-# Check for C++11.
-#
-CXX11([ODB_CXX11], [Compiling in the C++11 mode.])
-
 # Define LIBODB_STATIC_LIB if we are build static library on certain platforms.
 #
 STATIC_LIB([LIBODB_STATIC_LIB], [Static library interface.])
