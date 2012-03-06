@@ -46,6 +46,12 @@ namespace odb
     return "session not in effect in this thread";
   }
 
+  const char* session_required::
+  what () const throw ()
+  {
+    return "session required to load this object relationship";
+  }
+
   const char* deadlock::
   what () const throw ()
   {
