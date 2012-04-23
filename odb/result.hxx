@@ -9,7 +9,7 @@
 
 #include <cstddef>  // std::ptrdiff_t, std::size_t
 
-#include <odb/forward.hxx> // result
+#include <odb/forward.hxx>
 #include <odb/traits.hxx>
 
 namespace odb
@@ -190,10 +190,3 @@ namespace odb
 #include <odb/post.hxx>
 
 #endif // ODB_RESULT_HXX
-
-// Include result specializations so that the user code only needs
-// to include this header.
-//
-
-#include <odb/object-result.hxx>
-#include <odb/view-result.hxx>

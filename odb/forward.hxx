@@ -73,6 +73,20 @@ namespace odb
   template <typename T>
   struct view_traits;
 
+  // Cache traits.
+  //
+  template <typename T> struct no_id_pointer_cache_traits;
+  template <typename T> struct no_op_pointer_cache_traits;
+  template <typename T> struct pointer_cache_traits;
+  template <typename T> struct no_id_reference_cache_traits;
+  template <typename T> struct no_op_reference_cache_traits;
+  template <typename T> struct reference_cache_traits;
+
+  // Polymorphism support.
+  //
+  template <typename R>
+  struct polymorphic_map;
+
   namespace details
   {
     template <>

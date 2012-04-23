@@ -113,6 +113,20 @@ namespace odb
   {
   };
 
+  // Polymorphism support exceptions.
+  //
+  struct LIBODB_EXPORT abstract_class: exception
+  {
+    virtual const char*
+    what () const throw ();
+  };
+
+  struct LIBODB_EXPORT no_type_info: exception
+  {
+    virtual const char*
+    what () const throw ();
+  };
+
   // Schema catalog exceptions.
   //
   struct LIBODB_EXPORT unknown_schema: exception
@@ -155,6 +169,9 @@ namespace odb
     using odb::object_changed;
     using odb::result_not_cached;
     using odb::database_exception;
+
+    using odb::abstract_class;
+    using odb::no_type_info;
 
     using odb::unknown_schema;
   }

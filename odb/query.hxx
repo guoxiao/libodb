@@ -11,15 +11,26 @@
 
 namespace odb
 {
+  // Table alias for type T and alias tag Tag. The dummy third template
+  // argument is used to make the C++ compiler weed out duplicates.
+  //
+  // The alias_traits interface consists of two things: the table_name
+  // static variable containing the name and, in case of a derived type
+  // in a polymorphic hierarchy, the base_traits typedef. Note that the
+  // same interface is exposed by object_traits, which is used when
+  // we need straight tables instead of aliases.
   //
   //
+  template <typename T, typename Tag, bool dummy = true>
+  struct alias_traits;
+
   template <typename T>
   struct query_columns_base;
 
-  template <typename T, const char* table>
+  template <typename T, typename Alias>
   struct query_columns;
 
-  template <typename T, const char* table>
+  template <typename T, typename Alias>
   struct pointer_query_columns;
 
   // Object pointer syntax wrapper.

@@ -2,7 +2,7 @@
 // copyright : Copyright (c) 2009-2012 Code Synthesis Tools CC
 // license   : GNU GPL v2; see accompanying LICENSE file
 
-#include <cstring> // std::string
+#include <cstring> // std::strlen()
 
 namespace odb
 {
@@ -102,6 +102,28 @@ namespace odb
   persist (const typename object_traits<T>::pointer_type& pobj)
   {
     return persist_<T> (pobj);
+  }
+
+  template <typename T>
+  inline typename object_traits<T>::pointer_type database::
+  find (const typename object_traits<T>::id_type& id)
+  {
+    // T is always object_type.
+    //
+
+    // Compiler error pointing here? Perhaps the object doesn't have the
+    // default constructor?
+    //
+    return object_traits<T>::find (*this, id);
+  }
+
+  template <typename T>
+  inline bool database::
+  find (const typename object_traits<T>::id_type& id, T& obj)
+  {
+    // T is always object_type.
+    //
+    return object_traits<T>::find (*this, id, obj);
   }
 
   template <typename T>
@@ -218,6 +240,41 @@ namespace odb
 
   template <typename T>
   inline void database::
+  update (T& obj)
+  {
+    // T can be const T while object_type will always be T.
+    //
+    typedef typename odb::object_traits<T>::object_type object_type;
+    typedef odb::object_traits<object_type> object_traits;
+
+    // Compiler error pointing here? Perhaps the object is readonly or
+    // doesn't have an object id? Such objects cannot be updated.
+    //
+    object_traits::update (*this, obj);
+  }
+
+  template <typename T>
+  inline void database::
+  update_ (const typename object_traits<T>::pointer_type& pobj)
+  {
+    // T can be const T while object_type will always be T.
+    //
+    typedef typename odb::object_traits<T>::object_type object_type;
+    typedef odb::object_traits<object_type> object_traits;
+
+    typedef typename odb::object_traits<T>::pointer_type pointer_type;
+    typedef odb::pointer_traits<pointer_type> pointer_traits;
+
+    T& obj (pointer_traits::get_ref (pobj));
+
+    // Compiler error pointing here? Perhaps the object is readonly or
+    // doesn't have an object id? Such objects cannot be updated.
+    //
+    object_traits::update (*this, obj);
+  }
+
+  template <typename T>
+  inline void database::
   erase (T* p)
   {
     typedef typename object_traits<T>::pointer_type object_pointer;
@@ -295,6 +352,26 @@ namespace odb
   }
 
   template <typename T>
+  inline void database::
+  erase (const typename object_traits<T>::id_type& id)
+  {
+    // T is always object_type.
+    //
+    object_traits<T>::erase (*this, id);
+  }
+
+  template <typename T>
+  inline void database::
+  erase (T& obj)
+  {
+    // T can be const T while object_type will always be T.
+    //
+    typedef typename object_traits<T>::object_type object_type;
+
+    object_traits<object_type>::erase (*this, obj);
+  }
+
+  template <typename T>
   inline unsigned long long database::
   erase_query ()
   {
@@ -319,6 +396,15 @@ namespace odb
     // T is always object_type.
     //
     return erase_query<T> (odb::query<T> (q));
+  }
+
+  template <typename T>
+  inline unsigned long long database::
+  erase_query (const odb::query<T>& q)
+  {
+    // T is always object_type.
+    //
+    return object_traits<T>::erase_query (*this, q);
   }
 
   template <typename T>

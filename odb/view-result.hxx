@@ -12,6 +12,7 @@
 #include <utility>  // std::move
 
 #include <odb/forward.hxx>
+#include <odb/traits.hxx>
 #include <odb/result.hxx>
 #include <odb/pointer-traits.hxx>
 

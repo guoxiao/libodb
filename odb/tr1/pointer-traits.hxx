@@ -61,9 +61,23 @@ namespace odb
     }
 
     static unrestricted_pointer_type
-    cast (const pointer_type& p)
+    const_pointer_cast (const pointer_type& p)
     {
       return std::tr1::const_pointer_cast<unrestricted_element_type> (p);
+    }
+
+    template <typename T1>
+    static std::tr1::shared_ptr<T1>
+    static_pointer_cast (const pointer_type& p)
+    {
+      return std::tr1::static_pointer_cast<T1> (p);
+    }
+
+    template <typename T1>
+    static std::tr1::shared_ptr<T1>
+    dynamic_pointer_cast (const pointer_type& p)
+    {
+      return std::tr1::dynamic_pointer_cast<T1> (p);
     }
 
   public:

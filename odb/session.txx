@@ -28,7 +28,7 @@ namespace odb
     std::pair<typename object_map<T>::iterator, bool> r (om.insert (vt));
 
     // In what situation may we possibly attempt to reinsert the object?
-    // For example, when the user loads the same object in to different
+    // For example, when the user loads the same object in two different
     // instances (i.e., load into a pre-allocated object). In this case
     // we should probably update our entries accordingly.
     //

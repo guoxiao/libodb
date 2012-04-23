@@ -138,6 +138,8 @@ namespace odb
     typedef typename access::object_traits<T>::object_type object_type;
     typedef typename pointer_traits::const_pointer_type const_pointer_type;
     typedef const_pointer_type pointer_type;
+
+    static const bool polymorphic = access::object_traits<T>::polymorphic;
   };
 
   // Specializations for pointer types to allow the C++ compiler to

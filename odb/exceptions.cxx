@@ -94,6 +94,18 @@ namespace odb
     return "query result is not cached";
   }
 
+  const char* abstract_class::
+  what () const throw ()
+  {
+    return "database operation on instance of abstract class";
+  }
+
+  const char* no_type_info::
+  what () const throw ()
+  {
+    return "no type information";
+  }
+
   unknown_schema::
   unknown_schema (const std::string& name)
       : name_ (name)

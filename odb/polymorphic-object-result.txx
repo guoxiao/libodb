@@ -1,0 +1,76 @@
+// file      : odb/polymorphic-object-result.txx
+// copyright : Copyright (c) 2009-2012 Code Synthesis Tools CC
+// license   : GNU GPL v2; see accompanying LICENSE file
+
+#include <odb/cache-traits.hxx>
+#include <odb/exceptions.hxx>
+
+namespace odb
+{
+  //
+  // polymorphic_object_result_impl
+  //
+
+  template <typename T>
+  polymorphic_object_result_impl<T>::
+  ~polymorphic_object_result_impl ()
+  {
+  }
+
+  template <typename T>
+  void polymorphic_object_result_impl<T>::
+  load ()
+  {
+    typedef typename root_traits::pointer_type root_pointer_type;
+    typedef typename root_traits::pointer_traits root_pointer_traits;
+
+    // First check the session.
+    //
+    const id_type& id (load_id ());
+
+    root_pointer_type rp (
+      object_traits::pointer_cache_traits::find (database (), id));
+
+    if (!root_pointer_traits::null_ptr (rp))
+    {
+      // Check if the types match.
+      //
+      pointer_type p (
+        root_pointer_traits::template dynamic_pointer_cast<
+          object_type> (rp));
+
+      if (!pointer_traits::null_ptr (p))
+        current (p, false); // Pointer from cache should not be guarded.
+      else
+        // We have an object in session that has a different type
+        // compared to the one in the database.
+        //
+        throw object_not_persistent (); // @@ type_mismatch?
+    }
+    else
+      // load() is responsible for creating the object of a correct
+      // dynamic type and for object cache insertion.
+      //
+      load (0, false);
+  }
+
+  //
+  // object_result_iterator
+  //
+
+  template <typename T, typename ID>
+  void object_result_iterator<T, ID, true>::
+  load (object_type& obj)
+  {
+    if (res_->end ())
+      return;
+
+    typedef odb::object_traits<object_type> object_traits;
+
+    typename object_traits::reference_cache_traits::insert_guard ig (
+      object_traits::reference_cache_traits::insert (
+        res_->database (), res_->load_id (), obj));
+    res_->load (&obj, false);
+    ig.release ();
+  }
+}

@@ -47,7 +47,7 @@ namespace odb
     release () {p_ = 0;}
 
     void
-    reset (P p) {delete p_; p_ = p;}
+    reset (P p = 0) {delete p_; p_ = p;}
 
   private:
     P p_;
@@ -66,6 +66,9 @@ namespace odb
 
     void
     release () {}
+
+    void
+    reset () {}
 
     void
     reset (const P&) {}
@@ -111,12 +114,26 @@ namespace odb
       return p == 0;
     }
 
-    // Cast away constness.
+    // Casts.
     //
     static unrestricted_pointer_type
-    cast (pointer_type p)
+    const_pointer_cast (pointer_type p)
     {
       return const_cast<unrestricted_pointer_type> (p);
+    }
+
+    template <typename T1>
+    static T1*
+    static_pointer_cast (pointer_type p)
+    {
+      return static_cast<T1*> (p);
+    }
+
+    template <typename T1>
+    static T1*
+    dynamic_pointer_cast (pointer_type p)
+    {
+      return dynamic_cast<T1*> (p);
     }
 
   public:
@@ -174,8 +191,31 @@ namespace odb
       return p.get () == 0;
     }
 
-    // cast() is not provided since it transfers the ownership.
+    // const_pointer_cast() is not provided.
     //
+
+    // Note: transfers ownership.
+    //
+    template <typename T1>
+    static std::auto_ptr<T1>
+    static_pointer_cast (pointer_type& p)
+    {
+      return std::auto_ptr<T1> (static_cast<T1*> (p.release ()));
+    }
+
+    // Note: transfers ownership if successful.
+    //
+    template <typename T1>
+    static std::auto_ptr<T1>
+    dynamic_pointer_cast (pointer_type& p)
+    {
+      T1* p1 (dynamic_cast<T1*> (p.get ()));
+
+      if (p1 != 0)
+        p.release ();
+
+      return std::auto_ptr<T1> (p1);
+    }
 
   public:
     static void*
@@ -225,8 +265,31 @@ namespace odb
       return !p;
     }
 
-    // cast() is not provided since it transfers the ownership.
+    // const_pointer_cast() is not provided.
     //
+
+    // Note: transfers ownership.
+    //
+    template <typename T1>
+    static std::unique_ptr<T1>
+    static_pointer_cast (pointer_type& p)
+    {
+      return std::unique_ptr<T1> (static_cast<T1*> (p.release ()));
+    }
+
+    // Note: transfers ownership if successful.
+    //
+    template <typename T1>
+    static std::unique_ptr<T1>
+    dynamic_pointer_cast (pointer_type& p)
+    {
+      T1* p1 (dynamic_cast<T1*> (p.get ()));
+
+      if (p1 != 0)
+        p.release ();
+
+      return std::unique_ptr<T1> (p1);
+    }
 
   public:
     static void*
@@ -279,9 +342,23 @@ namespace odb
     }
 
     static unrestricted_pointer_type
-    cast (const pointer_type& p)
+    const_pointer_cast (const pointer_type& p)
     {
       return std::const_pointer_cast<unrestricted_element_type> (p);
+    }
+
+    template <typename T1>
+    static std::shared_ptr<T1>
+    static_pointer_cast (const pointer_type& p)
+    {
+      return std::static_pointer_cast<T1> (p);
+    }
+
+    template <typename T1>
+    static std::shared_ptr<T1>
+    dynamic_pointer_cast (const pointer_type& p)
+    {
+      return std::dynamic_pointer_cast<T1> (p);
     }
 
   public:
