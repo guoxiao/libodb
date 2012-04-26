@@ -9,8 +9,7 @@
 #include <windows.h>
 #include <process.h> // _beginthreadex, _endthreadex
 
-#include <memory> // std::auto_ptr
-
+#include <odb/details/unique-ptr.hxx>
 #include <odb/details/win32/thread.hxx>
 #include <odb/details/win32/exceptions.hxx>
 
@@ -60,7 +59,7 @@ namespace odb
     thread::
     thread (void* (*func) (void*), void* arg)
     {
-      std::auto_ptr<data> d (new data);
+      unique_ptr<data> d (new data);
       d->func = func;
       d->arg = arg;
       d->count = 2; // One for the thread and one for us.

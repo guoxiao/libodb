@@ -2,8 +2,7 @@
 // copyright : Copyright (c) 2009-2012 Code Synthesis Tools CC
 // license   : GNU GPL v2; see accompanying LICENSE file
 
-#include <memory> // std::auto_ptr
-
+#include <odb/details/unique-ptr.hxx>
 #include <odb/details/posix/thread.hxx>
 #include <odb/details/posix/exceptions.hxx>
 
@@ -33,7 +32,7 @@ namespace odb
     thread (void* (*func) (void*), void* arg)
         : detached_ (false)
     {
-      std::auto_ptr<thread_data> data (new thread_data);
+      unique_ptr<thread_data> data (new thread_data);
       data->func = func;
       data->arg = arg;
 

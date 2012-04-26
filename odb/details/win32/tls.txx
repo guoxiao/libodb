@@ -2,11 +2,8 @@
 // copyright : Copyright (c) 2009-2012 Code Synthesis Tools CC
 // license   : GNU GPL v2; see accompanying LICENSE file
 
-#include <memory> // std::auto_ptr
-
+#include <odb/details/unique-ptr.hxx>
 #include <odb/details/win32/exceptions.hxx>
-
-using namespace std;
 
 namespace odb
 {
@@ -29,7 +26,7 @@ namespace odb
       if (void* v = _get (key_))
         return *static_cast<T*> (v);
 
-      auto_ptr<T> p (new T);
+      unique_ptr<T> p (new T);
       _set (key_, p.get ());
 
       T& r (*p);
