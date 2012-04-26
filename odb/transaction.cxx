@@ -18,33 +18,30 @@ namespace odb
   static ODB_TLS_POINTER (transaction) current_transaction;
 
   transaction::
-  transaction (transaction_impl* impl, bool make_current)
-      : finalized_ (false), impl_ (impl)
+  ~transaction ()
   {
+    if (!finalized_)
+      try {rollback ();} catch (...) {}
+  }
+
+  void transaction::
+  reset (transaction_impl* impl, bool make_current)
+  {
+    details::unique_ptr<transaction_impl> i (impl);
+
+    if (!finalized_)
+      rollback ();
+
+    impl_.reset (i.release ());
+
     if (make_current && tls_get (current_transaction) != 0)
       throw already_in_transaction ();
 
     impl_->start ();
+    finalized_ = false;
 
     if (make_current)
       tls_set (current_transaction, this);
-  }
-
-  transaction::
-  ~transaction ()
-  {
-    if (!finalized_)
-    {
-      try
-      {
-        rollback ();
-      }
-      catch (...)
-      {
-      }
-    }
-
-    delete impl_;
   }
 
   bool transaction::

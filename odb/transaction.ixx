@@ -6,6 +6,13 @@
 
 namespace odb
 {
+  inline transaction::
+  transaction (transaction_impl* impl, bool make_current)
+      : finalized_ (true), impl_ (0)
+  {
+    reset (impl, make_current);
+  }
+
   inline transaction::database_type& transaction::
   database ()
   {

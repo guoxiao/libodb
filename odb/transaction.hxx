@@ -10,6 +10,7 @@
 #include <odb/forward.hxx>
 
 #include <odb/details/export.hxx>
+#include <odb/details/unique-ptr.hxx>
 
 namespace odb
 {
@@ -21,8 +22,8 @@ namespace odb
     typedef odb::database database_type;
     typedef odb::connection connection_type;
 
-    // If the second argument is false, then this transaction is not
-    // made the current transaction of the thread.
+    // If the second argument is false, then this transaction is not made
+    // the current transaction of the thread.
     //
     explicit
     transaction (transaction_impl*, bool make_current = true);
@@ -31,6 +32,14 @@ namespace odb
     // committed or rolled back), the destructor will roll it back.
     //
     ~transaction ();
+
+    // Unless the current transaction has already been finalized (explicitly
+    // committed or rolled back), reset will roll it back. If the second
+    // argument is false, then this transaction is not made the current
+    // transaction of the thread.
+    //
+    void
+    reset (transaction_impl*, bool make_current = true);
 
     void
     commit ();
@@ -96,7 +105,7 @@ namespace odb
 
   protected:
     bool finalized_;
-    transaction_impl* impl_;
+    details::unique_ptr<transaction_impl> impl_;
   };
 
   class LIBODB_EXPORT transaction_impl
