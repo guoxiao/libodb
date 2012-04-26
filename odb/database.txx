@@ -4,8 +4,7 @@
 
 #include <odb/exceptions.hxx>
 #include <odb/transaction.hxx>
-#include <odb/session.hxx>
-#include <odb/cache-traits.hxx>
+#include <odb/no-op-cache-traits.hxx>
 #include <odb/pointer-traits.hxx>
 
 namespace odb
