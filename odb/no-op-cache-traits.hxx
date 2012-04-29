@@ -47,21 +47,18 @@ namespace odb
   struct pointer_cache_type<P, E, O, pk_unique>
   {
     // If the pointer is unique, then casting it can transfer ownership.
-    // So return null pointer, which will be ignored down the chain.
+    // In this case we return NULL void*, which will be ignored down the
+    // chain.
     //
-    typedef typename object_traits<O>::pointer_type pointer_type;
-
-    static pointer_type
-    convert (const P&) {return pointer_type ();}
+    static void*
+    convert (const P&) {return 0;}
   };
 
   template <typename P, typename T>
   struct pointer_cache_type<P, T, T, pk_unique>
   {
-    typedef typename object_traits<T>::pointer_type pointer_type;
-
-    static pointer_type
-    convert (const P&) {return pointer_type ();}
+    static void*
+    convert (const P&) {return 0;}
   };
 
   // reference_cache_type
@@ -126,6 +123,11 @@ namespace odb
     static position_type
     insert (odb::database&, const pointer_type&) {return position_type ();}
 
+    // Special signature for unique pointers.
+    //
+    static position_type
+    insert (odb::database&, void*) {return position_type ();}
+
     static pointer_type
     find (odb::database&, const id_type&) {return pointer_type ();}
 
@@ -143,10 +145,12 @@ namespace odb
     struct position_type {};
 
     static position_type
-    insert (odb::database&, const pointer_type&)
-    {
-      return position_type ();
-    }
+    insert (odb::database&, const pointer_type&) {return position_type ();}
+
+    // Special signature for unique pointers.
+    //
+    static position_type
+    insert (odb::database&, void*) {return position_type ();}
   };
 
   // reference_cache_traits
@@ -183,10 +187,7 @@ namespace odb
     }
 
     static position_type
-    insert (odb::database&, object_type&)
-    {
-      return position_type ();
-    }
+    insert (odb::database&, object_type&) {return position_type ();}
   };
 
   template <typename T>
@@ -196,10 +197,7 @@ namespace odb
     struct position_type {};
 
     static position_type
-    insert (odb::database&, object_type&)
-    {
-      return position_type ();
-    }
+    insert (odb::database&, object_type&) {return position_type ();}
   };
 }
 
