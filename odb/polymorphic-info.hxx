@@ -7,6 +7,8 @@
 
 #include <odb/pre.hxx>
 
+#include <typeinfo>
+
 #include <odb/forward.hxx> // database
 #include <odb/traits.hxx>
 
