@@ -39,8 +39,10 @@ namespace odb
   template <typename R>
   struct polymorphic_concrete_info: polymorphic_abstract_info<R>
   {
+    // Have to use access::object_traits directly because of VC10.
+    //
     typedef R root_type;
-    typedef object_traits<root_type> root_traits;
+    typedef access::object_traits<root_type> root_traits;
     typedef typename root_traits::id_type id_type;
     typedef typename root_traits::pointer_type pointer_type;
     typedef typename root_traits::discriminator_type discriminator_type;

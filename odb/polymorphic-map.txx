@@ -43,7 +43,9 @@ namespace odb
   void polymorphic_entry_impl<R>::
   insert (const info_type& i)
   {
-    polymorphic_map<root_type>*& pm (root_traits::map);
+    // VC10 cannot grok constructor call syntax here.
+    //
+    polymorphic_map<root_type>*& pm = root_traits::map;
 
     if (pm == 0)
       pm = new polymorphic_map<root_type>;
@@ -58,7 +60,9 @@ namespace odb
   void polymorphic_entry_impl<R>::
   erase (const info_type& i)
   {
-    polymorphic_map<root_type>*& pm (root_traits::map);
+    // VC10 cannot grok constructor call syntax here.
+    //
+    polymorphic_map<root_type>*& pm = root_traits::map;
 
     pm->discriminator_map_.erase (&i.discriminator);
     pm->type_map_.erase (&i.type);
