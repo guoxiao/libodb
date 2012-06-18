@@ -14,12 +14,15 @@ namespace odb
   static ODB_TLS_POINTER (session) current_session;
 
   session::
-  session ()
+  session (bool make_current)
   {
-    if (has_current ())
-      throw already_in_session ();
+    if (make_current)
+    {
+      if (has_current ())
+        throw already_in_session ();
 
-    current (*this);
+      current (*this);
+    }
   }
 
   session::

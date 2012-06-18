@@ -25,11 +25,11 @@ namespace odb
   public:
     typedef odb::database database_type;
 
-    // Set the current thread's session to this session. If another
-    // session is already in effect, throw the already_in_session
-    // exception.
+    // If the make_current argument is true, then set the current thread's
+    // session to this session. If another session is already in effect,
+    // throw the already_in_session exception.
     //
-    session ();
+    session (bool make_current = true);
 
     // Reset the current thread's session if it is this session.
     //
