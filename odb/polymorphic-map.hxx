@@ -41,7 +41,7 @@ namespace odb
     typedef
     std::map<const std::type_info*,
              const info_type*,
-             details::type_info_comparator>
+             odb::details::type_info_comparator> // VC bug.
     type_map;
 
     struct discriminator_comparator
