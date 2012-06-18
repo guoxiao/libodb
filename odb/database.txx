@@ -115,8 +115,9 @@ namespace odb
   {
     // T is always object_type.
     //
-    if (!transaction::has_current ())
-      throw not_in_transaction ();
+
+    // We don't need to check for transaction here;
+    // object_traits::query () does this.
 
     result<T> r (query_<T, class_traits<T>::kind>::call (*this, q));
 

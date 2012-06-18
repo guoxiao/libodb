@@ -14,9 +14,6 @@ namespace odb
   unsigned long long database::
   execute (const char* st, std::size_t n)
   {
-    if (!transaction::has_current ())
-      throw not_in_transaction ();
-
     connection_type& c (transaction::current ().connection ());
     return c.execute (st, n);
   }
