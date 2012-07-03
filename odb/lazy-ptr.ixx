@@ -180,7 +180,9 @@ namespace odb
   {
     typedef typename object_traits<T>::object_type object_type;
 
-    return p_ ? object_traits<object_type>::id (*p_) : i_.object_id<O> ();
+    return p_
+      ? object_traits<object_type>::id (*p_)
+      : i_.template object_id<O> ();
   }
 
   template <class T>
@@ -460,7 +462,7 @@ namespace odb
 
     return p_.get () != 0
       ? object_traits<object_type>::id (*p_)
-      : i_.object_id<O> ();
+      : i_.template object_id<O> ();
   }
 
   template <class T>
@@ -768,7 +770,9 @@ namespace odb
   {
     typedef typename object_traits<T>::object_type object_type;
 
-    return p_ ? object_traits<object_type>::id (*p_) : i_.object_id<O> ();
+    return p_
+      ? object_traits<object_type>::id (*p_)
+      : i_.template object_id<O> ();
   }
 
   template <class T, class D>
@@ -1308,7 +1312,9 @@ namespace odb
   {
     typedef typename object_traits<T>::object_type object_type;
 
-    return p_ ? object_traits<object_type>::id (*p_) : i_.object_id<O> ();
+    return p_
+      ? object_traits<object_type>::id (*p_)
+      : i_.template object_id<O> ();
   }
 
   template <class T>
@@ -1601,7 +1607,9 @@ namespace odb
     typedef typename object_traits<T>::object_type object_type;
 
     std::shared_ptr<T> sp (p_.lock ());
-    return sp ? object_traits<object_type>::id (*sp) : i_.object_id<O> ();
+    return sp
+      ? object_traits<object_type>::id (*sp)
+      : i_.template object_id<O> ();
   }
 
   template <class T>

@@ -34,7 +34,7 @@ namespace odb
     static typename object_traits<O>::id_type
     object_id (const pointer_type& p)
     {
-      return p.object_id<O> ();
+      return p.template object_id<O> ();
     }
   };
 
@@ -59,7 +59,7 @@ namespace odb
     static typename object_traits<O>::id_type
     object_id (const pointer_type& p)
     {
-      return p.object_id<O> ();
+      return p.template object_id<O> ();
     }
   };
 
@@ -85,7 +85,7 @@ namespace odb
     static typename object_traits<O>::id_type
     object_id (const pointer_type& p)
     {
-      return p.object_id<O> ();
+      return p.template object_id<O> ();
     }
   };
 
@@ -110,7 +110,7 @@ namespace odb
     static typename object_traits<O>::id_type
     object_id (const pointer_type& p)
     {
-      return p.object_id<O> ();
+      return p.template object_id<O> ();
     }
   };
 

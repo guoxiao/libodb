@@ -329,7 +329,9 @@ namespace odb
     {
       typedef typename object_traits<T>::object_type object_type;
 
-      return p_ ? object_traits<object_type>::id (*p_) : i_.object_id<O> ();
+      return p_
+        ? object_traits<object_type>::id (*p_)
+        : i_.template object_id<O> ();
     }
 
     template <class T>
@@ -593,7 +595,9 @@ namespace odb
       typedef typename object_traits<T>::object_type object_type;
 
       std::tr1::shared_ptr<T> sp (p_.lock ());
-      return sp ? object_traits<object_type>::id (*sp) : i_.object_id<O> ();
+      return sp
+        ? object_traits<object_type>::id (*sp)
+        : i_.template object_id<O> ();
     }
 
     template <class T>

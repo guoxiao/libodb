@@ -38,7 +38,7 @@ namespace odb
       typedef typename object_traits<Y>::object_type object_type2;
 
       return i_.database () == r.i_.database () &&
-        object_id<object_type1> () == r.object_id<object_type2> ();
+        object_id<object_type1> () == r.template object_id<object_type2> ();
     }
 
     //
@@ -61,7 +61,8 @@ namespace odb
       else
       {
         if (i_)
-          return lazy_shared_ptr<T> (*i_.database (), i_.object_id<T> ());
+          return lazy_shared_ptr<T> (
+            *i_.database (), i_.template object_id<T> ());
         else
           return lazy_shared_ptr<T> ();
       }
