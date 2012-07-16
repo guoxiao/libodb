@@ -63,14 +63,14 @@ namespace odb
   struct query_selector_impl<T, class_object>
   {
     typedef typename object_traits<T>::query_base_type base_type;
-    typedef typename object_traits<T>::query_type type;
+    typedef query_columns<T, access::object_traits<T> > columns_type;
   };
 
   template <typename T>
   struct query_selector_impl<T, class_view>
   {
     typedef typename view_traits<T>::query_base_type base_type;
-    typedef typename view_traits<T>::query_type type;
+    typedef typename view_traits<T>::query_columns columns_type;
   };
 
   template <typename T>
