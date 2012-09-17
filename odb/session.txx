@@ -13,8 +13,6 @@ namespace odb
           const typename object_traits<T>::pointer_type& obj)
   {
     typedef odb::object_traits<T> object_traits;
-    typedef typename object_traits::pointer_type pointer_type;
-    typedef odb::pointer_traits<pointer_type> pointer_traits;
 
     type_map& tm (db_map_[&db]);
     details::shared_ptr<object_map_base>& pom (tm[&typeid (T)]);
