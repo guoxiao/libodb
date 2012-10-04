@@ -12,8 +12,16 @@
 #include <odb/forward.hxx>
 #include <odb/traits.hxx>
 
+#include <odb/details/shared-ptr.hxx>
+
 namespace odb
 {
+  struct result_impl: details::shared_base
+  {
+    virtual
+    ~result_impl ();
+  };
+
   template <typename T, class_kind kind>
   class result_base;
 

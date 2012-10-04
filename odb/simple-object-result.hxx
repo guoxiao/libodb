@@ -17,19 +17,14 @@
 #include <odb/pointer-traits.hxx>
 
 #include <odb/details/config.hxx>     // ODB_CXX11
-#include <odb/details/shared-ptr.hxx>
 
 namespace odb
 {
   // Implementation for non-polymorphic objects with object id.
   //
   template <typename T>
-  class object_result_impl: public details::shared_base
+  class object_result_impl: public result_impl
   {
-  public:
-    virtual
-    ~object_result_impl ();
-
   protected:
     typedef odb::database database_type;
 

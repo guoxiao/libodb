@@ -17,17 +17,12 @@
 #include <odb/pointer-traits.hxx>
 
 #include <odb/details/config.hxx>     // ODB_CXX11
-#include <odb/details/shared-ptr.hxx>
 
 namespace odb
 {
   template <typename T>
-  class view_result_impl: public details::shared_base
+  class view_result_impl: public result_impl
   {
-  public:
-    virtual
-    ~view_result_impl ();
-
   protected:
     friend class result<T>;
     friend class result<const T>;

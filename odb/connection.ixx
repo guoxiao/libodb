@@ -30,6 +30,20 @@ namespace odb
     return execute (st.c_str (), st.size ());
   }
 
+  template <typename T>
+  inline prepared_query<T> connection::
+  prepare_query (const char* n, const char* q)
+  {
+    return prepare_query<T> (n, query<T> (q));
+  }
+
+  template <typename T>
+  inline prepared_query<T> connection::
+  prepare_query (const char* n, const std::string& q)
+  {
+    return prepare_query<T> (n, query<T> (q));
+  }
+
   inline void connection::
   tracer (tracer_type& t)
   {

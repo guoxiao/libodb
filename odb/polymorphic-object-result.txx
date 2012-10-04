@@ -11,12 +11,6 @@ namespace odb
   //
 
   template <typename T>
-  polymorphic_object_result_impl<T>::
-  ~polymorphic_object_result_impl ()
-  {
-  }
-
-  template <typename T>
   void polymorphic_object_result_impl<T>::
   load ()
   {

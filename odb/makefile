@@ -10,6 +10,8 @@ exceptions.cxx     \
 database.cxx       \
 connection.cxx     \
 lazy-ptr-impl.cxx  \
+prepared-query.cxx \
+result.cxx         \
 schema-catalog.cxx \
 session.cxx        \
 statement.cxx      \

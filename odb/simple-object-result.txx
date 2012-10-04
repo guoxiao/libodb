@@ -9,12 +9,6 @@ namespace odb
   //
 
   template <typename T>
-  object_result_impl<T>::
-  ~object_result_impl ()
-  {
-  }
-
-  template <typename T>
   void object_result_impl<T>::
   load ()
   {

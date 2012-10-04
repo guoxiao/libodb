@@ -9,12 +9,6 @@ namespace odb
   //
 
   template <typename T>
-  view_result_impl<T>::
-  ~view_result_impl ()
-  {
-  }
-
-  template <typename T>
   typename view_result_impl<T>::pointer_type&
   view_result_impl<T>::
   current ()

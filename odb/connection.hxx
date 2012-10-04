@@ -11,6 +11,8 @@
 #include <cstddef> // std::size_t
 
 #include <odb/forward.hxx>
+#include <odb/query.hxx>
+#include <odb/prepared-query.hxx>
 
 #include <odb/details/export.hxx>
 #include <odb/details/shared-ptr.hxx>
@@ -49,6 +51,21 @@ namespace odb
 
     virtual unsigned long long
     execute (const char* statement, std::size_t length) = 0;
+
+    // Query preparation.
+    //
+  public:
+    template <typename T>
+    prepared_query<T>
+    prepare_query (const char* name, const char* q);
+
+    template <typename T>
+    prepared_query<T>
+    prepare_query (const char* name, const std::string& q);
+
+    template <typename T>
+    prepared_query<T>
+    prepare_query (const char* name, const query<T>& q);
 
     // SQL statement tracing.
     //
@@ -96,6 +113,7 @@ namespace odb
 }
 
 #include <odb/connection.ixx>
+#include <odb/connection.txx>
 
 #include <odb/post.hxx>
 

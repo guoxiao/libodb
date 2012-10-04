@@ -9,12 +9,6 @@ namespace odb
   //
 
   template <typename T>
-  no_id_object_result_impl<T>::
-  ~no_id_object_result_impl ()
-  {
-  }
-
-  template <typename T>
   void no_id_object_result_impl<T>::
   load ()
   {

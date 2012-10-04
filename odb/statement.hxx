@@ -7,7 +7,7 @@
 
 #include <odb/pre.hxx>
 
-#include <odb/forward.hxx>
+#include <odb/forward.hxx> // connection
 
 #include <odb/details/export.hxx>
 #include <odb/details/shared-ptr.hxx>
@@ -17,18 +17,23 @@ namespace odb
   class LIBODB_EXPORT statement: public details::shared_base
   {
   public:
+    typedef odb::connection connection_type;
+
+    virtual const char*
+    text () const = 0;
+
+    virtual connection_type&
+    connection ()  = 0;
+
     virtual
     ~statement () = 0;
 
+  protected:
     statement () {}
 
   private:
     statement (const statement&);
     statement& operator= (const statement&);
-
-  public:
-    virtual const char*
-    text () const = 0;
   };
 }
 
