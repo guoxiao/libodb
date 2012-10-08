@@ -7,9 +7,15 @@
 namespace odb
 {
   inline database::
-  database ()
-      : tracer_ (0)
+  database (database_id id)
+      : id_ (id), tracer_ (0)
   {
+  }
+
+  inline database_id database::
+  id () const
+  {
+    return id_;
   }
 
   inline connection_ptr database::
@@ -38,6 +44,13 @@ namespace odb
 
   template <typename T>
   inline typename object_traits<T>::id_type database::
+  persist (T& obj)
+  {
+    return persist_<T, id_default> (obj);
+  }
+
+  template <typename T>
+  inline typename object_traits<T>::id_type database::
   persist (T* p)
   {
     typedef typename object_traits<T>::pointer_type object_pointer;
@@ -48,7 +61,7 @@ namespace odb
     //
     const object_pointer& pobj (p);
 
-    return persist_<T> (pobj);
+    return persist_<T, id_default> (pobj);
   }
 
   template <typename T, template <typename> class P>
@@ -63,7 +76,7 @@ namespace odb
     //
     const object_pointer& pobj (p);
 
-    return persist_<T> (pobj);
+    return persist_<T, id_default> (pobj);
   }
 
   template <typename T, typename A1, template <typename, typename> class P>
@@ -78,7 +91,7 @@ namespace odb
     //
     const object_pointer& pobj (p);
 
-    return persist_<T> (pobj);
+    return persist_<T, id_default> (pobj);
   }
 
   template <typename T, template <typename> class P>
@@ -101,29 +114,42 @@ namespace odb
   inline typename object_traits<T>::id_type database::
   persist (const typename object_traits<T>::pointer_type& pobj)
   {
-    return persist_<T> (pobj);
+    return persist_<T, id_default> (pobj);
+  }
+
+  template <typename T>
+  inline typename object_traits<T>::pointer_type database::
+  load (const typename object_traits<T>::id_type& id)
+  {
+    return load_<T, id_default> (id);
+  }
+
+  template <typename T>
+  inline void database::
+  load (const typename object_traits<T>::id_type& id, T& obj)
+  {
+    return load_<T, id_default> (id, obj);
   }
 
   template <typename T>
   inline typename object_traits<T>::pointer_type database::
   find (const typename object_traits<T>::id_type& id)
   {
-    // T is always object_type.
-    //
-
-    // Compiler error pointing here? Perhaps the object doesn't have the
-    // default constructor?
-    //
-    return object_traits<T>::find (*this, id);
+    return find_<T, id_default> (id);
   }
 
   template <typename T>
   inline bool database::
   find (const typename object_traits<T>::id_type& id, T& obj)
   {
-    // T is always object_type.
-    //
-    return object_traits<T>::find (*this, id, obj);
+    return find_<T, id_default> (id, obj);
+  }
+
+  template <typename T>
+  inline void database::
+  reload (T& obj)
+  {
+    reload_<T, id_default> (obj);
   }
 
   template <typename T>
@@ -172,6 +198,13 @@ namespace odb
 
   template <typename T>
   inline void database::
+  update (T& obj)
+  {
+    update_<T, id_default> (obj);
+  }
+
+  template <typename T>
+  inline void database::
   update (T* p)
   {
     typedef typename object_traits<T>::pointer_type object_pointer;
@@ -182,7 +215,7 @@ namespace odb
     //
     const object_pointer& pobj (p);
 
-    update_<T> (pobj);
+    update_<T, id_default> (pobj);
   }
 
   template <typename T, template <typename> class P>
@@ -197,7 +230,7 @@ namespace odb
     //
     const object_pointer& pobj (p);
 
-    update_<T> (pobj);
+    update_<T, id_default> (pobj);
   }
 
   template <typename T, typename A1, template <typename, typename> class P>
@@ -212,7 +245,7 @@ namespace odb
     //
     const object_pointer& pobj (p);
 
-    update_<T> (pobj);
+    update_<T, id_default> (pobj);
   }
 
   template <typename T, template <typename> class P>
@@ -235,42 +268,21 @@ namespace odb
   inline void database::
   update (const typename object_traits<T>::pointer_type& pobj)
   {
-    update_<T> (pobj);
+    update_<T, id_default> (pobj);
   }
 
   template <typename T>
   inline void database::
-  update (T& obj)
+  erase (const typename object_traits<T>::id_type& id)
   {
-    // T can be const T while object_type will always be T.
-    //
-    typedef typename odb::object_traits<T>::object_type object_type;
-    typedef odb::object_traits<object_type> object_traits;
-
-    // Compiler error pointing here? Perhaps the object is readonly or
-    // doesn't have an object id? Such objects cannot be updated.
-    //
-    object_traits::update (*this, obj);
+    return erase_<T, id_default> (id);
   }
 
   template <typename T>
   inline void database::
-  update_ (const typename object_traits<T>::pointer_type& pobj)
+  erase (T& obj)
   {
-    // T can be const T while object_type will always be T.
-    //
-    typedef typename odb::object_traits<T>::object_type object_type;
-    typedef odb::object_traits<object_type> object_traits;
-
-    typedef typename odb::object_traits<T>::pointer_type pointer_type;
-    typedef odb::pointer_traits<pointer_type> pointer_traits;
-
-    T& obj (pointer_traits::get_ref (pobj));
-
-    // Compiler error pointing here? Perhaps the object is readonly or
-    // doesn't have an object id? Such objects cannot be updated.
-    //
-    object_traits::update (*this, obj);
+    return erase_<T, id_default> (obj);
   }
 
   template <typename T>
@@ -285,7 +297,7 @@ namespace odb
     //
     const object_pointer& pobj (p);
 
-    erase_<T> (pobj);
+    erase_<T, id_default> (pobj);
   }
 
   template <typename T, template <typename> class P>
@@ -300,7 +312,7 @@ namespace odb
     //
     const object_pointer& pobj (p);
 
-    erase_<T> (pobj);
+    erase_<T, id_default> (pobj);
   }
 
   template <typename T, typename A1, template <typename, typename> class P>
@@ -315,7 +327,7 @@ namespace odb
     //
     const object_pointer& pobj (p);
 
-    erase_<T> (pobj);
+    erase_<T, id_default> (pobj);
   }
 
   template <typename T, template <typename> class P>
@@ -338,37 +350,7 @@ namespace odb
   inline void database::
   erase (const typename object_traits<T>::pointer_type& pobj)
   {
-    erase_<T> (pobj);
-  }
-
-  template <typename T>
-  inline void database::
-  erase_ (const typename object_traits<T>::pointer_type& pobj)
-  {
-    typedef typename object_traits<T>::pointer_type pointer_type;
-    typedef pointer_traits<pointer_type> pointer_traits;
-
-    erase<T> (pointer_traits::get_ref (pobj));
-  }
-
-  template <typename T>
-  inline void database::
-  erase (const typename object_traits<T>::id_type& id)
-  {
-    // T is always object_type.
-    //
-    object_traits<T>::erase (*this, id);
-  }
-
-  template <typename T>
-  inline void database::
-  erase (T& obj)
-  {
-    // T can be const T while object_type will always be T.
-    //
-    typedef typename object_traits<T>::object_type object_type;
-
-    object_traits<object_type>::erase (*this, obj);
+    erase_<T, id_default> (pobj);
   }
 
   template <typename T>
@@ -404,7 +386,7 @@ namespace odb
   {
     // T is always object_type.
     //
-    return object_traits<T>::erase_query (*this, q);
+    return object_traits_impl<T, id_default>::erase_query (*this, q);
   }
 
   template <typename T>
@@ -428,6 +410,92 @@ namespace odb
     return query<T> (odb::query<T> (q), cache);
   }
 
+  // Implementations (i.e., the *_() functions).
+  //
+  template <typename T, database_id DB>
+  inline typename object_traits<T>::pointer_type database::
+  find_ (const typename object_traits<T>::id_type& id)
+  {
+    // T is always object_type.
+    //
+
+    // Compiler error pointing here? Perhaps the object doesn't have the
+    // default constructor?
+    //
+    return object_traits_impl<T, DB>::find (*this, id);
+  }
+
+  template <typename T, database_id DB>
+  inline bool database::
+  find_ (const typename object_traits<T>::id_type& id, T& obj)
+  {
+    // T is always object_type.
+    //
+    return object_traits_impl<T, DB>::find (*this, id, obj);
+  }
+
+  template <typename T, database_id DB>
+  inline void database::
+  update_ (T& obj)
+  {
+    // T can be const T while object_type will always be T.
+    //
+    typedef typename object_traits<T>::object_type object_type;
+
+    // Compiler error pointing here? Perhaps the object is readonly or
+    // doesn't have an object id? Such objects cannot be updated.
+    //
+    object_traits_impl<object_type, DB>::update (*this, obj);
+  }
+
+  template <typename T, database_id DB>
+  inline void database::
+  update_ (const typename object_traits<T>::pointer_type& pobj)
+  {
+    // T can be const T while object_type will always be T.
+    //
+    typedef typename object_traits<T>::object_type object_type;
+    typedef typename object_traits<T>::pointer_type pointer_type;
+
+    T& obj (pointer_traits<pointer_type>::get_ref (pobj));
+
+    // Compiler error pointing here? Perhaps the object is readonly or
+    // doesn't have an object id? Such objects cannot be updated.
+    //
+    object_traits_impl<object_type, DB>::update (*this, obj);
+  }
+
+  template <typename T, database_id DB>
+  inline void database::
+  erase_ (const typename object_traits<T>::id_type& id)
+  {
+    // T is always object_type.
+    //
+    object_traits_impl<T, DB>::erase (*this, id);
+  }
+
+  template <typename T, database_id DB>
+  inline void database::
+  erase_ (T& obj)
+  {
+    // T can be const T while object_type will always be T.
+    //
+    typedef typename object_traits<T>::object_type object_type;
+
+    object_traits_impl<object_type, DB>::erase (*this, obj);
+  }
+
+  template <typename T, database_id DB>
+  inline void database::
+  erase_ (const typename object_traits<T>::pointer_type& pobj)
+  {
+    typedef typename object_traits<T>::pointer_type pointer_type;
+
+    erase_<T, DB> (pointer_traits<pointer_type>::get_ref (pobj));
+  }
+
+  // execute()
+  //
   inline unsigned long long database::
   execute (const char* statement)
   {

@@ -35,8 +35,9 @@ namespace odb
   struct LIBODB_EXPORT schema_catalog_entry
   {
     schema_catalog_entry (
+      database_id id,
       const char* name,
-      bool (*entry) (database&, unsigned short pass, bool drop));
+      bool (*create_function) (database&, unsigned short pass, bool drop));
   };
 }
 

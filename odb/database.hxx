@@ -63,7 +63,7 @@ namespace odb
     typename object_traits<T>::id_type
     persist (const typename object_traits<T>::pointer_type& obj_ptr);
 
-    // Throw object_not_persistent if not found.
+    // Load an object. Throw object_not_persistent if not found.
     //
     template <typename T>
     typename object_traits<T>::pointer_type
@@ -73,6 +73,8 @@ namespace odb
     void
     load (const typename object_traits<T>::id_type& id, T& object);
 
+    // Reload an object.
+    //
     template <typename T>
     void
     reload (T& object);
@@ -101,7 +103,7 @@ namespace odb
     void
     reload (const typename object_traits<T>::pointer_type& obj_ptr);
 
-    // Return NULL/false if not found.
+    // Loan an object if found. Return NULL/false if not found.
     //
     template <typename T>
     typename object_traits<T>::pointer_type
@@ -250,8 +252,14 @@ namespace odb
     tracer_type*
     tracer () const;
 
+    // Database id.
+    //
+  public:
+    database_id
+    id () const;
+
   protected:
-    database ();
+    database (database_id);
 
   private:
     database (const database&);
@@ -264,22 +272,61 @@ namespace odb
     connection_ () = 0;
 
   protected:
-    template <typename T>
+    template <typename T, database_id DB>
+    typename object_traits<T>::id_type
+    persist_ (T&);
+
+    template <typename T, database_id DB>
     typename object_traits<T>::id_type
     persist_ (const typename object_traits<T>::pointer_type&);
 
-    template <typename T>
+    template <typename T, database_id DB>
+    typename object_traits<T>::pointer_type
+    load_ (const typename object_traits<T>::id_type&);
+
+    template <typename T, database_id DB>
+    void
+    load_ (const typename object_traits<T>::id_type&, T&);
+
+    template <typename T, database_id DB>
+    void
+    reload_ (T&);
+
+    template <typename T, database_id DB>
+    typename object_traits<T>::pointer_type
+    find_ (const typename object_traits<T>::id_type&);
+
+    template <typename T, database_id DB>
+    bool
+    find_ (const typename object_traits<T>::id_type&, T&);
+
+    template <typename T, database_id DB>
+    void
+    update_ (T&);
+
+    template <typename T, database_id DB>
     void
     update_ (const typename object_traits<T>::pointer_type&);
 
-    template <typename T>
+    template <typename T, database_id DB>
+    void
+    erase_ (const typename object_traits<T>::id_type&);
+
+    template <typename T, database_id DB>
+    void
+    erase_ (T&);
+
+    template <typename T, database_id DB>
     void
     erase_ (const typename object_traits<T>::pointer_type&);
 
-    template <typename T, class_kind kind>
+    template <typename T,
+              database_id DB,
+              class_kind kind = class_traits<T>::kind>
     struct query_;
 
   protected:
+    database_id id_;
     tracer_type* tracer_;
   };
 }

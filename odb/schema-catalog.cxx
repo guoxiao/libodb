@@ -5,6 +5,7 @@
 #include <map>
 #include <vector>
 
+#include <odb/database.hxx>
 #include <odb/exceptions.hxx>
 #include <odb/schema-catalog.hxx>
 #include <odb/schema-catalog-impl.hxx>
@@ -19,8 +20,9 @@ namespace odb
   // for example, for foreign key generation.
   //
   typedef bool (*create_function) (database&, unsigned short pass, bool drop);
+  typedef pair<database_id, string> key;
   typedef vector<create_function> create_functions;
-  struct schema_catalog_impl: map<string, create_functions> {};
+  struct schema_catalog_impl: map<key, create_functions> {};
 
   schema_catalog_impl* schema_catalog_init::catalog = 0;
   size_t schema_catalog_init::count = 0;
@@ -29,8 +31,7 @@ namespace odb
   create_schema (database& db, const string& name)
   {
     const schema_catalog_impl& c (*schema_catalog_init::catalog);
-
-    schema_catalog_impl::const_iterator i (c.find (name));
+    schema_catalog_impl::const_iterator i (c.find (key (db.id (), name)));
 
     if (i == c.end ())
       throw unknown_schema (name);
@@ -94,9 +95,9 @@ namespace odb
   // schema_catalog_entry
   //
   schema_catalog_entry::
-  schema_catalog_entry (const char* name, create_function entry)
+  schema_catalog_entry (database_id id, const char* name, create_function cf)
   {
     schema_catalog_impl& c (*schema_catalog_init::catalog);
-    c[name].push_back (entry);
+    c[key(id, name)].push_back (cf);
   }
 }

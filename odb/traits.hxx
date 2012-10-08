@@ -99,17 +99,16 @@ namespace odb
   //
 
   template <typename T>
+  //
+  // If a C++ compiler issues an error pointing to this struct and
+  // saying that it is incomplete, then you are most likely trying to
+  // perform a database operation on a C++ type that is not a persistent
+  // object. Or you forgot to include the corresponding -odb.hxx file.
+  //
   struct object_traits:
     access::object_traits<T>,
     access::object_factory<T, typename access::object_traits<T>::pointer_type>
   {
-    //
-    // If a C++ compiler issues an error pointing to this struct and
-    // saying that it is incomplete, then you are most likely trying to
-    // perform a database operation on a C++ type that is not a persistent
-    // object. Or you forgot to include the corresponding -odb.hxx file.
-    //
-
     typedef
     odb::pointer_traits<typename access::object_traits<T>::pointer_type>
     pointer_traits;
@@ -160,27 +159,47 @@ namespace odb
   };
 
   template <typename T, template <typename> class P>
-  struct object_traits< P<T> >
+  struct object_traits<P<T> >
   {
     struct id_type {};
   };
 
   template <typename T, typename A1, template <typename, typename> class P>
-  struct object_traits< P<T, A1> >
+  struct object_traits<P<T, A1> >
   {
     struct id_type {};
   };
 
   template <typename T, template <typename> class P>
-  struct object_traits< const P<T> >
+  struct object_traits<const P<T> >
   {
     struct id_type {};
   };
 
   template <typename T, typename A1, template <typename, typename> class P>
-  struct object_traits< const P<T, A1> >
+  struct object_traits<const P<T, A1> >
   {
     struct id_type {};
+  };
+
+  template <typename T, database_id DB>
+  //
+  // If a C++ compiler issues an error pointing to this struct and
+  // saying that it is incomplete, then you are most likely trying to
+  // perform a database operation on a C++ type that is not a persistent
+  // object. Or you forgot to include the corresponding -odb.hxx file.
+  //
+  struct object_traits_impl:
+    access::object_traits_impl<T, DB>,
+    access::object_factory<T, typename access::object_traits<T>::pointer_type>
+  {
+    typedef
+    odb::pointer_traits<typename access::object_traits<T>::pointer_type>
+    pointer_traits;
+
+    typedef typename access::object_traits<T>::object_type object_type;
+    typedef typename access::object_traits<T>::pointer_type pointer_type;
+    typedef typename pointer_traits::const_pointer_type const_pointer_type;
   };
 
   //
@@ -188,17 +207,16 @@ namespace odb
   //
 
   template <typename T>
+  //
+  // If a C++ compiler issues an error pointing to this struct and
+  // saying that it is incomplete, then you are most likely trying to
+  // perform a database operation on a C++ type that is not a view
+  // Or you forgot to include the corresponding -odb.hxx file.
+  //
   struct view_traits:
     access::view_traits<T>,
     access::view_factory<T, typename access::view_traits<T>::pointer_type>
   {
-    //
-    // If a C++ compiler issues an error pointing to this struct and
-    // saying that it is incomplete, then you are most likely trying to
-    // perform a database operation on a C++ type that is not a view
-    // Or you forgot to include the corresponding -odb.hxx file.
-    //
-
     typedef
     odb::pointer_traits<typename access::view_traits<T>::pointer_type>
     pointer_traits;
@@ -227,12 +245,31 @@ namespace odb
     typedef const_pointer_type pointer_type;
   };
 
+  template <typename T, database_id DB>
+  //
+  // If a C++ compiler issues an error pointing to this struct and
+  // saying that it is incomplete, then you are most likely trying to
+  // perform a database operation on a C++ type that is not a view
+  // Or you forgot to include the corresponding -odb.hxx file.
+  //
+  struct view_traits_impl:
+    access::view_traits_impl<T, DB>,
+    access::view_factory<T, typename access::view_traits<T>::pointer_type>
+  {
+    typedef
+    odb::pointer_traits<typename access::view_traits<T>::pointer_type>
+    pointer_traits;
+
+    typedef typename access::view_traits<T>::view_type view_type;
+    typedef typename access::view_traits<T>::pointer_type pointer_type;
+  };
+
   //
   // composite_value_traits
   //
 
-  template <typename T>
-  struct composite_value_traits: access::composite_value_traits<T>
+  template <typename T, database_id DB>
+  struct composite_value_traits: access::composite_value_traits<T, DB>
   {
   };
 }

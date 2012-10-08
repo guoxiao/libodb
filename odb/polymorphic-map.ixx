@@ -4,17 +4,17 @@
 
 namespace odb
 {
-  template <typename T>
-  inline polymorphic_entry<T>::
+  template <typename T, database_id DB>
+  inline polymorphic_entry<T, DB>::
   polymorphic_entry ()
   {
-    polymorphic_entry_impl<root_type>::insert (object_traits::info);
+    polymorphic_entry_impl<root_type, DB>::insert (object_traits::info);
   }
 
-  template <typename T>
-    inline polymorphic_entry<T>::
+  template <typename T, database_id DB>
+  inline polymorphic_entry<T, DB>::
   ~polymorphic_entry ()
   {
-      polymorphic_entry_impl<root_type>::erase (object_traits::info);
+    polymorphic_entry_impl<root_type, DB>::erase (object_traits::info);
   }
 }

@@ -7,6 +7,8 @@
 
 #include <odb/pre.hxx>
 
+#include <cstddef> // std::size_t
+
 #include <odb/details/export.hxx>
 #include <odb/details/shared-ptr-fwd.hxx>
 
@@ -42,11 +44,33 @@ namespace odb
   // Implementation details.
   //
 
+  // Keep real databases first since their enumerators are used as array
+  // indexes
+  //
+  enum database_id
+  {
+    id_mysql,
+    id_sqlite,
+    id_pgsql,
+    id_oracle,
+    id_mssql,
+    id_default
+  };
+
+  // Number of real databases in the database_id enum.
+  //
+  const std::size_t database_count = id_default;
+
+  // Traits.
+  //
   class access
   {
   public:
     template <typename T>
     class object_traits;
+
+    template <typename T, database_id DB>
+    class object_traits_impl;
 
     template <typename T, typename P>
     class object_factory;
@@ -54,13 +78,16 @@ namespace odb
     template <typename T>
     class view_traits;
 
+    template <typename T, database_id DB>
+    class view_traits_impl;
+
     template <typename T, typename P>
     class view_factory;
 
     template <typename T, typename P>
     class pointer_factory;
 
-    template <typename T>
+    template <typename T, database_id DB>
     class composite_value_traits;
 
     template <typename C>
@@ -70,8 +97,14 @@ namespace odb
   template <typename T>
   struct object_traits;
 
+  template <typename T, database_id DB>
+  struct object_traits_impl;
+
   template <typename T>
   struct view_traits;
+
+  template <typename T, database_id DB>
+  struct view_traits_impl;
 
   // Cache traits.
   //

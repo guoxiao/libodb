@@ -86,14 +86,12 @@ namespace odb
 
   // Register concrete type T in the root's map.
   //
-  template <typename T>
+  template <typename T, database_id DB>
   struct polymorphic_entry
   {
     typedef T object_type;
-    typedef odb::object_traits<object_type> object_traits;
-
+    typedef object_traits_impl<object_type, DB> object_traits;
     typedef typename object_traits::root_type root_type;
-    typedef odb::object_traits<root_type> root_traits;
 
     polymorphic_entry ();
     ~polymorphic_entry ();

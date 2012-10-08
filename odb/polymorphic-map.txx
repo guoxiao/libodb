@@ -39,8 +39,8 @@ namespace odb
   // polymorphic_entry_impl
   //
 
-  template <typename R>
-  void polymorphic_entry_impl<R>::
+  template <typename R, database_id DB>
+  void polymorphic_entry_impl<R, DB>::
   insert (const info_type& i)
   {
     // VC10 cannot grok constructor call syntax here.
@@ -56,8 +56,8 @@ namespace odb
     pm->discriminator_map_[&i.discriminator] = &i;
   }
 
-  template <typename R>
-  void polymorphic_entry_impl<R>::
+  template <typename R, database_id DB>
+  void polymorphic_entry_impl<R, DB>::
   erase (const info_type& i)
   {
     // VC10 cannot grok constructor call syntax here.

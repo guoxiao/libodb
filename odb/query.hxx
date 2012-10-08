@@ -7,6 +7,7 @@
 
 #include <odb/pre.hxx>
 
+#include <odb/forward.hxx>
 #include <odb/traits.hxx>
 
 namespace odb
@@ -21,16 +22,16 @@ namespace odb
   // we need straight tables instead of aliases.
   //
   //
-  template <typename T, typename Tag, bool dummy = true>
+  template <typename T, database_id DB, typename Tag, bool dummy = true>
   struct alias_traits;
 
-  template <typename T>
+  template <typename T, database_id DB>
   struct query_columns_base;
 
-  template <typename T, typename Alias>
+  template <typename T, database_id DB, typename Alias>
   struct query_columns;
 
-  template <typename T, typename Alias>
+  template <typename T, database_id DB, typename Alias>
   struct pointer_query_columns;
 
   // Object pointer syntax wrapper.
@@ -56,29 +57,33 @@ namespace odb
   // we have to use the impl trick below instead of simply having kind
   // as a second template argument with a default value.
   //
-  template <typename T, class_kind kind>
+  template <typename T, database_id DB, class_kind kind>
   struct query_selector_impl;
 
-  template <typename T>
-  struct query_selector_impl<T, class_object>
+  template <typename T, database_id DB>
+  struct query_selector_impl<T, DB, class_object>
   {
-    typedef typename object_traits<T>::query_base_type base_type;
-    typedef query_columns<T, access::object_traits<T> > columns_type;
+    typedef typename object_traits_impl<T, DB>::query_base_type base_type;
+
+    typedef
+    query_columns<T, DB, access::object_traits_impl<T, DB> >
+    columns_type;
   };
 
-  template <typename T>
-  struct query_selector_impl<T, class_view>
+  template <typename T, database_id DB>
+  struct query_selector_impl<T, DB, class_view>
   {
-    typedef typename view_traits<T>::query_base_type base_type;
-    typedef typename view_traits<T>::query_columns columns_type;
+    typedef typename view_traits_impl<T, DB>::query_base_type base_type;
+    typedef typename view_traits_impl<T, DB>::query_columns columns_type;
   };
 
-  template <typename T>
-  struct query_selector: query_selector_impl<T, class_traits<T>::kind>
+  template <typename T, database_id DB>
+  struct query_selector: query_selector_impl<T, DB, class_traits<T>::kind>
   {
   };
 
-  template <typename T, typename Q = typename query_selector<T>::base_type>
+  template <typename T,
+            typename B = typename query_selector<T, id_default>::base_type>
   class query;
 
   namespace core

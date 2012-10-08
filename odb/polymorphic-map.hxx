@@ -66,11 +66,11 @@ namespace odb
     discriminator_map discriminator_map_;
   };
 
-  template <typename R>
+  template <typename R, database_id DB>
   struct polymorphic_entry_impl
   {
     typedef R root_type;
-    typedef object_traits<root_type> root_traits;
+    typedef object_traits_impl<root_type, DB> root_traits;
     typedef polymorphic_concrete_info<root_type> info_type;
 
     static void
@@ -103,18 +103,18 @@ namespace odb
     return r;
   }
 
-  template <typename T, typename R>
+  template <typename T, database_id DB, typename R>
   struct dispatch_load
   {
     static void
     call (database& db, T& obj, std::size_t d)
     {
-      object_traits<T>::load_ (db, obj, d);
+      object_traits_impl<T, DB>::load_ (db, obj, d);
     }
   };
 
-  template <typename R>
-  struct dispatch_load<R, R>
+  template <typename R, database_id DB>
+  struct dispatch_load<R, DB, R>
   {
     static void
     call (database&, R&, std::size_t)
@@ -123,7 +123,7 @@ namespace odb
     }
   };
 
-  template <typename T, bool auto_id>
+  template <typename T, database_id DB, bool auto_id>
   struct dispatch_persist
   {
     static void
@@ -131,23 +131,24 @@ namespace odb
     {
       // Top-level call, no dynamic type checking.
       //
-      object_traits<T>::persist (db, obj, true, false);
+      object_traits_impl<T, DB>::persist (db, obj, true, false);
     }
   };
 
-  template <typename T>
-  struct dispatch_persist<T, true>
+  template <typename T, database_id DB>
+  struct dispatch_persist<T, DB, true>
   {
     static void
     call (database& db, const T& obj)
     {
       // Top-level call, no dynamic type checking.
       //
-      object_traits<T>::persist (db, const_cast<T&> (obj), true, false);
+      object_traits_impl<T, DB>::persist (
+        db, const_cast<T&> (obj), true, false);
     }
   };
 
-  template <typename T>
+  template <typename T, database_id DB>
   bool dispatch_impl (
     typename polymorphic_concrete_info<
       typename object_traits<T>::root_type>::call_type c,
@@ -155,9 +156,9 @@ namespace odb
     const typename object_traits<T>::root_type* pobj,
     const void* arg)
   {
-    typedef object_traits<T> derived_traits;
+    typedef object_traits_impl<T, DB> derived_traits;
     typedef typename derived_traits::root_type root_type;
-    typedef object_traits<root_type> root_traits;
+    typedef object_traits_impl<root_type, DB> root_traits;
     typedef typename root_traits::id_type id_type;
     typedef polymorphic_concrete_info<root_type> info_type;
 
@@ -175,7 +176,7 @@ namespace odb
       }
     case info_type::call_persist:
       {
-        dispatch_persist<T, root_traits::auto_id>::call (
+        dispatch_persist<T, DB, root_traits::auto_id>::call (
           db,
           *static_cast<const T*> (pobj));
         break;
@@ -208,7 +209,7 @@ namespace odb
       }
     case info_type::call_load:
       {
-        dispatch_load<T, root_type>::call (
+        dispatch_load<T, DB, root_type>::call (
           db,
           *const_cast<T*> (static_cast<const T*> (pobj)),
           *static_cast<const std::size_t*> (arg));
