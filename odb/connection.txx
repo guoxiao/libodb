@@ -10,6 +10,7 @@ namespace odb
   {
     //@@ Views. Inline?
     //
-    return prepared_query<T> (object_traits<T>::prepare_query (*this, n, q));
+    return prepared_query<T> (
+      object_traits_impl<T, id_default>::prepare_query (*this, n, q));
   }
 }
