@@ -10,6 +10,7 @@
 #include <odb/forward.hxx>
 #include <odb/traits.hxx>
 #include <odb/result.hxx>
+#include <odb/statement.hxx>
 
 #include <odb/details/export.hxx>
 #include <odb/details/shared-ptr.hxx>
@@ -22,12 +23,19 @@ namespace odb
     ~prepared_query_impl ();
 
     const char* name;
+    details::shared_ptr<statement> stmt;
     details::shared_ptr<result_impl> (*execute) (prepared_query_impl&);
   };
 
   template <typename T>
   struct prepared_query
   {
+    prepared_query () {}
+
+    explicit
+    prepared_query (details::shared_ptr<prepared_query_impl> impl)
+        : impl_ (impl) {}
+
     result<T>
     execute (bool cache = true)
     {
@@ -46,11 +54,29 @@ namespace odb
       return r;
     }
 
-    explicit
-    prepared_query (details::shared_ptr<prepared_query_impl> impl)
-        : impl_ (impl) {}
+    const char*
+    name () const
+    {
+      return impl_->name;
+    }
+
+    typedef odb::statement statement_type;
+
+    statement_type&
+    statement () const
+    {
+      return *impl_->stmt;
+    }
+
+    typedef details::shared_ptr<prepared_query_impl>
+    prepared_query::*unspecified_bool_type;
+    operator unspecified_bool_type () const
+    {
+      return impl_ ? &prepared_query::impl_ : 0;
+    }
 
   private:
+    friend class connection;
     details::shared_ptr<prepared_query_impl> impl_;
   };
 

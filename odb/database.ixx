@@ -3,6 +3,9 @@
 // license   : GNU GPL v2; see accompanying LICENSE file
 
 #include <cstring> // std::strlen()
+#include <utility> // std::move
+
+#include <odb/transaction.hxx>
 
 namespace odb
 {
@@ -22,6 +25,30 @@ namespace odb
   connection ()
   {
     return connection_ptr (connection_ ());
+  }
+
+  inline void database::
+  query_factory (const char* name, query_factory_type f)
+  {
+    if (f)
+#ifdef ODB_CXX11
+      query_factory_map_[name] = std::move (f);
+#else
+      query_factory_map_[name] = f;
+#endif
+    else
+      query_factory_map_.erase (name);
+  }
+
+  inline database::query_factory_type database::
+  lookup_query_factory (const char* name) const
+  {
+    query_factory_map::const_iterator i (query_factory_map_.find (name));
+
+    if (i == query_factory_map_.end ())
+      i = query_factory_map_.find (""); // Wildcard factory.
+
+    return i != query_factory_map_.end () ? i->second : 0;
   }
 
   inline void database::
@@ -408,6 +435,70 @@ namespace odb
   query (const std::string& q, bool cache)
   {
     return query<T> (odb::query<T> (q), cache);
+  }
+
+  template <typename T>
+  inline prepared_query<T> database::
+  prepare_query (const char* n, const char* q)
+  {
+    return prepare_query<T> (n, odb::query<T> (q));
+  }
+
+  template <typename T>
+  inline prepared_query<T> database::
+  prepare_query (const char* n, const std::string& q)
+  {
+    return prepare_query<T> (n, odb::query<T> (q));
+  }
+
+  template <typename T>
+  inline prepared_query<T> database::
+  prepare_query (const char* n, const odb::query<T>& q)
+  {
+    connection_type& c (transaction::current ().connection ());
+    return c.prepare_query (n, q);
+  }
+
+  template <typename T>
+  inline void database::
+  cache_query (const prepared_query<T>& pq)
+  {
+    connection_type& c (transaction::current ().connection ());
+    c.cache_query (pq);
+  }
+
+  template <typename T, typename P>
+  inline void database::
+  cache_query (const prepared_query<T>& pq, std::auto_ptr<P> params)
+  {
+    connection_type& c (transaction::current ().connection ());
+    c.cache_query (pq, params);
+  }
+
+#ifdef ODB_CXX11
+  template <typename T, typename P>
+  inline void database::
+  cache_query (const prepared_query<T>& pq, std::unique_ptr<P> params)
+  {
+    connection_type& c (transaction::current ().connection ());
+    c.cache_query (pq, std::move (params));
+  }
+#endif
+
+  template <typename T>
+  inline prepared_query<T> database::
+  lookup_query (const char* name) const
+  {
+    connection_type& c (transaction::current ().connection ());
+    return c.lookup_query<T> (name);
+  }
+
+  template <typename T, typename P>
+  inline prepared_query<T> database::
+  lookup_query (const char* name, P*& params) const
+  {
+    connection_type& c (transaction::current ().connection ());
+    return c.lookup_query<T, P> (name, params);
   }
 
   // Implementations (i.e., the *_() functions).

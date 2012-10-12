@@ -16,6 +16,10 @@ namespace odb
 {
   class LIBODB_EXPORT statement: public details::shared_base
   {
+  private:
+    statement (const statement&);
+    statement& operator= (const statement&);
+
   public:
     typedef odb::connection connection_type;
 
@@ -28,12 +32,22 @@ namespace odb
     virtual
     ~statement () = 0;
 
-  protected:
-    statement () {}
+    // Statement caching status.
+    //
+  public:
+    bool
+    cached () const
+    {
+      return cached_;
+    }
 
-  private:
-    statement (const statement&);
-    statement& operator= (const statement&);
+    virtual void
+    cached (bool);
+
+  protected:
+    statement (): cached_ (false) {}
+
+    bool cached_;
   };
 }
 

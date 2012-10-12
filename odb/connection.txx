@@ -4,13 +4,42 @@
 
 namespace odb
 {
-  template <typename T>
-  prepared_query<T> connection::
-  prepare_query (const char* n, const query<T>& q)
+  template <typename T, database_id DB>
+  struct connection::query_<T, DB, class_object>
   {
-    //@@ Views. Inline?
-    //
-    return prepared_query<T> (
-      object_traits_impl<T, id_default>::prepare_query (*this, n, q));
+    template <typename Q>
+    static prepared_query<T>
+    call (connection& c, const char* n, const Q& q)
+    {
+      // C++ compiler complaining there is no prepare_query()? Perhaps
+      // you forgot to specify --generate-prepared when compiling your
+      // persistent classes.
+      //
+      return prepared_query<T> (
+        object_traits_impl<T, DB>::prepare_query (c, n, q));
+    }
+  };
+
+  template <typename T, database_id DB>
+  struct connection::query_<T, DB, class_view>
+  {
+    template <typename Q>
+    static prepared_query<T>
+    call (connection& c, const char* n, const Q& q)
+    {
+      // C++ compiler complaining there is no prepare_query()? Perhaps
+      // you forgot to specify --generate-prepared when compiling your
+      // views.
+      //
+      return prepared_query<T> (
+        view_traits_impl<T, DB>::prepare_query (c, n, q));
+    }
+  };
+
+  template <typename P>
+  void connection::
+  params_deleter (void* p)
+  {
+    delete static_cast<P*> (p);
   }
 }

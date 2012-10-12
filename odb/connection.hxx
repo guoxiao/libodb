@@ -7,14 +7,20 @@
 
 #include <odb/pre.hxx>
 
+#include <map>
 #include <string>
-#include <cstddef> // std::size_t
+#include <memory>   // std::auto_ptr, std::unique_ptr
+#include <cstddef>  // std::size_t
+#include <typeinfo>
 
 #include <odb/forward.hxx>
+#include <odb/traits.hxx>
 #include <odb/query.hxx>
 #include <odb/prepared-query.hxx>
 
+#include <odb/details/config.hxx> // ODB_CXX11
 #include <odb/details/export.hxx>
+#include <odb/details/c-string.hxx>
 #include <odb/details/shared-ptr.hxx>
 
 namespace odb
@@ -57,15 +63,37 @@ namespace odb
   public:
     template <typename T>
     prepared_query<T>
-    prepare_query (const char* name, const char* q);
+    prepare_query (const char* name, const char*);
 
     template <typename T>
     prepared_query<T>
-    prepare_query (const char* name, const std::string& q);
+    prepare_query (const char* name, const std::string&);
 
     template <typename T>
     prepared_query<T>
-    prepare_query (const char* name, const query<T>& q);
+    prepare_query (const char* name, const query<T>&);
+
+    template <typename T>
+    void
+    cache_query (const prepared_query<T>&);
+
+    template <typename T, typename P>
+    void
+    cache_query (const prepared_query<T>&, std::auto_ptr<P> params);
+
+#ifdef ODB_CXX11
+    template <typename T, typename P>
+    void
+    cache_query (const prepared_query<T>&, std::unique_ptr<P> params);
+#endif
+
+    template <typename T>
+    prepared_query<T>
+    lookup_query (const char* name) const;
+
+    template <typename T, typename P>
+    prepared_query<T>
+    lookup_query (const char* name, P*& params) const;
 
     // SQL statement tracing.
     //
@@ -98,9 +126,49 @@ namespace odb
   protected:
     connection (database_type&);
 
+    template <typename T,
+              database_id DB,
+              class_kind kind = class_traits<T>::kind>
+    struct query_;
+
+    virtual void
+    cache_query_ (details::shared_ptr<prepared_query_impl> pq,
+                  const std::type_info& ti,
+                  void* params,
+                  const std::type_info* params_info,
+                  void (*params_deleter) (void*));
+
+    details::shared_ptr<prepared_query_impl>
+    lookup_query_ (const char* name,
+                   const std::type_info& ti,
+                   void** params, // out
+                   const std::type_info* params_info) const;
+
+    template <typename P>
+    static void
+    params_deleter (void*);
+
   private:
     connection (const connection&);
     connection& operator= (const connection&);
+
+    // Prepared query cache.
+    //
+  protected:
+    struct prepared_entry_type
+    {
+      details::shared_ptr<prepared_query_impl> prep_query;
+      const std::type_info* type_info;
+      void* params;
+      const std::type_info* params_info;
+      void (*params_deleter) (void*);
+    };
+
+    typedef
+    std::map<const char*, prepared_entry_type, details::c_string_comparator>
+    prepared_map_type;
+
+    prepared_map_type prepared_map_;
 
   protected:
     database_type& database_;

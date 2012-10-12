@@ -2,8 +2,6 @@
 // copyright : Copyright (c) 2009-2012 Code Synthesis Tools CC
 // license   : GNU GPL v2; see accompanying LICENSE file
 
-#include <sstream>
-
 #include <odb/exceptions.hxx>
 
 using namespace std;
@@ -106,13 +104,53 @@ namespace odb
     return "no type information";
   }
 
+  prepared_already_cached::
+  prepared_already_cached (const char* name)
+      : name_ (name)
+  {
+    what_ = "prepared query '";
+    what_ += name;
+    what_ += "' is already cached";
+  }
+
+  prepared_already_cached::
+  ~prepared_already_cached () throw ()
+  {
+  }
+
+  const char* prepared_already_cached::
+  what () const throw ()
+  {
+    return what_.c_str ();
+  }
+
+  prepared_type_mismatch::
+  prepared_type_mismatch (const char* name)
+      : name_ (name)
+  {
+    what_ = "type mismatch while looking up prepared query '";
+    what_ += name;
+    what_ += "'";
+  }
+
+  prepared_type_mismatch::
+  ~prepared_type_mismatch () throw ()
+  {
+  }
+
+  const char* prepared_type_mismatch::
+  what () const throw ()
+  {
+    return what_.c_str ();
+  }
+
   unknown_schema::
   unknown_schema (const std::string& name)
       : name_ (name)
   {
-    ostringstream ostr;
-    ostr << "unknown database schema '" << name << "'";
-    what_ = ostr.str ();
+    what_ = "unknown database schema '";
+    what_ += name;
+    what_ += "'";
   }
 
   unknown_schema::

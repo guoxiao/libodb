@@ -7,17 +7,27 @@
 
 #include <odb/pre.hxx>
 
+#include <odb/details/config.hxx> // ODB_CXX11
+
+#include <map>
 #include <string>
+#include <memory>  // std::auto_ptr, std::unique_ptr
 #include <cstddef> // std::size_t
+
+#ifdef ODB_CXX11
+#  include <functional> // std::function
+#endif
 
 #include <odb/traits.hxx>
 #include <odb/forward.hxx>
 #include <odb/query.hxx>
+#include <odb/prepared-query.hxx>
 #include <odb/result.hxx>
 #include <odb/connection.hxx>
 #include <odb/exceptions.hxx>
 
 #include <odb/details/export.hxx>
+#include <odb/details/c-string.hxx>
 
 namespace odb
 {
@@ -214,6 +224,59 @@ namespace odb
     result<T>
     query (const odb::query<T>&, bool cache = true);
 
+    // Query preparation.
+    //
+    template <typename T>
+    prepared_query<T>
+    prepare_query (const char* name, const char*);
+
+    template <typename T>
+    prepared_query<T>
+    prepare_query (const char* name, const std::string&);
+
+    template <typename T>
+    prepared_query<T>
+    prepare_query (const char* name, const odb::query<T>&);
+
+    template <typename T>
+    void
+    cache_query (const prepared_query<T>&);
+
+    template <typename T, typename P>
+    void
+    cache_query (const prepared_query<T>&, std::auto_ptr<P> params);
+
+#ifdef ODB_CXX11
+    template <typename T, typename P>
+    void
+    cache_query (const prepared_query<T>&, std::unique_ptr<P> params);
+#endif
+
+    template <typename T>
+    prepared_query<T>
+    lookup_query (const char* name) const;
+
+    template <typename T, typename P>
+    prepared_query<T>
+    lookup_query (const char* name, P*& params) const;
+
+    // Prepared query factory.
+    //
+  public:
+#ifdef ODB_CXX11
+    typedef
+    std::function<void (const char*, connection&)>
+    query_factory_type;
+#else
+    typedef void (*query_factory_type) (const char*, connection&);
+#endif
+
+    void
+    query_factory (const char* name, query_factory_type);
+
+    query_factory_type
+    lookup_query_factory (const char* name) const;
+
     // Native database statement execution.
     //
   public:
@@ -326,8 +389,13 @@ namespace odb
     struct query_;
 
   protected:
+    typedef
+    std::map<const char*, query_factory_type, details::c_string_comparator>
+    query_factory_map;
+
     database_id id_;
     tracer_type* tracer_;
+    query_factory_map query_factory_map_;
   };
 }
 

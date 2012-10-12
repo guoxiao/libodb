@@ -127,6 +127,46 @@ namespace odb
     what () const throw ();
   };
 
+  // Prepared query support exceptions.
+  //
+  struct LIBODB_EXPORT prepared_already_cached: exception
+  {
+    prepared_already_cached (const char* name);
+    ~prepared_already_cached () throw ();
+
+    const char*
+    name () const
+    {
+      return name_;
+    }
+
+    virtual const char*
+    what () const throw ();
+
+  private:
+    const char* name_;
+    std::string what_;
+  };
+
+  struct LIBODB_EXPORT prepared_type_mismatch: exception
+  {
+    prepared_type_mismatch (const char* name);
+    ~prepared_type_mismatch () throw ();
+
+    const char*
+    name () const
+    {
+      return name_;
+    }
+
+    virtual const char*
+    what () const throw ();
+
+  private:
+    const char* name_;
+    std::string what_;
+  };
+
   // Schema catalog exceptions.
   //
   struct LIBODB_EXPORT unknown_schema: exception
