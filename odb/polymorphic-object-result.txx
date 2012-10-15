@@ -22,7 +22,7 @@ namespace odb
     const id_type& id (load_id ());
 
     root_pointer_type rp (
-      object_traits::pointer_cache_traits::find (database (), id));
+      object_traits::pointer_cache_traits::find (this->db_, id));
 
     if (!root_pointer_traits::null_ptr (rp))
     {
@@ -62,7 +62,7 @@ namespace odb
 
     typename object_traits::reference_cache_traits::insert_guard ig (
       object_traits::reference_cache_traits::insert (
-        res_->database (), res_->load_id (), obj));
+        res_->db_, res_->load_id (), obj));
     res_->load (&obj, false);
     ig.release ();
   }

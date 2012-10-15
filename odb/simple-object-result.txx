@@ -16,8 +16,7 @@ namespace odb
     //
     const id_type& id (load_id ());
 
-    pointer_type p (
-      object_traits::pointer_cache_traits::find (database (), id));
+    pointer_type p (object_traits::pointer_cache_traits::find (db_, id));
 
     if (!pointer_traits::null_ptr (p))
       current (p, false); // Pointer from cache should not be guarded.
@@ -26,7 +25,7 @@ namespace odb
       p = object_traits::create ();
 
       typename object_traits::pointer_cache_traits::insert_guard ig (
-        object_traits::pointer_cache_traits::insert (database (), id, p));
+        object_traits::pointer_cache_traits::insert (db_, id, p));
 
       object_type& obj (pointer_traits::get_ref (p));
       current (p);
@@ -50,7 +49,7 @@ namespace odb
 
     typename object_traits::reference_cache_traits::insert_guard ig (
       object_traits::reference_cache_traits::insert (
-        res_->database (), res_->load_id (), obj));
+        res_->db_, res_->load_id (), obj));
     res_->load (obj, false);
     ig.release ();
   }

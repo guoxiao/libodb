@@ -115,6 +115,11 @@ namespace odb
   template <typename T> struct no_op_reference_cache_traits;
   template <typename T> struct reference_cache_traits;
 
+  //
+  //
+  class result_impl;
+  class prepared_query_impl;
+
   // Polymorphism support.
   //
   template <typename R>

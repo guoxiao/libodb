@@ -123,6 +123,12 @@ namespace odb
     virtual
     ~connection ();
 
+    // Recycle the connection to be used by another thread. This call
+    // invalidates uncached prepared queries.
+    //
+    void
+    recycle ();
+
   protected:
     connection (database_type&);
 
@@ -132,13 +138,13 @@ namespace odb
     struct query_;
 
     virtual void
-    cache_query_ (details::shared_ptr<prepared_query_impl> pq,
+    cache_query_ (prepared_query_impl* pq,
                   const std::type_info& ti,
                   void* params,
                   const std::type_info* params_info,
                   void (*params_deleter) (void*));
 
-    details::shared_ptr<prepared_query_impl>
+    prepared_query_impl*
     lookup_query_ (const char* name,
                    const std::type_info& ti,
                    void** params, // out
@@ -170,9 +176,28 @@ namespace odb
 
     prepared_map_type prepared_map_;
 
+    void
+    clear_prepared_map ();
+
   protected:
     database_type& database_;
     tracer_type* tracer_;
+
+    // Active query result list.
+    //
+  protected:
+    friend class result_impl;
+    result_impl* results_;
+
+    void
+    invalidate_results ();
+
+    // Prepared but uncached query list (cached ones are stored in
+    // prepared_map_).
+    //
+  protected:
+    friend class prepared_query_impl;
+    prepared_query_impl* prepared_queries_;
 
   protected:
     friend class transaction;

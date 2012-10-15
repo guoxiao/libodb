@@ -32,22 +32,8 @@ namespace odb
     virtual
     ~statement () = 0;
 
-    // Statement caching status.
-    //
-  public:
-    bool
-    cached () const
-    {
-      return cached_;
-    }
-
-    virtual void
-    cached (bool);
-
   protected:
-    statement (): cached_ (false) {}
-
-    bool cached_;
+    statement () {}
   };
 }
 

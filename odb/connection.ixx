@@ -9,7 +9,11 @@ namespace odb
 {
   inline connection::
   connection (database_type& database)
-      : database_ (database), tracer_ (0), transaction_tracer_ (0)
+      : database_ (database),
+        tracer_ (0),
+        results_ (0),
+        prepared_queries_ (0),
+        transaction_tracer_ (0)
   {
   }
 

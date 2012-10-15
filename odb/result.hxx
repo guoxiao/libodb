@@ -16,10 +16,36 @@
 
 namespace odb
 {
-  struct result_impl: details::shared_base
+  class result_impl: public details::shared_base
   {
+  public:
     virtual
     ~result_impl ();
+
+    virtual void
+    invalidate () = 0;
+
+  protected:
+    result_impl (connection&);
+
+  protected:
+    database& db_;
+    connection& conn_;
+
+    // Doubly-linked list of results.
+    //
+    // prev_ ==    0 means we are the first element.
+    // next_ ==    0 means we are the last element.
+    // next_ == this means we are not on the list.
+    //
+  protected:
+    friend class connection;
+
+    void
+    list_remove ();
+
+    result_impl* prev_;
+    result_impl* next_;
   };
 
   template <typename T, class_kind kind>

@@ -26,8 +26,6 @@ namespace odb
   class no_id_object_result_impl: public result_impl
   {
   protected:
-    typedef odb::database database_type;
-
     // In result_impl, T is always non-const and the same as object_type.
     //
     typedef T object_type;
@@ -44,15 +42,9 @@ namespace odb
     friend class object_result_iterator<const T, void, false>;
 
   protected:
-    no_id_object_result_impl (database_type& db)
-        : begin_ (true), end_ (false), db_ (db), current_ ()
+    no_id_object_result_impl (connection& conn)
+        : result_impl (conn), begin_ (true), end_ (false), current_ ()
     {
-    }
-
-    database_type&
-    database () const
-    {
-      return db_;
     }
 
     // To make this work with all kinds of pointers (raw, std::auto_ptr,
@@ -135,7 +127,6 @@ namespace odb
     load ();
 
   private:
-    database_type& db_;
     pointer_type current_;
     typename pointer_traits::guard guard_;
   };
