@@ -78,7 +78,6 @@ namespace odb
   {
     class_object,
     class_view,
-    class_composite,
     class_other
   };
 
