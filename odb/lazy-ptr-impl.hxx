@@ -21,6 +21,7 @@ namespace odb
   {
     void* id_;
     database* db_;
+    void* loader_;
     void (*free_) (void*);
     void* (*copy_) (const void*);
   };
@@ -57,11 +58,6 @@ namespace odb
     void
     reset ();
 
-    // Reset the id and set the database to the new value.
-    //
-    void
-    reset (database_type&);
-
     // Reset the id.
     //
     void
@@ -88,7 +84,10 @@ namespace odb
     // Makes a copy of id.
     //
     void
-    reset_ (database_type*, const void* id, free_func, copy_func);
+    reset_ (database_type*,
+            void* loader,
+            const void* id,
+            free_func, copy_func);
 
     template <typename T>
     static void
@@ -98,9 +97,14 @@ namespace odb
     static void*
     copy (const void*);
 
+    template <typename T, typename DB>
+    static typename object_traits<T>::pointer_type
+    loader (database_type&, const typename object_traits<T>::id_type&);
+
   protected:
     void* id_;
     database_type* db_;
+    void* loader_;
 
   private:
     free_func free_;
@@ -113,8 +117,8 @@ namespace odb
   public:
     lazy_ptr_impl ();
 
-    template <typename ID>
-    lazy_ptr_impl (database_type&, const ID&);
+    template <typename DB, typename ID>
+    lazy_ptr_impl (DB&, const ID&);
 
     lazy_ptr_impl (const lazy_ptr_impl&);
 
@@ -154,9 +158,15 @@ namespace odb
     using lazy_ptr_base::reset;
     using lazy_ptr_base::reset_id;
 
-    template <typename ID>
+    template <typename DB, typename ID>
     void
-    reset (database_type&, const ID&);
+    reset (DB&, const ID&);
+
+    // Reset the id and set the database to the new value.
+    //
+    template <typename DB>
+    void
+    reset_db (DB&);
 
     template <typename ID>
     void

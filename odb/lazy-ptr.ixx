@@ -137,38 +137,38 @@ namespace odb
   }
 
   template <class T>
-  template <class ID>
+  template <class DB, class ID>
   inline lazy_ptr<T>::
-  lazy_ptr (database_type& db, const ID& id): p_ (0), i_ (db, id) {}
+  lazy_ptr (DB& db, const ID& id): p_ (0), i_ (db, id) {}
 
   template <class T>
-  template <class Y>
+  template <class DB, class Y>
   inline lazy_ptr<T>::
-  lazy_ptr (database_type& db, Y* r)
+  lazy_ptr (DB& db, Y* r)
       : p_ (r)
   {
     if (p_)
-      i_.reset (db);
+      i_.reset_db (db);
   }
 
   template <class T>
-  template <class ID>
+  template <class DB, class ID>
   inline void lazy_ptr<T>::
-  reset (database_type& db, const ID& id)
+  reset (DB& db, const ID& id)
   {
     p_ = 0;
     i_.reset (db, id);
   }
 
   template <class T>
-  template <class Y>
+  template <class DB, class Y>
   inline void lazy_ptr<T>::
-  reset (database_type& db, Y* r)
+  reset (DB& db, Y* r)
   {
     p_ = r;
 
     if (p_)
-      i_.reset (db);
+      i_.reset_db (db);
     else
       i_.reset ();
   }
@@ -396,59 +396,61 @@ namespace odb
   }
 
   template <class T>
-  template <class ID>
+  template <class DB, class ID>
   inline lazy_auto_ptr<T>::
-  lazy_auto_ptr (database_type& db, const ID& id): i_ (db, id) {}
+  lazy_auto_ptr (DB& db, const ID& id): i_ (db, id) {}
 
   template <class T>
+  template <class DB>
   inline lazy_auto_ptr<T>::
-  lazy_auto_ptr (database_type& db, T* p)
+  lazy_auto_ptr (DB& db, T* p)
       : p_ (p)
   {
     if (p)
-      i_.reset (db);
+      i_.reset_db (db);
   }
 
   template <class T>
-  template <class Y>
+  template <class DB, class Y>
   inline lazy_auto_ptr<T>::
-  lazy_auto_ptr (database_type& db, std::auto_ptr<Y>& p)
+  lazy_auto_ptr (DB& db, std::auto_ptr<Y>& p)
       : p_ (p)
   {
     if (p_.get () != 0)
-      i_.reset (db);
+      i_.reset_db (db);
   }
 
   template <class T>
-  template <class ID>
+  template <class DB, class ID>
   inline void lazy_auto_ptr<T>::
-  reset (database_type& db, const ID& id)
+  reset (DB& db, const ID& id)
   {
     p_.reset ();
     i_.reset (db, id);
   }
 
   template <class T>
+  template <class DB>
   inline void lazy_auto_ptr<T>::
-  reset (database_type& db, T* p)
+  reset (DB& db, T* p)
   {
     p_.reset (p);
 
     if (p)
-      i_.reset (db);
+      i_.reset_db (db);
     else
       i_.reset ();
   }
 
   template <class T>
-  template <class Y>
+  template <class DB, class Y>
   inline void lazy_auto_ptr<T>::
-  reset (database_type& db, std::auto_ptr<Y>& p)
+  reset (DB& db, std::auto_ptr<Y>& p)
   {
     p_ = p;
 
     if (p_.get () != 0)
-      i_.reset (db);
+      i_.reset_db (db);
     else
       i_.reset ();
   }
@@ -665,100 +667,104 @@ namespace odb
   }
 
   template <class T, class D>
-  template <class ID>
+  template <class DB, class ID>
   inline lazy_unique_ptr<T, D>::
-  lazy_unique_ptr (database_type& db, const ID& id): i_ (db, id) {}
+  lazy_unique_ptr (DB& db, const ID& id): i_ (db, id) {}
 
   template <class T, class D>
+  template <class DB>
   inline lazy_unique_ptr<T, D>::
-  lazy_unique_ptr (database_type& db, T* p)
+  lazy_unique_ptr (DB& db, T* p)
       : p_ (p)
   {
     if (p_)
-      i_.reset (db);
+      i_.reset_db (db);
   }
 
   template <class T, class D>
+  template <class DB>
   inline lazy_unique_ptr<T, D>::
-  lazy_unique_ptr (database_type& db, T* p, const deleter_type& d)
+  lazy_unique_ptr (DB& db, T* p, const deleter_type& d)
       : p_ (p, d)
   {
     if (p_)
-      i_.reset (db);
+      i_.reset_db (db);
   }
 
   template <class T, class D>
+  template <class DB>
   inline lazy_unique_ptr<T, D>::
-  lazy_unique_ptr (database_type& db, T* p, deleter_type&& d)
+  lazy_unique_ptr (DB& db, T* p, deleter_type&& d)
       : p_ (p, std::move (d))
   {
     if (p_)
-      i_.reset (db);
+      i_.reset_db (db);
   }
 
   template <class T, class D>
-  template <class T1, class D1>
+  template <class DB, class T1, class D1>
   inline lazy_unique_ptr<T, D>::
-  lazy_unique_ptr (database_type& db, std::unique_ptr<T1, D1>&& p)
+  lazy_unique_ptr (DB& db, std::unique_ptr<T1, D1>&& p)
       : p_ (std::move (p))
   {
     if (p_)
-      i_.reset (db);
+      i_.reset_db (db);
   }
 
   template <class T, class D>
-  template <class T1>
+  template <class DB, class T1>
   inline lazy_unique_ptr<T, D>::
-  lazy_unique_ptr (database_type& db, std::auto_ptr<T1>&& p)
+  lazy_unique_ptr (DB& db, std::auto_ptr<T1>&& p)
       : p_ (std::move (p))
   {
     if (p_)
-      i_.reset (db);
+      i_.reset_db (db);
   }
 
   template <class T, class D>
-  template <class ID>
+  template <class DB, class ID>
   inline void lazy_unique_ptr<T, D>::
-  reset (database_type& db, const ID& id)
+  reset (DB& db, const ID& id)
   {
     p_.reset ();
     i_.reset (db, id);
   }
 
   template <class T, class D>
+  template <class DB>
   inline void lazy_unique_ptr<T, D>::
-  reset (database_type& db, T* p)
+  reset (DB& db, T* p)
   {
     p_.reset (p);
 
     if (p)
-      i_.reset (db);
+      i_.reset_db (db);
     else
       i_.reset ();
   }
 
   template <class T, class D>
-  template <class T1, class D1>
+  template <class DB, class T1, class D1>
   inline void lazy_unique_ptr<T, D>::
-  reset (database_type& db, std::unique_ptr<T1, D1>&& p)
+  reset (DB& db, std::unique_ptr<T1, D1>&& p)
   {
     p_ = std::move (p);
 
     if (p_)
-      i_.reset (db);
+      i_.reset_db (db);
     else
       i_.reset ();
   }
 
   template <class T, class D>
-  template <class T1>
+  template <class DB, class T1>
   inline void lazy_unique_ptr<T, D>::
-  reset (database_type& db, std::auto_ptr<T1>&& p)
+  reset (DB& db, std::auto_ptr<T1>&& p)
   {
     p_ = std::unique_ptr<T, D> (std::move (p));
 
     if (p_)
-      i_.reset (db);
+      i_.reset_db (db);
     else
       i_.reset ();
   }
@@ -1144,163 +1150,163 @@ namespace odb
   }
 
   template <class T>
-  template <class ID>
+  template <class DB, class ID>
   inline lazy_shared_ptr<T>::
-  lazy_shared_ptr (database_type& db, const ID& id): i_ (db, id) {}
+  lazy_shared_ptr (DB& db, const ID& id): i_ (db, id) {}
 
   template <class T>
-  template <class Y>
+  template <class DB, class Y>
   inline lazy_shared_ptr<T>::
-  lazy_shared_ptr (database_type& db, Y* p)
+  lazy_shared_ptr (DB& db, Y* p)
       : p_ (p)
   {
     if (p_)
-      i_.reset (db);
+      i_.reset_db (db);
   }
 
   template <class T>
-  template <class Y, class D>
+  template <class DB, class Y, class D>
   inline lazy_shared_ptr<T>::
-  lazy_shared_ptr (database_type& db, Y* p, D d)
+  lazy_shared_ptr (DB& db, Y* p, D d)
       : p_ (p, d)
   {
     if (p_)
-      i_.reset (db);
+      i_.reset_db (db);
   }
 
   template <class T>
-  template <class Y, class D, class A>
+  template <class DB, class Y, class D, class A>
   inline lazy_shared_ptr<T>::
-  lazy_shared_ptr (database_type& db, Y* p, D d, A a)
+  lazy_shared_ptr (DB& db, Y* p, D d, A a)
       : p_ (p, d, a)
   {
     if (p_)
-      i_.reset (db);
+      i_.reset_db (db);
   }
 
   template <class T>
-  template <class Y>
+  template <class DB, class Y>
   inline lazy_shared_ptr<T>::
-  lazy_shared_ptr (database_type& db, std::auto_ptr<Y>&& r)
+  lazy_shared_ptr (DB& db, std::auto_ptr<Y>&& r)
       : p_ (std::move (r))
   {
     if (p_)
-      i_.reset (db);
+      i_.reset_db (db);
   }
 
   template <class T>
-  template <class Y>
+  template <class DB, class Y>
   inline lazy_shared_ptr<T>::
-  lazy_shared_ptr (database_type& db, const std::shared_ptr<Y>& r)
+  lazy_shared_ptr (DB& db, const std::shared_ptr<Y>& r)
       : p_ (r)
   {
     if (p_)
-      i_.reset (db);
+      i_.reset_db (db);
   }
 
   template <class T>
-  template <class Y>
+  template <class DB, class Y>
   inline lazy_shared_ptr<T>::
-  lazy_shared_ptr (database_type& db, std::shared_ptr<Y>&& r)
+  lazy_shared_ptr (DB& db, std::shared_ptr<Y>&& r)
       : p_ (std::move (r))
   {
     if (p_)
-      i_.reset (db);
+      i_.reset_db (db);
   }
 
   template <class T>
-  template <class Y>
+  template <class DB, class Y>
   inline lazy_shared_ptr<T>::
-  lazy_shared_ptr (database_type& db, const std::weak_ptr<Y>& r)
+  lazy_shared_ptr (DB& db, const std::weak_ptr<Y>& r)
       : p_ (r)
   {
     if (p_)
-      i_.reset (db);
+      i_.reset_db (db);
   }
 
   template <class T>
-  template <class ID>
+  template <class DB, class ID>
   inline void lazy_shared_ptr<T>::
-  reset (database_type& db, const ID& id)
+  reset (DB& db, const ID& id)
   {
     p_.reset ();
     i_.reset (db, id);
   }
 
   template <class T>
-  template <class Y>
+  template <class DB, class Y>
   inline void lazy_shared_ptr<T>::
-  reset (database_type& db, Y* p)
+  reset (DB& db, Y* p)
   {
     p_.reset (p);
 
     if (p_)
-      i_.reset (db);
+      i_.reset_db (db);
     else
       i_.reset ();
   }
 
   template <class T>
-  template <class Y, class D>
+  template <class DB, class Y, class D>
   inline void lazy_shared_ptr<T>::
-  reset (database_type& db, Y* p, D d)
+  reset (DB& db, Y* p, D d)
   {
     p_.reset (p, d);
 
     if (p_)
-      i_.reset (db);
+      i_.reset_db (db);
     else
       i_.reset ();
   }
 
   template <class T>
-  template <class Y, class D, class A>
+  template <class DB, class Y, class D, class A>
   inline void lazy_shared_ptr<T>::
-  reset (database_type& db, Y* p, D d, A a)
+  reset (DB& db, Y* p, D d, A a)
   {
     p_.reset (p, d, a);
 
     if (p_)
-      i_.reset (db);
+      i_.reset_db (db);
     else
       i_.reset ();
   }
 
   template <class T>
-  template <class Y>
+  template <class DB, class Y>
   inline void lazy_shared_ptr<T>::
-  reset (database_type& db, std::auto_ptr<Y>&& r)
+  reset (DB& db, std::auto_ptr<Y>&& r)
   {
     p_ = std::move (r);
 
     if (p_)
-      i_.reset (db);
+      i_.reset_db (db);
     else
       i_.reset ();
   }
 
   template <class T>
-  template <class Y>
+  template <class DB, class Y>
   inline void lazy_shared_ptr<T>::
-  reset (database_type& db, const std::shared_ptr<Y>& r)
+  reset (DB& db, const std::shared_ptr<Y>& r)
   {
     p_ = r;
 
     if (p_)
-      i_.reset (db);
+      i_.reset_db (db);
     else
       i_.reset ();
   }
 
   template <class T>
-  template <class Y>
+  template <class DB, class Y>
   inline void lazy_shared_ptr<T>::
-  reset (database_type& db, std::shared_ptr<Y>&& r)
+  reset (DB& db, std::shared_ptr<Y>&& r)
   {
     p_ = std::move (r);
 
     if (p_)
-      i_.reset (db);
+      i_.reset_db (db);
     else
       i_.reset ();
   }
@@ -1529,14 +1535,14 @@ namespace odb
   }
 
   template <class T>
-  template <class ID>
+  template <class DB, class ID>
   inline lazy_weak_ptr<T>::
-  lazy_weak_ptr (database_type& db, const ID& id): i_ (db, id) {}
+  lazy_weak_ptr (DB& db, const ID& id): i_ (db, id) {}
 
   template <class T>
-  template <class Y>
+  template <class DB, class Y>
   inline lazy_weak_ptr<T>::
-  lazy_weak_ptr (database_type& db, const std::shared_ptr<Y>& r)
+  lazy_weak_ptr (DB& db, const std::shared_ptr<Y>& r)
       : p_ (r)
   {
     typedef typename object_traits<T>::object_type object_type;
@@ -1546,9 +1552,9 @@ namespace odb
   }
 
   template <class T>
-  template <class Y>
+  template <class DB, class Y>
   inline lazy_weak_ptr<T>::
-  lazy_weak_ptr (database_type& db, const std::weak_ptr<Y>& r)
+  lazy_weak_ptr (DB& db, const std::weak_ptr<Y>& r)
       : p_ (r)
   {
     typedef typename object_traits<T>::object_type object_type;
@@ -1560,18 +1566,18 @@ namespace odb
   }
 
   template <class T>
-  template <class ID>
+  template <class DB, class ID>
   inline void lazy_weak_ptr<T>::
-  reset (database_type& db, const ID& id)
+  reset (DB& db, const ID& id)
   {
     p_.reset ();
     i_.reset (db, id);
   }
 
   template <class T>
-  template <class Y>
+  template <class DB, class Y>
   inline void lazy_weak_ptr<T>::
-  reset (database_type& db, const std::shared_ptr<Y>& r)
+  reset (DB& db, const std::shared_ptr<Y>& r)
   {
     typedef typename object_traits<T>::object_type object_type;
 
@@ -1584,9 +1590,9 @@ namespace odb
   }
 
   template <class T>
-  template <class Y>
+  template <class DB, class Y>
   inline void lazy_weak_ptr<T>::
-  reset (database_type& db, const std::weak_ptr<Y>& r)
+  reset (DB& db, const std::weak_ptr<Y>& r)
   {
     typedef typename object_traits<T>::object_type object_type;
 

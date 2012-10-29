@@ -72,11 +72,11 @@ namespace odb
     //
     void unload () const;
 
-    template <class ID> lazy_ptr (database_type&, const ID&);
-    template <class Y> lazy_ptr (database_type&, Y*);
+    template <class DB, class ID> lazy_ptr (DB&, const ID&);
+    template <class DB, class Y> lazy_ptr (DB&, Y*);
 
-    template <class ID> void reset (database_type&, const ID&);
-    template <class Y> void reset (database_type&, Y*);
+    template <class DB, class ID> void reset (DB&, const ID&);
+    template <class DB, class Y> void reset (DB&, Y*);
 
 #ifdef ODB_CXX11_FUNCTION_TEMPLATE_DEFAULT_ARGUMENT
     template <class O = T>
@@ -185,13 +185,13 @@ namespace odb
     //
     void unload () const;
 
-    template <class ID> lazy_auto_ptr (database_type&, const ID&);
-    lazy_auto_ptr (database_type&, T*);
-    template <class Y> lazy_auto_ptr (database_type&, std::auto_ptr<Y>&);
+    template <class DB, class ID> lazy_auto_ptr (DB&, const ID&);
+    template <class DB> lazy_auto_ptr (DB&, T*);
+    template <class DB, class Y> lazy_auto_ptr (DB&, std::auto_ptr<Y>&);
 
-    template <class ID> void reset (database_type&, const ID&);
-    void reset (database_type&, T*);
-    template <class Y> void reset (database_type&, std::auto_ptr<Y>&);
+    template <class DB, class ID> void reset (DB&, const ID&);
+    template <class DB> void reset (DB&, T*);
+    template <class DB, class Y> void reset (DB&, std::auto_ptr<Y>&);
 
 #ifdef ODB_CXX11_FUNCTION_TEMPLATE_DEFAULT_ARGUMENT
     template <class O = T>
@@ -305,17 +305,17 @@ namespace odb
     //
     void unload () const;
 
-    template <class ID> lazy_unique_ptr (database_type&, const ID&);
-    lazy_unique_ptr (database_type&, pointer);
-    lazy_unique_ptr (database_type&, pointer, const deleter_type&);
-    lazy_unique_ptr (database_type&, pointer, deleter_type&&);
-    template <class T1, class D1> lazy_unique_ptr (database_type&, std::unique_ptr<T1, D1>&&);
-    template <class T1> lazy_unique_ptr (database_type&, std::auto_ptr<T1>&&);
+    template <class DB, class ID> lazy_unique_ptr (DB&, const ID&);
+    template <class DB> lazy_unique_ptr (DB&, pointer);
+    template <class DB> lazy_unique_ptr (DB&, pointer, const deleter_type&);
+    template <class DB> lazy_unique_ptr (DB&, pointer, deleter_type&&);
+    template <class DB, class T1, class D1> lazy_unique_ptr (DB&, std::unique_ptr<T1, D1>&&);
+    template <class DB, class T1> lazy_unique_ptr (DB&, std::auto_ptr<T1>&&);
 
-    template <class ID> void reset (database_type&, const ID&);
-    void reset (database_type&, pointer);
-    template <class T1, class D1> void reset (database_type&, std::unique_ptr<T1, D1>&&);
-    template <class T1> void reset (database_type&, std::auto_ptr<T1>&&);
+    template <class DB, class ID> void reset (DB&, const ID&);
+    template <class DB> void reset (DB&, pointer);
+    template <class DB, class T1, class D1> void reset (DB&, std::unique_ptr<T1, D1>&&);
+    template <class DB, class T1> void reset (DB&, std::auto_ptr<T1>&&);
 
 #ifdef ODB_CXX11_FUNCTION_TEMPLATE_DEFAULT_ARGUMENT
     template <class O = T>
@@ -464,22 +464,22 @@ namespace odb
     //
     void unload () const;
 
-    template <class ID> lazy_shared_ptr (database_type&, const ID&);
-    template <class Y> lazy_shared_ptr (database_type&, Y*);
-    template <class Y, class D> lazy_shared_ptr (database_type&, Y*, D);
-    template <class Y, class D, class A> lazy_shared_ptr (database_type&, Y*, D, A);
-    template <class Y> lazy_shared_ptr (database_type&, std::auto_ptr<Y>&&);
-    template <class Y> lazy_shared_ptr (database_type&, const std::shared_ptr<Y>&);
-    template <class Y> lazy_shared_ptr (database_type&, std::shared_ptr<Y>&&);
-    template <class Y> lazy_shared_ptr (database_type&, const std::weak_ptr<Y>&);
+    template <class DB, class ID> lazy_shared_ptr (DB&, const ID&);
+    template <class DB, class Y> lazy_shared_ptr (DB&, Y*);
+    template <class DB, class Y, class D> lazy_shared_ptr (DB&, Y*, D);
+    template <class DB, class Y, class D, class A> lazy_shared_ptr (DB&, Y*, D, A);
+    template <class DB, class Y> lazy_shared_ptr (DB&, std::auto_ptr<Y>&&);
+    template <class DB, class Y> lazy_shared_ptr (DB&, const std::shared_ptr<Y>&);
+    template <class DB, class Y> lazy_shared_ptr (DB&, std::shared_ptr<Y>&&);
+    template <class DB, class Y> lazy_shared_ptr (DB&, const std::weak_ptr<Y>&);
 
-    template <class ID> void reset (database_type&, const ID&);
-    template <class Y> void reset (database_type&, Y*);
-    template <class Y, class D> void reset (database_type&, Y*, D);
-    template <class Y, class D, class A> void reset (database_type&, Y*, D, A);
-    template <class Y> void reset (database_type&, std::auto_ptr<Y>&&);
-    template <class Y> void reset (database_type&, const std::shared_ptr<Y>&);
-    template <class Y> void reset (database_type&, std::shared_ptr<Y>&&);
+    template <class DB, class ID> void reset (DB&, const ID&);
+    template <class DB, class Y> void reset (DB&, Y*);
+    template <class DB, class Y, class D> void reset (DB&, Y*, D);
+    template <class DB, class Y, class D, class A> void reset (DB&, Y*, D, A);
+    template <class DB, class Y> void reset (DB&, std::auto_ptr<Y>&&);
+    template <class DB, class Y> void reset (DB&, const std::shared_ptr<Y>&);
+    template <class DB, class Y> void reset (DB&, std::shared_ptr<Y>&&);
 
 #ifdef ODB_CXX11_FUNCTION_TEMPLATE_DEFAULT_ARGUMENT
     template <class O = T>
@@ -593,13 +593,13 @@ namespace odb
     //
     void unload () const;
 
-    template <class ID> lazy_weak_ptr (database_type&, const ID&);
-    template <class Y> lazy_weak_ptr (database_type&, const std::shared_ptr<Y>&);
-    template <class Y> lazy_weak_ptr (database_type&, const std::weak_ptr<Y>&);
+    template <class DB, class ID> lazy_weak_ptr (DB&, const ID&);
+    template <class DB, class Y> lazy_weak_ptr (DB&, const std::shared_ptr<Y>&);
+    template <class DB, class Y> lazy_weak_ptr (DB&, const std::weak_ptr<Y>&);
 
-    template <class ID> void reset (database_type&, const ID&);
-    template <class Y> void reset (database_type&, const std::shared_ptr<Y>&);
-    template <class Y> void reset (database_type&, const std::weak_ptr<Y>&);
+    template <class DB, class ID> void reset (DB&, const ID&);
+    template <class DB, class Y> void reset (DB&, const std::shared_ptr<Y>&);
+    template <class DB, class Y> void reset (DB&, const std::weak_ptr<Y>&);
 
     // The object_id() function can only be called when the object is
     // persistent, or: expired() XOR loaded() (can use != for XOR).

@@ -24,6 +24,13 @@ namespace odb
     return new T (*static_cast<const T*> (p));
   }
 
+  template <typename T, typename DB>
+  typename object_traits<T>::pointer_type lazy_ptr_base::
+  loader (database_type& db, const typename object_traits<T>::id_type& id)
+  {
+    return static_cast<DB&> (db).template load<T> (id);
+  }
+
   //
   // lazy_ptr_impl
   //
@@ -35,9 +42,11 @@ namespace odb
   {
     typedef typename object_traits<T>::id_type id_type;
     typedef typename object_traits<T>::pointer_type pointer_type;
+    typedef pointer_type (*loader_type) (database_type&, const id_type&);
 
+    loader_type loader (reinterpret_cast<loader_type> (loader_));
     const id_type& id (*static_cast<const id_type*> (id_));
-    pointer_type p (db_->load<T> (id));
+    pointer_type p (loader (*db_, id));
 
     if (reset)
       reset_id ();

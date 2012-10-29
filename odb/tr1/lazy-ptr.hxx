@@ -98,18 +98,18 @@ namespace odb
       //
       void unload () const;
 
-      template <class ID> lazy_shared_ptr (database_type&, const ID&);
-      template <class Y> lazy_shared_ptr (database_type&, Y*);
-      template <class Y, class D> lazy_shared_ptr (database_type&, Y*, D);
-      template <class Y> lazy_shared_ptr (database_type&, std::auto_ptr<Y>&);
-      template <class Y> lazy_shared_ptr (database_type&, const std::tr1::shared_ptr<Y>&);
-      template <class Y> lazy_shared_ptr (database_type&, const std::tr1::weak_ptr<Y>&);
+      template <class DB, class ID> lazy_shared_ptr (DB&, const ID&);
+      template <class DB, class Y> lazy_shared_ptr (DB&, Y*);
+      template <class DB, class Y, class D> lazy_shared_ptr (DB&, Y*, D);
+      template <class DB, class Y> lazy_shared_ptr (DB&, std::auto_ptr<Y>&);
+      template <class DB, class Y> lazy_shared_ptr (DB&, const std::tr1::shared_ptr<Y>&);
+      template <class DB, class Y> lazy_shared_ptr (DB&, const std::tr1::weak_ptr<Y>&);
 
-      template <class ID> void reset (database_type&, const ID&);
-      template <class Y> void reset (database_type&, Y*);
-      template <class Y, class D> void reset (database_type&, Y*, D);
-      template <class Y> void reset (database_type&, std::auto_ptr<Y>&);
-      template <class Y> void reset (database_type&, const std::tr1::shared_ptr<Y>&);
+      template <class DB, class ID> void reset (DB&, const ID&);
+      template <class DB, class Y> void reset (DB&, Y*);
+      template <class DB, class Y, class D> void reset (DB&, Y*, D);
+      template <class DB, class Y> void reset (DB&, std::auto_ptr<Y>&);
+      template <class DB, class Y> void reset (DB&, const std::tr1::shared_ptr<Y>&);
 
 #ifdef ODB_CXX11_FUNCTION_TEMPLATE_DEFAULT_ARGUMENT
       template <class O = T>
@@ -207,13 +207,13 @@ namespace odb
       //
       void unload () const;
 
-      template <class ID> lazy_weak_ptr (database_type&, const ID&);
-      template <class Y> lazy_weak_ptr (database_type&, const std::tr1::shared_ptr<Y>&);
-      template <class Y> lazy_weak_ptr (database_type&, const std::tr1::weak_ptr<Y>&);
+      template <class DB, class ID> lazy_weak_ptr (DB&, const ID&);
+      template <class DB, class Y> lazy_weak_ptr (DB&, const std::tr1::shared_ptr<Y>&);
+      template <class DB, class Y> lazy_weak_ptr (DB&, const std::tr1::weak_ptr<Y>&);
 
-      template <class ID> void reset (database_type&, const ID&);
-      template <class Y> void reset (database_type&, const std::tr1::shared_ptr<Y>&);
-      template <class Y> void reset (database_type&, const std::tr1::weak_ptr<Y>&);
+      template <class DB, class ID> void reset (DB&, const ID&);
+      template <class DB, class Y> void reset (DB&, const std::tr1::shared_ptr<Y>&);
+      template <class DB, class Y> void reset (DB&, const std::tr1::weak_ptr<Y>&);
 
       // The object_id() function can only be called when the object is
       // persistent, or: expired() XOR loaded() (can use != for XOR).

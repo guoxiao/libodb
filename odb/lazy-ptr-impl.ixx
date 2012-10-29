@@ -10,13 +10,14 @@ namespace odb
 
   inline lazy_ptr_base::
   lazy_ptr_base ()
-      : id_ (0), db_ (0)
+      : id_ (0), db_ (0), loader_ (0)
   {
   }
 
   inline lazy_ptr_base::
   lazy_ptr_base (const lazy_ptr_base& r)
-      : id_ (0), db_ (r.db_), free_ (r.free_), copy_ (r.copy_)
+      : id_ (0), db_ (r.db_), loader_ (r.loader_),
+        free_ (r.free_), copy_ (r.copy_)
   {
     if (r.id_)
       id_ = copy_ (r.id_);
@@ -24,14 +25,16 @@ namespace odb
 
   inline lazy_ptr_base::
   lazy_ptr_base (const lazy_ptr_impl_ref& r)
-      : id_ (r.id_), db_ (r.db_), free_ (r.free_), copy_ (r.copy_)
+      : id_ (r.id_), db_ (r.db_), loader_ (r.loader_),
+        free_ (r.free_), copy_ (r.copy_)
   {
   }
 
 #ifdef ODB_CXX11
   inline lazy_ptr_base::
   lazy_ptr_base (lazy_ptr_base&& r)
-      : id_ (r.id_), db_ (r.db_), free_ (r.free_), copy_ (r.copy_)
+      : id_ (r.id_), db_ (r.db_), loader_ (r.loader_),
+        free_ (r.free_), copy_ (r.copy_)
   {
     r.id_ = 0;
   }
@@ -44,6 +47,7 @@ namespace odb
       reset_id ();
       id_ = r.id_;
       db_ = r.db_;
+      loader_ = r.loader_;
       free_ = r.free_;
       copy_ = r.copy_;
 
@@ -55,16 +59,11 @@ namespace odb
 #endif
 
   inline void lazy_ptr_base::
-  reset_id ()
-  {
-    if (id_)
-      free_ (id_);
-
-    id_ = 0;
-  }
-
-  inline void lazy_ptr_base::
-  reset_ (database_type* db, const void* id, free_func free, copy_func copy)
+  reset_ (database_type* db,
+          void* loader,
+          const void* id,
+          free_func free,
+          copy_func copy)
   {
     void* idc (id ? copy (id) : 0);
 
@@ -76,6 +75,7 @@ namespace odb
 
     id_ = idc;
     db_ = db;
+    loader_ = loader;
   }
 
   inline void lazy_ptr_base::
@@ -83,22 +83,28 @@ namespace odb
   {
     reset_id ();
     db_ = 0;
+    loader_ = 0;
   }
 
   inline void lazy_ptr_base::
-  reset (database_type& db)
+  reset_id ()
   {
-    reset_id ();
-    db_ = &db;
+    if (id_)
+      free_ (id_);
+
+    id_ = 0;
   }
 
   inline lazy_ptr_base& lazy_ptr_base::
   operator= (const lazy_ptr_base& r)
   {
     if (id_ != r.id_)
-      reset_ (r.db_, r.id_, r.free_, r.copy_);
+      reset_ (r.db_, r.loader_, r.id_, r.free_, r.copy_);
     else
+    {
       db_ = r.db_;
+      loader_ = r.loader_;
+    }
 
     return *this;
   }
@@ -115,6 +121,7 @@ namespace odb
     }
 
     db_ = r.db_;
+    loader_ = r.loader_;
     return *this;
   }
 
@@ -130,16 +137,19 @@ namespace odb
   {
     void* id (id_);
     database_type* db (db_);
+    void* l (loader_);
     free_func f (free_);
     copy_func c (copy_);
 
     id_ = r.id_;
     db_ = r.db_;
+    loader_ = r.loader_;
     free_ = r.free_;
     copy_ = r.copy_;
 
     r.id_ = id;
     r.db_ = db;
+    r.loader_ = l;
     r.free_ = f;
     r.copy_ = c;
   }
@@ -156,10 +166,12 @@ namespace odb
     lazy_ptr_impl_ref r;
     r.id_ = id_;
     r.db_ = db_;
+    r.loader_ = loader_;
     r.free_ = free_;
     r.copy_ = copy_;
     id_ = 0;
     db_ = 0;
+    loader_ = 0;
     return r;
   }
 
@@ -174,11 +186,13 @@ namespace odb
   }
 
   template <typename T>
-  template <typename ID>
+  template <typename DB, typename ID>
   inline lazy_ptr_impl<T>::
-  lazy_ptr_impl (database_type& db, const ID& id)
+  lazy_ptr_impl (DB& db, const ID& id)
   {
     typedef typename object_traits<T>::id_type id_type;
+    typedef typename object_traits<T>::pointer_type pointer_type;
+    typedef pointer_type (*loader_type) (database_type&, const id_type&);
 
     // Make sure that ID and T's object id types are the same
     // (or implicit-convertible). If you get a compile error
@@ -187,7 +201,21 @@ namespace odb
     //
     const id_type& r (id);
 
-    reset_ (&db, &r, &free<id_type>, &copy<id_type>);
+    // Compiler error pointing here? Perhaps db is not an
+    // odb::<database>::database instance?
+    //
+    database_type& bdb (db);
+
+    // For some reason GCC needs this statically-typed pointer in
+    // order to instantiate the functions.
+    //
+    loader_type ldr (&loader<T, DB>);
+
+    reset_ (&bdb,
+            reinterpret_cast<void*> (ldr),
+            &r,
+            &free<id_type>,
+            &copy<id_type>);
   }
 
   template <typename T>
@@ -277,11 +305,13 @@ namespace odb
 #endif
 
   template <typename T>
-  template <typename ID>
+  template <typename DB, typename ID>
   inline void lazy_ptr_impl<T>::
-  reset (database_type& db, const ID& id)
+  reset (DB& db, const ID& id)
   {
     typedef typename object_traits<T>::id_type id_type;
+    typedef typename object_traits<T>::pointer_type pointer_type;
+    typedef pointer_type (*loader_type) (database_type&, const id_type&);
 
     // Make sure that ID and T's object id types are the same
     // (or implicit-convertible). If you get a compile error
@@ -290,7 +320,44 @@ namespace odb
     //
     const id_type& r (id);
 
-    reset_ (&db, &r, &free<id_type>, &copy<id_type>);
+    // Compiler error pointing here? Perhaps db is not an
+    // odb::<database>::database instance?
+    //
+    database_type& bdb (db);
+
+    // For some reason GCC needs this statically-typed pointer in
+    // order to instantiate the functions.
+    //
+    loader_type ldr (&loader<T, DB>);
+
+    reset_ (&bdb,
+            reinterpret_cast<void*> (ldr),
+            &r,
+            &free<id_type>,
+            &copy<id_type>);
+  }
+
+  template <typename T>
+  template <typename DB>
+  inline void lazy_ptr_impl<T>::
+  reset_db (DB& db)
+  {
+    typedef typename object_traits<T>::id_type id_type;
+    typedef typename object_traits<T>::pointer_type pointer_type;
+    typedef pointer_type (*loader_type) (database_type&, const id_type&);
+
+    reset_id ();
+
+    // Compiler error pointing here? Perhaps db is not an
+    // odb::<database>::database instance?
+    //
+    db_ = &db;
+
+    // For some reason GCC needs this statically-typed pointer in
+    // order to instantiate the functions.
+    //
+    loader_type ldr (&loader<T, DB>);
+    loader_ = reinterpret_cast<void*> (ldr);
   }
 
   template <typename T>
@@ -307,7 +374,7 @@ namespace odb
     //
     const id_type& r (id);
 
-    reset_ (db_, &r, &free<id_type>, &copy<id_type>);
+    reset_ (db_, loader_, &r, &free<id_type>, &copy<id_type>);
   }
 
   template <typename T>
