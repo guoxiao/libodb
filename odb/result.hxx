@@ -12,11 +12,12 @@
 #include <odb/forward.hxx>
 #include <odb/traits.hxx>
 
+#include <odb/details/export.hxx>
 #include <odb/details/shared-ptr.hxx>
 
 namespace odb
 {
-  class result_impl: public details::shared_base
+  class LIBODB_EXPORT result_impl: public details::shared_base
   {
   public:
     virtual

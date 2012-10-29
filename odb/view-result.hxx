@@ -37,7 +37,7 @@ namespace odb
     typedef typename view_traits::pointer_type pointer_type;
     typedef odb::pointer_traits<pointer_type> pointer_traits;
 
-    view_result_impl (connection& conn)
+    view_result_impl (odb::connection& conn)
         : result_impl (conn), begin_ (true), end_ (false), current_ ()
     {
     }

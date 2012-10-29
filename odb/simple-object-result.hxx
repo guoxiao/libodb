@@ -43,7 +43,7 @@ namespace odb
     friend class object_result_iterator<const T, id_type, false>;
 
   protected:
-    object_result_impl (connection& conn)
+    object_result_impl (odb::connection& conn)
         : result_impl (conn), begin_ (true), end_ (false), current_ ()
     {
     }
