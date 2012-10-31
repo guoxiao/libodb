@@ -45,7 +45,7 @@ namespace odb
   //
 
   // Keep real databases first since their enumerators are used as array
-  // indexes
+  // indexes.
   //
   enum database_id
   {
@@ -57,7 +57,8 @@ namespace odb
     id_default
   };
 
-  // Number of real databases in the database_id enum.
+  // Number of real databases (i.e., excluding default) in the database_id
+  // enum.
   //
   const std::size_t database_count = id_default;
 
