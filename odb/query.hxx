@@ -12,8 +12,7 @@
 
 namespace odb
 {
-  // Table alias for type T and alias tag Tag. The dummy third template
-  // argument is used to make the C++ compiler weed out duplicates.
+  // Table alias for type T and tag Tag.
   //
   // The alias_traits interface consists of two things: the table_name
   // static variable containing the name and, in case of a derived type
@@ -22,16 +21,16 @@ namespace odb
   // we need straight tables instead of aliases.
   //
   //
-  template <typename T, database_id DB, typename Tag, bool dummy = true>
+  template <typename T, database_id DB, typename Tag>
   struct alias_traits;
 
   template <typename T, database_id DB>
   struct query_columns_base;
 
-  template <typename T, database_id DB, typename Alias>
+  template <typename T, database_id DB, typename A>
   struct query_columns;
 
-  template <typename T, database_id DB, typename Alias>
+  template <typename T, database_id DB, typename A>
   struct pointer_query_columns;
 
   // Object pointer syntax wrapper.
