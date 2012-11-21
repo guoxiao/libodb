@@ -49,7 +49,6 @@ namespace odb
     class basic_buffer: public basic_buffer_base
     {
     public:
-
       basic_buffer (std::size_t capacity = 256)
           : basic_buffer_base (capacity)
       {

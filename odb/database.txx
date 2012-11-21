@@ -15,7 +15,7 @@ namespace odb
     // T is always object_type. We also don't need to check for transaction
     // here; object_traits::query () does this.
     //
-    result<T> r (query_<T, id_default>::call (*this, q));
+    result<T> r (query_<T, id_common>::call (*this, q));
 
     if (cache)
       r.cache ();

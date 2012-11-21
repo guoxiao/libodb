@@ -73,7 +73,7 @@ namespace odb
   inline typename object_traits<T>::id_type database::
   persist (T& obj)
   {
-    return persist_<T, id_default> (obj);
+    return persist_<T, id_common> (obj);
   }
 
   template <typename T>
@@ -88,7 +88,7 @@ namespace odb
     //
     const object_pointer& pobj (p);
 
-    return persist_<T, id_default> (pobj);
+    return persist_<T, id_common> (pobj);
   }
 
   template <typename T, template <typename> class P>
@@ -103,7 +103,7 @@ namespace odb
     //
     const object_pointer& pobj (p);
 
-    return persist_<T, id_default> (pobj);
+    return persist_<T, id_common> (pobj);
   }
 
   template <typename T, typename A1, template <typename, typename> class P>
@@ -118,7 +118,7 @@ namespace odb
     //
     const object_pointer& pobj (p);
 
-    return persist_<T, id_default> (pobj);
+    return persist_<T, id_common> (pobj);
   }
 
   template <typename T, template <typename> class P>
@@ -141,42 +141,42 @@ namespace odb
   inline typename object_traits<T>::id_type database::
   persist (const typename object_traits<T>::pointer_type& pobj)
   {
-    return persist_<T, id_default> (pobj);
+    return persist_<T, id_common> (pobj);
   }
 
   template <typename T>
   inline typename object_traits<T>::pointer_type database::
   load (const typename object_traits<T>::id_type& id)
   {
-    return load_<T, id_default> (id);
+    return load_<T, id_common> (id);
   }
 
   template <typename T>
   inline void database::
   load (const typename object_traits<T>::id_type& id, T& obj)
   {
-    return load_<T, id_default> (id, obj);
+    return load_<T, id_common> (id, obj);
   }
 
   template <typename T>
   inline typename object_traits<T>::pointer_type database::
   find (const typename object_traits<T>::id_type& id)
   {
-    return find_<T, id_default> (id);
+    return find_<T, id_common> (id);
   }
 
   template <typename T>
   inline bool database::
   find (const typename object_traits<T>::id_type& id, T& obj)
   {
-    return find_<T, id_default> (id, obj);
+    return find_<T, id_common> (id, obj);
   }
 
   template <typename T>
   inline void database::
   reload (T& obj)
   {
-    reload_<T, id_default> (obj);
+    reload_<T, id_common> (obj);
   }
 
   template <typename T>
@@ -227,7 +227,7 @@ namespace odb
   inline void database::
   update (T& obj)
   {
-    update_<T, id_default> (obj);
+    update_<T, id_common> (obj);
   }
 
   template <typename T>
@@ -242,7 +242,7 @@ namespace odb
     //
     const object_pointer& pobj (p);
 
-    update_<T, id_default> (pobj);
+    update_<T, id_common> (pobj);
   }
 
   template <typename T, template <typename> class P>
@@ -257,7 +257,7 @@ namespace odb
     //
     const object_pointer& pobj (p);
 
-    update_<T, id_default> (pobj);
+    update_<T, id_common> (pobj);
   }
 
   template <typename T, typename A1, template <typename, typename> class P>
@@ -272,7 +272,7 @@ namespace odb
     //
     const object_pointer& pobj (p);
 
-    update_<T, id_default> (pobj);
+    update_<T, id_common> (pobj);
   }
 
   template <typename T, template <typename> class P>
@@ -295,21 +295,21 @@ namespace odb
   inline void database::
   update (const typename object_traits<T>::pointer_type& pobj)
   {
-    update_<T, id_default> (pobj);
+    update_<T, id_common> (pobj);
   }
 
   template <typename T>
   inline void database::
   erase (const typename object_traits<T>::id_type& id)
   {
-    return erase_<T, id_default> (id);
+    return erase_<T, id_common> (id);
   }
 
   template <typename T>
   inline void database::
   erase (T& obj)
   {
-    return erase_<T, id_default> (obj);
+    return erase_<T, id_common> (obj);
   }
 
   template <typename T>
@@ -324,7 +324,7 @@ namespace odb
     //
     const object_pointer& pobj (p);
 
-    erase_<T, id_default> (pobj);
+    erase_<T, id_common> (pobj);
   }
 
   template <typename T, template <typename> class P>
@@ -339,7 +339,7 @@ namespace odb
     //
     const object_pointer& pobj (p);
 
-    erase_<T, id_default> (pobj);
+    erase_<T, id_common> (pobj);
   }
 
   template <typename T, typename A1, template <typename, typename> class P>
@@ -354,7 +354,7 @@ namespace odb
     //
     const object_pointer& pobj (p);
 
-    erase_<T, id_default> (pobj);
+    erase_<T, id_common> (pobj);
   }
 
   template <typename T, template <typename> class P>
@@ -377,7 +377,7 @@ namespace odb
   inline void database::
   erase (const typename object_traits<T>::pointer_type& pobj)
   {
-    erase_<T, id_default> (pobj);
+    erase_<T, id_common> (pobj);
   }
 
   template <typename T>
@@ -413,7 +413,7 @@ namespace odb
   {
     // T is always object_type.
     //
-    return object_traits_impl<T, id_default>::erase_query (*this, q);
+    return object_traits_impl<T, id_common>::erase_query (*this, q);
   }
 
   template <typename T>

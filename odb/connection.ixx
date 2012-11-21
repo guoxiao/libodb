@@ -53,7 +53,7 @@ namespace odb
   inline prepared_query<T> connection::
   prepare_query (const char* n, const query<T>& q)
   {
-    return query_<T, id_default>::call (*this, n, q);
+    return query_<T, id_common>::call (*this, n, q);
   }
 
   template <typename T>

@@ -54,13 +54,13 @@ namespace odb
     id_pgsql,
     id_oracle,
     id_mssql,
-    id_default
+    id_common
   };
 
   // Number of real databases (i.e., excluding default) in the database_id
   // enum.
   //
-  const std::size_t database_count = id_default;
+  const std::size_t database_count = id_common;
 
   // Traits.
   //
@@ -115,6 +115,13 @@ namespace odb
   template <typename T> struct no_id_reference_cache_traits;
   template <typename T> struct no_op_reference_cache_traits;
   template <typename T> struct reference_cache_traits;
+
+  //
+  //
+  class query_base;
+
+  template <typename T>
+  struct query_column;
 
   //
   //

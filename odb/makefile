@@ -11,6 +11,7 @@ database.cxx       \
 connection.cxx     \
 lazy-ptr-impl.cxx  \
 prepared-query.cxx \
+query-dynamic.cxx  \
 result.cxx         \
 schema-catalog.cxx \
 session.cxx        \

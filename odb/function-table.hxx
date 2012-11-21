@@ -12,19 +12,36 @@
 namespace odb
 {
   template <typename T, database_id DB>
-  struct function_table_entry
+  struct object_function_table_entry
   {
-    typedef access::object_traits_impl<T, id_default> default_traits;
+    typedef access::object_traits_impl<T, id_common> common_traits;
 
-    function_table_entry (
-      const typename default_traits::function_table_type* t)
+    object_function_table_entry (
+      const typename common_traits::function_table_type* t)
     {
-      default_traits::function_table[DB] = t;
+      common_traits::function_table[DB] = t;
     }
 
-    ~function_table_entry ()
+    ~object_function_table_entry ()
     {
-      default_traits::function_table[DB] = 0;
+      common_traits::function_table[DB] = 0;
+    }
+  };
+
+  template <typename T, database_id DB>
+  struct view_function_table_entry
+  {
+    typedef access::view_traits_impl<T, id_common> common_traits;
+
+    view_function_table_entry (
+      const typename common_traits::function_table_type* t)
+    {
+      common_traits::function_table[DB] = t;
+    }
+
+    ~view_function_table_entry ()
+    {
+      common_traits::function_table[DB] = 0;
     }
   };
 }

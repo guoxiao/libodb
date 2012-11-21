@@ -82,7 +82,7 @@ namespace odb
   };
 
   template <typename T,
-            typename B = typename query_selector<T, id_default>::base_type>
+            typename B = typename query_selector<T, id_common>::base_type>
   class query;
 
   namespace core
