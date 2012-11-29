@@ -9,6 +9,7 @@
 
 #include <exception>
 
+#include <odb/forward.hxx>        // odb::core
 #include <odb/details/export.hxx>
 
 namespace odb
@@ -19,7 +20,7 @@ namespace odb
     what () const throw () = 0;
   };
 
-  namespace core
+  namespace common
   {
     using odb::exception;
   }

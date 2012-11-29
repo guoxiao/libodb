@@ -7,6 +7,7 @@
 
 #include <odb/pre.hxx>
 
+#include <odb/forward.hxx>        // odb::core
 #include <odb/details/export.hxx>
 
 namespace odb
@@ -32,7 +33,7 @@ namespace odb
     value v_;
   };
 
-  namespace core
+  namespace common
   {
     using odb::callback_event;
   }

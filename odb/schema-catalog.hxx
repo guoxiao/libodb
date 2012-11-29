@@ -9,7 +9,7 @@
 
 #include <string>
 
-#include <odb/forward.hxx>
+#include <odb/forward.hxx> // odb::core
 
 #include <odb/details/export.hxx>
 
@@ -22,7 +22,7 @@ namespace odb
     create_schema (database&, const std::string& name = "");
   };
 
-  namespace core
+  namespace common
   {
     using odb::schema_catalog;
   }

@@ -14,12 +14,30 @@
 
 namespace odb
 {
+  // Common and core namespaces. The idea is that you can use the
+  // using directive to get database-independent (common) names or
+  // all core names (core).
+  //
+  namespace common {}
+
+  namespace core
+  {
+    using namespace common;
+  }
+
+  //
+  //
   class database;
   class connection;
   typedef details::shared_ptr<connection> connection_ptr;
   class transaction;
   class statement;
   class session;
+
+  namespace common
+  {
+    using odb::session;
+  }
 
   namespace core
   {
@@ -28,7 +46,6 @@ namespace odb
     using odb::connection_ptr;
     using odb::transaction;
     using odb::statement;
-    using odb::session;
   }
 
   // Tracing.
@@ -36,7 +53,7 @@ namespace odb
   class tracer; // Not in core.
   extern LIBODB_EXPORT tracer& stderr_tracer;
 
-  namespace core
+  namespace common
   {
     using odb::stderr_tracer;
   }

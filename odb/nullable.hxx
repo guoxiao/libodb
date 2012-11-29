@@ -7,6 +7,8 @@
 
 #include <odb/pre.hxx>
 
+#include <odb/forward.hxx> // odb::core
+
 namespace odb
 {
   template <typename T>
@@ -52,7 +54,7 @@ namespace odb
     bool null_;
   };
 
-  namespace core
+  namespace common
   {
     using odb::nullable;
   }

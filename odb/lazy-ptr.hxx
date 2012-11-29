@@ -10,7 +10,7 @@
 #include <memory>  // std::auto_ptr, std::shared_ptr/weak_ptr
 #include <utility> // std::move
 
-#include <odb/forward.hxx>        // odb::database
+#include <odb/forward.hxx>        // odb::core, odb::database
 #include <odb/traits.hxx>
 #include <odb/lazy-ptr-impl.hxx>
 #include <odb/details/config.hxx> // ODB_CXX11
@@ -627,7 +627,7 @@ namespace odb
 
 #endif // ODB_CXX11
 
-  namespace core
+  namespace common
   {
     using odb::lazy_ptr;
     using odb::lazy_auto_ptr;

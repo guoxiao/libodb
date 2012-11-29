@@ -9,7 +9,7 @@
 
 #include <cstddef>  // std::ptrdiff_t, std::size_t
 
-#include <odb/forward.hxx>
+#include <odb/forward.hxx> // odb::core
 #include <odb/traits.hxx>
 
 #include <odb/details/export.hxx>
@@ -215,7 +215,7 @@ namespace odb
     details::shared_ptr<result_impl_type> impl_;
   };
 
-  namespace core
+  namespace common
   {
     using odb::result;
     using odb::result_iterator;

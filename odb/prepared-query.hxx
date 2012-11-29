@@ -7,7 +7,7 @@
 
 #include <odb/pre.hxx>
 
-#include <odb/forward.hxx>
+#include <odb/forward.hxx> // odb::core
 #include <odb/traits.hxx>
 #include <odb/result.hxx>
 #include <odb/statement.hxx>
@@ -162,7 +162,7 @@ namespace odb
     prepared_query_impl* impl_;
   };
 
-  namespace core
+  namespace common
   {
     using odb::prepared_query;
   }

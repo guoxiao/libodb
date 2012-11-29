@@ -9,6 +9,7 @@
 
 #include <string>
 
+#include <odb/forward.hxx>    // odb::core
 #include <odb/exception.hxx>
 
 #include <odb/details/export.hxx>
@@ -188,7 +189,7 @@ namespace odb
     std::string what_;
   };
 
-  namespace core
+  namespace common
   {
     using odb::null_pointer;
 
