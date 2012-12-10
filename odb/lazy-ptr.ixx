@@ -1490,7 +1490,7 @@ namespace odb
   {
     p_ = r;
     i_.reset ();
-    return this;
+    return *this;
   }
 
   template <class T>
@@ -1500,7 +1500,7 @@ namespace odb
   {
     p_ = r;
     i_.reset ();
-    return this;
+    return *this;
   }
 
   template <class T>
