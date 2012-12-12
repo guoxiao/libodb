@@ -48,7 +48,9 @@ namespace odb
     if (i == query_factory_map_.end ())
       i = query_factory_map_.find (""); // Wildcard factory.
 
-    return i != query_factory_map_.end () ? i->second : 0;
+    return i != query_factory_map_.end ()
+      ? i->second
+      : database::query_factory_type ();
   }
 
   inline void database::
