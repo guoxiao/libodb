@@ -27,7 +27,17 @@ namespace odb
     typedef odb::pointer_traits<pointer_type> pointer_traits;
     typedef typename pointer_traits::element_type object_type;
     typedef typename object_traits<object_type>::id_type id_type;
-    typedef session::object_position<object_type> position_type;
+
+    struct position_type
+    {
+      typedef session::position<object_type> base_type;
+
+      position_type (): empty_ (true) {}
+      position_type (const base_type& pos): empty_ (false), pos_ (pos) {}
+
+      bool empty_;
+      base_type pos_;
+    };
 
     struct insert_guard
     {
@@ -35,13 +45,13 @@ namespace odb
       insert_guard (const position_type& pos): pos_ (pos) {}
       ~insert_guard () {erase (pos_);}
 
-      position_type
+      const position_type&
       position () const {return pos_;}
 
       void
-      release () {pos_.map_ = 0;}
+      release () {pos_.empty_ = true;}
 
-      // Note: doesn't call erase() on the old position (assumes not set).
+      // Note: doesn't call erase() on the old position (assumes empty).
       //
       void
       reset (const position_type& pos) {pos_ = pos;}
@@ -94,8 +104,8 @@ namespace odb
     static void
     erase (const position_type& p)
     {
-      if (p.map_ != 0)
-        session::current ().erase<object_type> (p);
+      if (!p.empty_)
+        session::current ().erase<object_type> (p.pos_);
     }
   };
 

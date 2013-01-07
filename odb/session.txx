@@ -7,7 +7,7 @@
 namespace odb
 {
   template <typename T>
-  typename session::object_position<T> session::
+  typename session::position<T> session::
   insert (database_type& db,
           const typename object_traits<T>::id_type& id,
           const typename object_traits<T>::pointer_type& obj)
@@ -33,7 +33,7 @@ namespace odb
     if (!r.second)
       r.first->second = obj;
 
-    return object_position<T> (om, r.first);
+    return position<T> (om, r.first);
   }
 
   template <typename T>

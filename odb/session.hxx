@@ -83,22 +83,26 @@ namespace odb
     // Object cache.
     //
   public:
+    // Position in the cache of an inserted element. The requirements
+    // for this class template are: default and copy-constructible and
+    // copy-assignable. In particular, a standard iterator can be used
+    // as a position.
+    //
     template <typename T>
-    struct object_position
+    struct position
     {
-      typedef T object_type;
-      typedef object_map<object_type> map;
+      typedef object_map<T> map;
       typedef typename map::iterator iterator;
 
-      object_position (): map_ (0) {}
-      object_position (map& m, const iterator& p): map_ (&m), pos_ (p) {}
+      position () {}
+      position (map& m, const iterator& p): map_ (&m), pos_ (p) {}
 
       map* map_;
       iterator pos_;
     };
 
     template <typename T>
-    object_position<T>
+    position<T>
     insert (database_type&,
             const typename object_traits<T>::id_type&,
             const typename object_traits<T>::pointer_type&);
@@ -113,7 +117,7 @@ namespace odb
 
     template <typename T>
     void
-    erase (const object_position<T>&);
+    erase (const position<T>&);
 
   protected:
     typedef std::map<const std::type_info*,

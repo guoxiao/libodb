@@ -8,7 +8,7 @@ namespace odb
 {
   template <typename T>
   inline void session::
-  erase (const object_position<T>& p)
+  erase (const position<T>& p)
   {
     // @@ Empty maps are not cleaned up by this version of erase.
     //
