@@ -73,10 +73,9 @@ namespace odb
     };
 
     template <typename T>
-    struct object_map:
-      object_map_base,
-      std::map<typename object_traits<T>::id_type,
-               typename object_traits<T>::pointer_type>
+    struct object_map: object_map_base,
+                       std::map<typename object_traits<T>::id_type,
+                                typename object_traits<T>::pointer_type>
     {
     };
 
@@ -84,9 +83,9 @@ namespace odb
     //
   public:
     // Position in the cache of an inserted element. The requirements
-    // for this class template are: default and copy-constructible and
-    // copy-assignable. In particular, a standard iterator can be used
-    // as a position.
+    // for this class template are: default and copy-constructible as
+    // well as copy-assignable. In particular, a standard iterator can
+    // be used as a position.
     //
     template <typename T>
     struct position
@@ -119,13 +118,22 @@ namespace odb
     void
     erase (const position<T>&);
 
-  protected:
+    // Low-level object cache access (iteration, etc).
+    //
+  public:
     typedef std::map<const std::type_info*,
                      details::shared_ptr<object_map_base>,
                      details::type_info_comparator> type_map;
 
     typedef std::map<database_type*, type_map> database_map;
 
+    database_map&
+    map () {return db_map_;}
+
+    const database_map&
+    map () const {return db_map_;}
+
+  protected:
     database_map db_map_;
   };
 }
