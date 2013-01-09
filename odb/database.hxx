@@ -263,12 +263,14 @@ namespace odb
     // Prepared query factory.
     //
   public:
+    typedef odb::connection connection_type;
+
 #ifdef ODB_CXX11
     typedef
-    std::function<void (const char*, connection&)>
+    std::function<void (const char*, connection_type&)>
     query_factory_type;
 #else
-    typedef void (*query_factory_type) (const char*, connection&);
+    typedef void (*query_factory_type) (const char*, connection_type&);
 #endif
 
     void
@@ -329,8 +331,6 @@ namespace odb
     database& operator= (const database&);
 
   protected:
-    typedef odb::connection connection_type;
-
     virtual connection_type*
     connection_ () = 0;
 
