@@ -20,17 +20,18 @@ namespace odb
   // Caching traits for objects passed by pointer. P should be the canonical
   // pointer (non-const).
   //
-  template <typename P, pointer_kind pk>
+  template <typename P, typename S, pointer_kind pk>
   struct pointer_cache_traits_impl
   {
     typedef P pointer_type;
+    typedef S session_type;
     typedef odb::pointer_traits<pointer_type> pointer_traits;
     typedef typename pointer_traits::element_type object_type;
     typedef typename object_traits<object_type>::id_type id_type;
 
     struct position_type
     {
-      typedef session::position<object_type> base_type;
+      typedef typename session_type::template position<object_type> base_type;
 
       position_type (): empty_ (true) {}
       position_type (const base_type& pos): empty_ (false), pos_ (pos) {}
@@ -69,8 +70,9 @@ namespace odb
     static position_type
     insert (odb::database& db, const id_type& id, const pointer_type& p)
     {
-      if (session::has_current ())
-        return session::current ().insert<object_type> (db, id, p);
+      if (session_type::has_current ())
+        return session_type::current ().template insert<object_type> (
+          db, id, p);
       else
         return position_type ();
     }
@@ -88,8 +90,8 @@ namespace odb
     static pointer_type
     find (odb::database& db, const id_type& id)
     {
-      if (session::has_current ())
-        return session::current ().find<object_type> (db, id);
+      if (session_type::has_current ())
+        return session_type::current ().template find<object_type> (db, id);
       else
         return pointer_type ();
     }
@@ -97,27 +99,27 @@ namespace odb
     static void
     erase (odb::database& db, const id_type& id)
     {
-      if (session::has_current ())
-        session::current ().erase<object_type> (db, id);
+      if (session_type::has_current ())
+        session_type::current ().template erase<object_type> (db, id);
     }
 
     static void
     erase (const position_type& p)
     {
       if (!p.empty_)
-        session::current ().erase<object_type> (p.pos_);
+        session_type::current ().template erase<object_type> (p.pos_);
     }
   };
 
   // Unique pointers don't work with the object cache.
   //
-  template <typename P>
-  struct pointer_cache_traits_impl<P, pk_unique>:
+  template <typename P, typename S>
+  struct pointer_cache_traits_impl<P, S, pk_unique>:
     no_op_pointer_cache_traits<P> {};
 
-  template <typename P>
+  template <typename P, typename S>
   struct pointer_cache_traits:
-    pointer_cache_traits_impl<P, pointer_traits<P>::kind> {};
+    pointer_cache_traits_impl<P, S, pointer_traits<P>::kind> {};
 
   // reference_cache_traits
   //
@@ -125,17 +127,17 @@ namespace odb
   // canonical object type (non-const). Only if the object pointer
   // kind is raw do we add the object to the session.
   //
-  template <typename T, pointer_kind pk>
+  template <typename T, typename S, pointer_kind pk>
   struct reference_cache_traits_impl: no_op_reference_cache_traits<T> {};
 
-  template <typename T>
-  struct reference_cache_traits_impl<T, pk_raw>
+  template <typename T, typename S>
+  struct reference_cache_traits_impl<T, S, pk_raw>
   {
     typedef T object_type;
     typedef typename object_traits<object_type>::pointer_type pointer_type;
     typedef typename object_traits<object_type>::id_type id_type;
 
-    typedef pointer_cache_traits<pointer_type> pointer_traits;
+    typedef pointer_cache_traits<pointer_type, S> pointer_traits;
     typedef typename pointer_traits::position_type position_type;
     typedef typename pointer_traits::insert_guard insert_guard;
 
@@ -154,10 +156,10 @@ namespace odb
     }
   };
 
-  template <typename T>
+  template <typename T, typename S>
   struct reference_cache_traits:
     reference_cache_traits_impl<
-    T, pointer_traits<typename object_traits<T>::pointer_type>::kind> {};
+      T, S, pointer_traits<typename object_traits<T>::pointer_type>::kind> {};
 }
 
 #include <odb/post.hxx>

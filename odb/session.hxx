@@ -65,7 +65,7 @@ namespace odb
     session (const session&);
     session& operator= (const session&);
 
-  protected:
+  public:
     struct LIBODB_EXPORT object_map_base: details::shared_base
     {
       virtual
@@ -84,8 +84,7 @@ namespace odb
   public:
     // Position in the cache of an inserted element. The requirements
     // for this class template are: default and copy-constructible as
-    // well as copy-assignable. In particular, a standard iterator can
-    // be used as a position.
+    // well as copy-assignable.
     //
     template <typename T>
     struct position
@@ -117,6 +116,7 @@ namespace odb
     template <typename T>
     void
     erase (const position<T>&);
+
 
     // Low-level object cache access (iteration, etc).
     //

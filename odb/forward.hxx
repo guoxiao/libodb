@@ -128,10 +128,10 @@ namespace odb
   //
   template <typename T> struct no_id_pointer_cache_traits;
   template <typename T> struct no_op_pointer_cache_traits;
-  template <typename T> struct pointer_cache_traits;
+  template <typename T, typename S> struct pointer_cache_traits;
   template <typename T> struct no_id_reference_cache_traits;
   template <typename T> struct no_op_reference_cache_traits;
-  template <typename T> struct reference_cache_traits;
+  template <typename T, typename S> struct reference_cache_traits;
 
   //
   //
