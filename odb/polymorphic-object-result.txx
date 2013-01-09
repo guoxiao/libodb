@@ -60,10 +60,12 @@ namespace odb
 
     typedef odb::object_traits<object_type> object_traits;
 
-    typename object_traits::reference_cache_traits::insert_guard ig (
+    typename object_traits::reference_cache_traits::position_type p (
       object_traits::reference_cache_traits::insert (
         res_->db_, res_->load_id (), obj));
+    typename object_traits::reference_cache_traits::insert_guard ig (p);
     res_->load (&obj, false);
+    object_traits::reference_cache_traits::initialize (p);
     ig.release ();
   }
 }

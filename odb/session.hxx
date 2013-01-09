@@ -106,6 +106,10 @@ namespace odb
             const typename object_traits<T>::pointer_type&);
 
     template <typename T>
+    static void
+    initialize (const position<T>&) {}
+
+    template <typename T>
     typename object_traits<T>::pointer_type
     find (database_type&, const typename object_traits<T>::id_type&) const;
 
@@ -114,7 +118,7 @@ namespace odb
     erase (database_type&, const typename object_traits<T>::id_type&);
 
     template <typename T>
-    void
+    static void
     erase (const position<T>&);
 
 

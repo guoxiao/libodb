@@ -77,6 +77,13 @@ namespace odb
         return position_type ();
     }
 
+    static void
+    initialize (const position_type& p)
+    {
+      if (!p.empty_)
+        session_type::template initialize<object_type> (p.pos_);
+    }
+
     static position_type
     insert (odb::database& db, const pointer_type& p)
     {
@@ -107,7 +114,7 @@ namespace odb
     erase (const position_type& p)
     {
       if (!p.empty_)
-        session_type::current ().template erase<object_type> (p.pos_);
+        session_type::template erase<object_type> (p.pos_);
     }
   };
 
@@ -153,6 +160,12 @@ namespace odb
     {
       pointer_type p (&obj);
       return pointer_traits::insert (db, p);
+    }
+
+    static void
+    initialize (const position_type& p)
+    {
+      pointer_traits::initialize (p);
     }
   };
 

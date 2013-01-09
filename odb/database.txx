@@ -36,8 +36,11 @@ namespace odb
 
     object_traits::persist (*this, obj);
 
-    object_traits::reference_cache_traits::insert (
-      *this, reference_cache_type<T>::convert (obj));
+    typename object_traits::reference_cache_traits::position_type p (
+      object_traits::reference_cache_traits::insert (
+        *this, reference_cache_type<T>::convert (obj)));
+
+    object_traits::reference_cache_traits::initialize (p);
 
     return object_traits::id (obj);
   }
@@ -58,8 +61,11 @@ namespace odb
 
     // Get the canonical object pointer and insert it into object cache.
     //
-    object_traits::pointer_cache_traits::insert (
-      *this, pointer_cache_type<pointer_type>::convert (pobj));
+    typename object_traits::pointer_cache_traits::position_type p (
+      object_traits::pointer_cache_traits::insert (
+        *this, pointer_cache_type<pointer_type>::convert (pobj)));
+
+    object_traits::pointer_cache_traits::initialize (p);
 
     return object_traits::id (obj);
   }
