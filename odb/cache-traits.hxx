@@ -28,29 +28,19 @@ namespace odb
     typedef odb::pointer_traits<pointer_type> pointer_traits;
     typedef typename pointer_traits::element_type object_type;
     typedef typename object_traits<object_type>::id_type id_type;
-
-    struct position_type
-    {
-      typedef typename session_type::template position<object_type> base_type;
-
-      position_type (): empty_ (true) {}
-      position_type (const base_type& pos): empty_ (false), pos_ (pos) {}
-
-      bool empty_;
-      base_type pos_;
-    };
+    typedef typename session_type::template position<object_type> position_type;
 
     struct insert_guard
     {
       insert_guard () {}
       insert_guard (const position_type& pos): pos_ (pos) {}
-      ~insert_guard () {erase (pos_);}
+      ~insert_guard () {session_type::erase (pos_);}
 
       const position_type&
       position () const {return pos_;}
 
       void
-      release () {pos_.empty_ = true;}
+      release () {pos_ = position_type ();}
 
       // Note: doesn't call erase() on the old position (assumes empty).
       //
@@ -61,6 +51,8 @@ namespace odb
       position_type pos_;
     };
 
+    // Cache management.
+    //
     // We need the insert() overload with explicit id to handle self-
     // references. In such cases the object is not yet loaded and the
     // id member does not contain the correct id.
@@ -70,18 +62,7 @@ namespace odb
     static position_type
     insert (odb::database& db, const id_type& id, const pointer_type& p)
     {
-      if (session_type::has_current ())
-        return session_type::current ().template insert<object_type> (
-          db, id, p);
-      else
-        return position_type ();
-    }
-
-    static void
-    initialize (const position_type& p)
-    {
-      if (!p.empty_)
-        session_type::template initialize<object_type> (p.pos_);
+      return session_type::template insert<object_type> (db, id, p);
     }
 
     static position_type
@@ -91,30 +72,45 @@ namespace odb
         object_traits<object_type>::id (
           pointer_traits::get_ref (p)));
 
-      return insert (db, id, p);
+      return session_type::template insert<object_type> (db, id, p);
     }
 
     static pointer_type
     find (odb::database& db, const id_type& id)
     {
-      if (session_type::has_current ())
-        return session_type::current ().template find<object_type> (db, id);
-      else
-        return pointer_type ();
-    }
-
-    static void
-    erase (odb::database& db, const id_type& id)
-    {
-      if (session_type::has_current ())
-        session_type::current ().template erase<object_type> (db, id);
+      return session_type::template find<object_type> (db, id);
     }
 
     static void
     erase (const position_type& p)
     {
-      if (!p.empty_)
-        session_type::template erase<object_type> (p.pos_);
+      session_type::template erase<object_type> (p);
+    }
+
+    // Notifications.
+    //
+    static void
+    persist (const position_type& p)
+    {
+      session_type::template persist<object_type> (p);
+    }
+
+    static void
+    load (const position_type& p)
+    {
+      session_type::template load<object_type> (p);
+    }
+
+    static void
+    update (odb::database& db, const object_type& obj)
+    {
+      session_type::template update<object_type> (db, obj);
+    }
+
+    static void
+    erase (odb::database& db, const id_type& id)
+    {
+      session_type::template erase<object_type> (db, id);
     }
   };
 
@@ -163,9 +159,15 @@ namespace odb
     }
 
     static void
-    initialize (const position_type& p)
+    persist (const position_type& p)
     {
-      pointer_traits::initialize (p);
+      pointer_traits::persist (p);
+    }
+
+    static void
+    load (const position_type& p)
+    {
+      pointer_traits::load (p);
     }
   };
 

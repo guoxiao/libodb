@@ -12,6 +12,7 @@ namespace odb
   {
     // @@ Empty maps are not cleaned up by this version of erase.
     //
-    p.map_->erase (p.pos_);
+    if (p.map_ != 0)
+      p.map_->erase (p.pos_);
   }
 }

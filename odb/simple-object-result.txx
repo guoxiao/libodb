@@ -30,7 +30,7 @@ namespace odb
       object_type& obj (pointer_traits::get_ref (p));
       current (p);
       load (obj, false);
-      object_traits::pointer_cache_traits::initialize (ig.position ());
+      object_traits::pointer_cache_traits::load (ig.position ());
       ig.release ();
     }
   }
@@ -53,7 +53,7 @@ namespace odb
         res_->db_, res_->load_id (), obj));
     typename object_traits::reference_cache_traits::insert_guard ig (p);
     res_->load (obj, false);
-    object_traits::reference_cache_traits::initialize (p);
+    object_traits::reference_cache_traits::load (p);
     ig.release ();
   }
 }

@@ -114,6 +114,8 @@ namespace odb
       reset (const position_type&) {}
     };
 
+    // Cache management.
+    //
     static position_type
     insert (odb::database&, const id_type&, const pointer_type&)
     {
@@ -128,17 +130,25 @@ namespace odb
     static position_type
     insert (odb::database&, void*) {return position_type ();}
 
-    static void
-    initialize (const position_type&) {}
-
     static pointer_type
     find (odb::database&, const id_type&) {return pointer_type ();}
 
     static void
-    erase (odb::database&, const id_type&) {}
+    erase (const position_type&) {}
+
+    // Notifications.
+    //
+    static void
+    persist (const position_type&) {}
 
     static void
-    erase (const position_type&) {}
+    load (const position_type&) {}
+
+    static void
+    update (odb::database&, const object_type&) {}
+
+    static void
+    erase (odb::database&, const id_type&) {}
   };
 
   template <typename P>
@@ -156,7 +166,10 @@ namespace odb
     insert (odb::database&, void*) {return position_type ();}
 
     static void
-    initialize (const position_type&) {}
+    persist (const position_type&) {}
+
+    static void
+    load (const position_type&) {}
   };
 
   // reference_cache_traits
@@ -196,7 +209,10 @@ namespace odb
     insert (odb::database&, object_type&) {return position_type ();}
 
     static void
-    initialize (const position_type&) {}
+    persist (const position_type&) {}
+
+    static void
+    load (const position_type&) {}
   };
 
   template <typename T>
@@ -209,7 +225,10 @@ namespace odb
     insert (odb::database&, object_type&) {return position_type ();}
 
     static void
-    initialize (const position_type&) {}
+    persist (const position_type&) {}
+
+    static void
+    load (const position_type&) {}
   };
 }
 

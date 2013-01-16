@@ -40,7 +40,7 @@ namespace odb
       object_traits::reference_cache_traits::insert (
         *this, reference_cache_type<T>::convert (obj)));
 
-    object_traits::reference_cache_traits::initialize (p);
+    object_traits::reference_cache_traits::persist (p);
 
     return object_traits::id (obj);
   }
@@ -65,7 +65,7 @@ namespace odb
       object_traits::pointer_cache_traits::insert (
         *this, pointer_cache_type<pointer_type>::convert (pobj)));
 
-    object_traits::pointer_cache_traits::initialize (p);
+    object_traits::pointer_cache_traits::persist (p);
 
     return object_traits::id (obj);
   }

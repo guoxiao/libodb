@@ -12,7 +12,11 @@ namespace odb
   {
     typedef odb::object_traits<T> object_traits;
 
-    type_map& tm (db_map_[&db]);
+    session* s (current_pointer ());
+    if (s == 0)
+      return position<T> ();
+
+    type_map& tm (s->db_map_[&db]);
     details::shared_ptr<object_map_base>& pom (tm[&typeid (T)]);
 
     if (!pom)
@@ -36,13 +40,17 @@ namespace odb
 
   template <typename T>
   typename object_traits<T>::pointer_type session::
-  find (database_type& db, const typename object_traits<T>::id_type& id) const
+  find (database_type& db, const typename object_traits<T>::id_type& id)
   {
     typedef typename object_traits<T>::pointer_type pointer_type;
 
-    database_map::const_iterator di (db_map_.find (&db));
+    const session* s (current_pointer ());
+    if (s == 0)
+      return pointer_type ();
 
-    if (di == db_map_.end ())
+    database_map::const_iterator di (s->db_map_.find (&db));
+
+    if (di == s->db_map_.end ())
       return pointer_type ();
 
     const type_map& tm (di->second);
@@ -64,9 +72,13 @@ namespace odb
   void session::
   erase (database_type& db, const typename object_traits<T>::id_type& id)
   {
-    database_map::iterator di (db_map_.find (&db));
+    session* s (current_pointer ());
+    if (s == 0)
+      return;
 
-    if (di == db_map_.end ())
+    database_map::iterator di (s->db_map_.find (&db));
+
+    if (di == s->db_map_.end ())
       return;
 
     type_map& tm (di->second);
@@ -87,6 +99,6 @@ namespace odb
       tm.erase (ti);
 
     if (tm.empty ())
-      db_map_.erase (di);
+      s->db_map_.erase (di);
   }
 }

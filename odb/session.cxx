@@ -21,7 +21,7 @@ namespace odb
       if (has_current ())
         throw already_in_session ();
 
-      current (*this);
+      current_pointer (this);
     }
   }
 
@@ -30,14 +30,20 @@ namespace odb
   {
     // If we are the current thread's session, reset it.
     //
-    if (has_current () && &current () == this)
+    if (current_pointer () == this)
       reset_current ();
   }
 
-  bool session::
-  has_current ()
+  session* session::
+  current_pointer ()
   {
-    return tls_get (current_session) != 0;
+    return tls_get (current_session);
+  }
+
+  void session::
+  current_pointer (session* s)
+  {
+    tls_set (current_session, s);
   }
 
   session& session::
@@ -49,19 +55,6 @@ namespace odb
       throw not_in_session ();
 
     return *cur;
-  }
-
-  void session::
-  current (session& s)
-  {
-    tls_set (current_session, &s);
-  }
-
-  void session::
-  reset_current ()
-  {
-    session* s (0);
-    tls_set (current_session, s);
   }
 
   //

@@ -65,7 +65,7 @@ namespace odb
         res_->db_, res_->load_id (), obj));
     typename object_traits::reference_cache_traits::insert_guard ig (p);
     res_->load (&obj, false);
-    object_traits::reference_cache_traits::initialize (p);
+    object_traits::reference_cache_traits::load (p);
     ig.release ();
   }
 }
