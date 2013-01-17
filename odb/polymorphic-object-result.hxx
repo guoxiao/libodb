@@ -98,7 +98,7 @@ namespace odb
     // The load() signature differs from the non-polymorphic cases in
     // that we pass a pointer to object instead of a reference. The
     // object is only passed if the user requests loading into an
-    // existing instance. Otherwise, we pass NULL an load() is
+    // existing instance. Otherwise, we pass NULL and load() is
     // responsible for creating the object of a correct dynamic
     // type and managing the object cache insertion.
     //
