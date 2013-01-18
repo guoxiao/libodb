@@ -7,6 +7,8 @@
 
 #include <odb/details/tls.hxx>
 
+using namespace std;
+
 namespace odb
 {
   using namespace details;
@@ -74,6 +76,15 @@ namespace odb
     tls_set (current_transaction, t);
   }
 
+  struct rollback_guard
+  {
+    rollback_guard (transaction& t): t_ (&t) {}
+    ~rollback_guard () {if (t_ != 0) t_->call (transaction::event_rollback);}
+    void release () {t_ = 0;}
+  private:
+    transaction* t_;
+  };
+
   void transaction::
   commit ()
   {
@@ -81,6 +92,8 @@ namespace odb
       throw transaction_already_finalized ();
 
     finalized_ = true;
+    rollback_guard rg (*this);
+
     impl_->connection ().transaction_tracer_ = 0;
 
     if (tls_get (current_transaction) == this)
@@ -90,6 +103,10 @@ namespace odb
     }
 
     impl_->commit ();
+    rg.release ();
+
+    if (callback_count_ != 0)
+      call (event_commit);
   }
 
   void transaction::
@@ -99,6 +116,8 @@ namespace odb
       throw transaction_already_finalized ();
 
     finalized_ = true;
+    rollback_guard rg (*this);
+
     impl_->connection ().transaction_tracer_ = 0;
 
     if (tls_get (current_transaction) == this)
@@ -108,6 +127,171 @@ namespace odb
     }
 
     impl_->rollback ();
+    rg.release ();
+
+    if (callback_count_ != 0)
+      call (event_rollback);
+  }
+
+  void transaction::
+  call (unsigned short event)
+  {
+    size_t stack_count (callback_count_ < stack_callback_count
+                        ? callback_count_ : stack_callback_count);
+    size_t dyn_count (callback_count_ - stack_count);
+
+    // We need to be careful with the situation where a callback
+    // throws and we neither call the rest of the callbacks nor
+    // reset their states. To make sure this doesn't happen, we
+    // do a first pass and reset all the states.
+    //
+    for (size_t i (0); i < stack_count; ++i)
+    {
+      callback_data& d (stack_callbacks_[i]);
+      if (d.event != 0 && d.state != 0)
+        *d.state = 0;
+    }
+
+    for (size_t i (0); i < dyn_count; ++i)
+    {
+      callback_data& d (dyn_callbacks_[i]);
+      if (d.event != 0 && d.state != 0)
+        *d.state = 0;
+    }
+
+    // Now do the actual calls.
+    //
+    for (size_t i (0); i < stack_count; ++i)
+    {
+      callback_data& d (stack_callbacks_[i]);
+      if (d.event & event)
+        d.func (event, d.key, d.data);
+    }
+
+    for (size_t i (0); i < dyn_count; ++i)
+    {
+      callback_data& d (dyn_callbacks_[i]);
+      if (d.event & event)
+        d.func (event, d.key, d.data);
+    }
+
+    // Clean things up in case this instance is going to be reused.
+    //
+    if (dyn_count != 0)
+      dyn_callbacks_.clear ();
+
+    free_callback_ = max_callback_count;
+    callback_count_ = 0;
+  }
+
+  void transaction::
+  register_ (callback_type func,
+             void* key,
+             unsigned short event,
+             unsigned long long data,
+             transaction** state)
+  {
+    callback_data* s;
+
+    // If we have a free slot, use it.
+    //
+    if (free_callback_ != max_callback_count)
+    {
+      s = (free_callback_ < stack_callback_count)
+        ? stack_callbacks_ + free_callback_
+        : &dyn_callbacks_[free_callback_ - stack_callback_count];
+
+      free_callback_ = reinterpret_cast<size_t> (s->key);
+    }
+    // If we have space in the stack, grab that.
+    //
+    else if (callback_count_ < stack_callback_count)
+    {
+      s = stack_callbacks_ + callback_count_;
+      callback_count_++;
+    }
+    // Otherwise use the dynamic storage.
+    //
+    else
+    {
+      dyn_callbacks_.push_back (callback_data ());
+      s = &dyn_callbacks_.back ();
+      callback_count_++;
+    }
+
+    s->func = func;
+    s->key = key;
+    s->event = event;
+    s->data = data;
+    s->state = state;
+  }
+
+  void transaction::
+  unregister (void* key)
+  {
+    // Note that it is ok for this function not to find the key.
+    //
+    if (callback_count_ == 0)
+      return;
+
+    size_t stack_count;
+
+    // See if this is the last slot registered. This will be a fast path
+    // if things are going to be unregistered from destructors.
+    //
+    if (callback_count_ <= stack_callback_count)
+    {
+      if (stack_callbacks_[callback_count_ - 1].key == key)
+      {
+        callback_count_--;
+        return;
+      }
+
+      stack_count = callback_count_;
+    }
+    else
+    {
+      if (dyn_callbacks_.back ().key == key)
+      {
+        dyn_callbacks_.pop_back ();
+        callback_count_--;
+        return;
+      }
+
+      stack_count = stack_callback_count;
+    }
+
+    size_t dyn_count (callback_count_ - stack_count);
+
+    // Otherwise do a linear search.
+    //
+    for (size_t i (0); i < stack_count; ++i)
+    {
+      callback_data& d (stack_callbacks_[i]);
+      if (d.key == key)
+      {
+        // Add to the free list.
+        //
+        d.event = 0;
+        d.key = reinterpret_cast<void*> (free_callback_);
+        free_callback_ = i;
+        return;
+      }
+    }
+
+    for (size_t i (0); i < dyn_count; ++i)
+    {
+      callback_data& d (dyn_callbacks_[i]);
+      if (d.key == key)
+      {
+        // Add to the free list.
+        //
+        d.event = 0;
+        d.key = reinterpret_cast<void*> (free_callback_);
+        free_callback_ = stack_callback_count + i;
+        return;
+      }
+    }
   }
 
   //

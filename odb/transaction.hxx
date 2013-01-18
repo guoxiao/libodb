@@ -7,6 +7,9 @@
 
 #include <odb/pre.hxx>
 
+#include <vector>
+#include <cstddef> // std::size_t
+
 #include <odb/forward.hxx>
 
 #include <odb/details/export.hxx>
@@ -93,6 +96,46 @@ namespace odb
     tracer_type*
     tracer () const;
 
+    // Post-commit/rollback callbacks.
+    //
+  public:
+    static const unsigned short event_commit = 0x01;
+    static const unsigned short event_rollback = 0x02;
+    static const unsigned short event_all = event_commit | event_rollback;
+
+    typedef void (*callback_type) (
+      unsigned short event, void* key, unsigned long long data);
+
+    // Register a post-commit/rollback callback. The data argument
+    // can be used to store any user data that does not exceed 8
+    // bytes and doesn't require alignment greater than unsigned
+    // long long, such as an old value that needs to be restored
+    // in case of a rollback.
+    //
+    // The state argument can be used to indicate to the caller
+    // that the callback has been unregistered because the
+    // transaction has terminated. In this case the transaction
+    // resets the passed pointer to 0.
+    //
+    // Note that the order in which the callbacks are called is
+    // unspecified.
+    //
+    void
+    register_ (callback_type,
+               void* key,
+               unsigned short event = event_all,
+               unsigned long long data = 0,
+               transaction** state = 0);
+
+    // Unregister a post-commit/rollback callback. Note that this is a
+    // potentially slow operation. You also don't need to unregister
+    // a callback that has been called or auto-reset using the state
+    // argument passed to register_(). This function does nothing if
+    // the key is not found.
+    //
+    void
+    unregister (void* key);
+
   public:
     transaction_impl&
     implementation ();
@@ -104,8 +147,50 @@ namespace odb
     transaction& operator= (const transaction&);
 
   protected:
+    friend struct rollback_guard;
+
+    void
+    call (unsigned short event);
+
+  protected:
     bool finalized_;
     details::unique_ptr<transaction_impl> impl_;
+
+    // Callbacks.
+    //
+    struct callback_data
+    {
+      unsigned short event;
+      callback_type func;
+      void* key;
+      unsigned long long data;
+      transaction** state;
+    };
+
+    // Slots for the first 20 callback are pre-allocated on the stack.
+    // For the rest they are allocated dynamically as needed.
+    //
+    // Note, if you change stack_callback_count, make sure you also
+    // update the common/transaction/callback test accordingly.
+    //
+    static const std::size_t stack_callback_count = 20;
+    static const std::size_t max_callback_count = ~(std::size_t (0));
+
+    callback_data stack_callbacks_[stack_callback_count];
+    std::vector<callback_data> dyn_callbacks_;
+
+    // When a callback is unregistered, the free slot from the stack is
+    // added to the linked list of free slots which is organized by
+    // re-using the key data member to store the slot's index (we cannot
+    // store a pointer because std::vector may move slots on expansion).
+    // The value equal to max_callback_count indicates no free slots are
+    // available.
+    //
+    std::size_t free_callback_;
+
+    // Total number of used slots, both registered and in the free list.
+    //
+    std::size_t callback_count_;
   };
 
   class LIBODB_EXPORT transaction_impl
