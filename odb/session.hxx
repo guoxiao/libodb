@@ -59,6 +59,8 @@ namespace odb
     static void
     reset_current () {current_pointer (0);}
 
+    // Pointer versions.
+    //
     static session*
     current_pointer ();
 
@@ -88,61 +90,29 @@ namespace odb
     // Object cache.
     //
   public:
-    // Position in the cache of an inserted element. The requirements
-    // for this class template are: default and copy-constructible as
-    // well as copy-assignable. The default constructor creates an
-    // empty/NULL position.
+    // Position in the cache of the inserted element.
     //
     template <typename T>
-    struct position
-    {
-      typedef object_map<T> map;
-      typedef typename map::iterator iterator;
-
-      position (): map_ (0) {}
-      position (map& m, const iterator& p): map_ (&m), pos_ (p) {}
-
-      map* map_;
-      iterator pos_;
-    };
-
-    // The following cache management functions are all static to
-    // allow for a custom notion of a current session. The erase()
-    // function is called to remove the object if the operation
-    // that caused it to be inserted (e.g., load) failed.
-    //
-    template <typename T>
-    static position<T>
-    insert (database_type&,
-            const typename object_traits<T>::id_type&,
-            const typename object_traits<T>::pointer_type&);
+    struct cache_position;
 
     template <typename T>
-    static typename object_traits<T>::pointer_type
-    find (database_type&, const typename object_traits<T>::id_type&);
+    cache_position<T>
+    cache_insert (database_type&,
+                  const typename object_traits<T>::id_type&,
+                  const typename object_traits<T>::pointer_type&);
 
     template <typename T>
-    static void
-    erase (const position<T>&);
-
-    // Notifications. These are called after per-object callbacks for
-    // post_{persist, load, update, erase} events.
-    //
-    template <typename T>
-    static void
-    persist (const position<T>&) {}
+    typename object_traits<T>::pointer_type
+    cache_find (database_type&,
+                const typename object_traits<T>::id_type&) const;
 
     template <typename T>
-    static void
-    load (const position<T>&) {}
+    void
+    cache_erase (const cache_position<T>&);
 
     template <typename T>
-    static void
-    update (database_type&, const T&) {}
-
-    template <typename T>
-    static void
-    erase (database_type&, const typename object_traits<T>::id_type&);
+    void
+    cache_erase (database_type&, const typename object_traits<T>::id_type&);
 
     // Low-level object cache access (iteration, etc).
     //
@@ -158,6 +128,65 @@ namespace odb
 
     const database_map&
     map () const {return db_map_;}
+
+    // Static cache API as expected by the rest of ODB.
+    //
+  public:
+    // Position in the cache of the inserted element. The requirements
+    // for this class template are: default and copy-constructible as
+    // well as copy-assignable. The default constructor creates an
+    // empty/NULL position.
+    //
+    template <typename T>
+    struct cache_position
+    {
+      typedef object_map<T> map;
+      typedef typename map::iterator iterator;
+
+      cache_position (): map_ (0) {}
+      cache_position (map& m, const iterator& p): map_ (&m), pos_ (p) {}
+
+      map* map_;
+      iterator pos_;
+    };
+
+    // The following cache management functions are all static to
+    // allow for a custom notion of a current session. The erase()
+    // function is called to remove the object if the operation
+    // that caused it to be inserted (e.g., load) failed.
+    //
+    template <typename T>
+    static cache_position<T>
+    _cache_insert (database_type&,
+                   const typename object_traits<T>::id_type&,
+                   const typename object_traits<T>::pointer_type&);
+
+    template <typename T>
+    static typename object_traits<T>::pointer_type
+    _cache_find (database_type&, const typename object_traits<T>::id_type&);
+
+    template <typename T>
+    static void
+    _cache_erase (const cache_position<T>&);
+
+    // Notifications. These are called after per-object callbacks for
+    // post_{persist, load, update, erase} events.
+    //
+    template <typename T>
+    static void
+    _cache_persist (const cache_position<T>&) {}
+
+    template <typename T>
+    static void
+    _cache_load (const cache_position<T>&) {}
+
+    template <typename T>
+    static void
+    _cache_update (database_type&, const T&) {}
+
+    template <typename T>
+    static void
+    _cache_erase (database_type&, const typename object_traits<T>::id_type&);
 
   protected:
     database_map db_map_;

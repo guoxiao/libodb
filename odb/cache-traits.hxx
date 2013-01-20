@@ -28,13 +28,14 @@ namespace odb
     typedef odb::pointer_traits<pointer_type> pointer_traits;
     typedef typename pointer_traits::element_type object_type;
     typedef typename object_traits<object_type>::id_type id_type;
-    typedef typename session_type::template position<object_type> position_type;
+    typedef typename session_type::template cache_position<object_type>
+    position_type;
 
     struct insert_guard
     {
       insert_guard () {}
       insert_guard (const position_type& pos): pos_ (pos) {}
-      ~insert_guard () {session_type::erase (pos_);}
+      ~insert_guard () {session_type::_cache_erase (pos_);}
 
       const position_type&
       position () const {return pos_;}
@@ -62,7 +63,7 @@ namespace odb
     static position_type
     insert (odb::database& db, const id_type& id, const pointer_type& p)
     {
-      return session_type::template insert<object_type> (db, id, p);
+      return session_type::template _cache_insert<object_type> (db, id, p);
     }
 
     static position_type
@@ -72,19 +73,19 @@ namespace odb
         object_traits<object_type>::id (
           pointer_traits::get_ref (p)));
 
-      return session_type::template insert<object_type> (db, id, p);
+      return session_type::template _cache_insert<object_type> (db, id, p);
     }
 
     static pointer_type
     find (odb::database& db, const id_type& id)
     {
-      return session_type::template find<object_type> (db, id);
+      return session_type::template _cache_find<object_type> (db, id);
     }
 
     static void
     erase (const position_type& p)
     {
-      session_type::template erase<object_type> (p);
+      session_type::template _cache_erase<object_type> (p);
     }
 
     // Notifications.
@@ -92,25 +93,25 @@ namespace odb
     static void
     persist (const position_type& p)
     {
-      session_type::template persist<object_type> (p);
+      session_type::template _cache_persist<object_type> (p);
     }
 
     static void
     load (const position_type& p)
     {
-      session_type::template load<object_type> (p);
+      session_type::template _cache_load<object_type> (p);
     }
 
     static void
     update (odb::database& db, const object_type& obj)
     {
-      session_type::template update<object_type> (db, obj);
+      session_type::template _cache_update<object_type> (db, obj);
     }
 
     static void
     erase (odb::database& db, const id_type& id)
     {
-      session_type::template erase<object_type> (db, id);
+      session_type::template _cache_erase<object_type> (db, id);
     }
   };
 

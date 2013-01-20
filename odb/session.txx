@@ -5,18 +5,14 @@
 namespace odb
 {
   template <typename T>
-  typename session::position<T> session::
-  insert (database_type& db,
-          const typename object_traits<T>::id_type& id,
-          const typename object_traits<T>::pointer_type& obj)
+  typename session::cache_position<T> session::
+  cache_insert (database_type& db,
+                const typename object_traits<T>::id_type& id,
+                const typename object_traits<T>::pointer_type& obj)
   {
     typedef odb::object_traits<T> object_traits;
 
-    session* s (current_pointer ());
-    if (s == 0)
-      return position<T> ();
-
-    type_map& tm (s->db_map_[&db]);
+    type_map& tm (db_map_[&db]);
     details::shared_ptr<object_map_base>& pom (tm[&typeid (T)]);
 
     if (!pom)
@@ -35,22 +31,19 @@ namespace odb
     if (!r.second)
       r.first->second = obj;
 
-    return position<T> (om, r.first);
+    return cache_position<T> (om, r.first);
   }
 
   template <typename T>
   typename object_traits<T>::pointer_type session::
-  find (database_type& db, const typename object_traits<T>::id_type& id)
+  cache_find (database_type& db,
+              const typename object_traits<T>::id_type& id) const
   {
     typedef typename object_traits<T>::pointer_type pointer_type;
 
-    const session* s (current_pointer ());
-    if (s == 0)
-      return pointer_type ();
+    database_map::const_iterator di (db_map_.find (&db));
 
-    database_map::const_iterator di (s->db_map_.find (&db));
-
-    if (di == s->db_map_.end ())
+    if (di == db_map_.end ())
       return pointer_type ();
 
     const type_map& tm (di->second);
@@ -70,15 +63,11 @@ namespace odb
 
   template <typename T>
   void session::
-  erase (database_type& db, const typename object_traits<T>::id_type& id)
+  cache_erase (database_type& db, const typename object_traits<T>::id_type& id)
   {
-    session* s (current_pointer ());
-    if (s == 0)
-      return;
+    database_map::iterator di (db_map_.find (&db));
 
-    database_map::iterator di (s->db_map_.find (&db));
-
-    if (di == s->db_map_.end ())
+    if (di == db_map_.end ())
       return;
 
     type_map& tm (di->second);
@@ -99,6 +88,6 @@ namespace odb
       tm.erase (ti);
 
     if (tm.empty ())
-      s->db_map_.erase (di);
+      db_map_.erase (di);
   }
 }
