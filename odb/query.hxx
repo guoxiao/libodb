@@ -51,6 +51,30 @@ namespace odb
     }
   };
 
+  // Query parameter decay traits.
+  //
+  template <typename T>
+  struct decay_traits
+  {
+    typedef const T& type;
+
+    static type
+    instance ();
+  };
+
+  template <typename T, std::size_t N>
+  struct decay_traits<T[N]>
+  {
+    typedef const T* type;
+
+    // Use the pointer comparability as a proxy for data comparability.
+    // Note that it is stricter than using element comparability (i.e.,
+    // one can compare int to char but not int* to char*).
+    //
+    static type
+    instance ();
+  };
+
   // VC9 cannot handle certain cases of non-type arguments with default
   // values in template functions (e.g., database::query()). As a result,
   // we have to use the impl trick below instead of simply having kind

@@ -24,19 +24,51 @@ namespace odb
   template <typename T>
   struct val_bind
   {
-    explicit
-    val_bind (const T& v): val (v) {}
+    typedef const T& type;
 
-    const T& val;
+    explicit
+    val_bind (type v): val (v) {}
+
+    type val;
   };
+
+  // Passing arrays by value in dynamic queries is not supported.
+  // Pass by reference instead.
+  //
+  template <typename T, std::size_t N>
+  struct val_bind<T[N]>;
 
   template <typename T>
   struct ref_bind
   {
-    explicit
-    ref_bind (const T& r): ref (r) {}
+    typedef const T& type;
 
-    const T& ref;
+    explicit
+    ref_bind (type r): ref (r) {}
+
+    const void*
+    ptr () const {return &ref;}
+
+    type ref;
+  };
+
+  template <typename T, std::size_t N>
+  struct ref_bind<T[N]>
+  {
+    typedef const T* type;
+
+    explicit
+    ref_bind (type r): ref (r) {}
+
+    // Allow implicit conversion from decayed ref_bind's.
+    //
+    ref_bind (ref_bind<T*> r): ref (r.ref) {}
+    ref_bind (ref_bind<const T*> r): ref (r.ref) {}
+
+    const void*
+    ptr () const {return ref;}
+
+    type ref;
   };
 
   //
@@ -384,7 +416,7 @@ namespace odb
     equal (ref_bind<T> r) const
     {
       query_base q (native_info);
-      q.append_ref (&r.ref, native_info);
+      q.append_ref (r.ptr (), native_info);
       q.append (query_base::clause_part::op_eq, 0);
       return q;
     }
@@ -455,7 +487,7 @@ namespace odb
     unequal (ref_bind<T> r) const
     {
       query_base q (native_info);
-      q.append_ref (&r.ref, native_info);
+      q.append_ref (r.ptr (), native_info);
       q.append (query_base::clause_part::op_ne, 0);
       return q;
     }
@@ -526,7 +558,7 @@ namespace odb
     less (ref_bind<T> r) const
     {
       query_base q (native_info);
-      q.append_ref (&r.ref, native_info);
+      q.append_ref (r.ptr (), native_info);
       q.append (query_base::clause_part::op_lt, 0);
       return q;
     }
@@ -597,7 +629,7 @@ namespace odb
     greater (ref_bind<T> r) const
     {
       query_base q (native_info);
-      q.append_ref (&r.ref, native_info);
+      q.append_ref (r.ptr (), native_info);
       q.append (query_base::clause_part::op_gt, 0);
       return q;
     }
@@ -668,7 +700,7 @@ namespace odb
     less_equal (ref_bind<T> r) const
     {
       query_base q (native_info);
-      q.append_ref (&r.ref, native_info);
+      q.append_ref (r.ptr (), native_info);
       q.append (query_base::clause_part::op_le, 0);
       return q;
     }
@@ -739,7 +771,7 @@ namespace odb
     greater_equal (ref_bind<T> r) const
     {
       query_base q (native_info);
-      q.append_ref (&r.ref, native_info);
+      q.append_ref (r.ptr (), native_info);
       q.append (query_base::clause_part::op_ge, 0);
       return q;
     }
