@@ -136,6 +136,12 @@ namespace odb
     void
     unregister (void* key);
 
+    // Update the data and state values for a callback. Note that just
+    // like unregister(), this is a potentially slow operation.
+    //
+    void
+    update (void* key, unsigned long long data, transaction** state = 0);
+
   public:
     transaction_impl&
     implementation ();
@@ -148,6 +154,9 @@ namespace odb
 
   protected:
     friend struct rollback_guard;
+
+    std::size_t
+    find (void* key);
 
     void
     call (unsigned short event);

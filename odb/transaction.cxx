@@ -226,72 +226,97 @@ namespace odb
     s->state = state;
   }
 
-  void transaction::
-  unregister (void* key)
+  size_t transaction::
+  find (void* key)
   {
-    // Note that it is ok for this function not to find the key.
-    //
     if (callback_count_ == 0)
-      return;
+      return 0;
 
     size_t stack_count;
 
-    // See if this is the last slot registered. This will be a fast path
-    // if things are going to be unregistered from destructors.
+    // See if this is the last slot registered. This will be a fast path if,
+    // for example, things are going to be unregistered from destructors.
     //
     if (callback_count_ <= stack_callback_count)
     {
       if (stack_callbacks_[callback_count_ - 1].key == key)
-      {
-        callback_count_--;
-        return;
-      }
+        return callback_count_ - 1;
 
       stack_count = callback_count_;
     }
     else
     {
       if (dyn_callbacks_.back ().key == key)
-      {
-        dyn_callbacks_.pop_back ();
-        callback_count_--;
-        return;
-      }
+        return callback_count_ - 1;
 
       stack_count = stack_callback_count;
     }
 
-    size_t dyn_count (callback_count_ - stack_count);
-
     // Otherwise do a linear search.
     //
     for (size_t i (0); i < stack_count; ++i)
-    {
-      callback_data& d (stack_callbacks_[i]);
-      if (d.key == key)
-      {
-        // Add to the free list.
-        //
-        d.event = 0;
-        d.key = reinterpret_cast<void*> (free_callback_);
-        free_callback_ = i;
-        return;
-      }
-    }
+      if (stack_callbacks_[i].key == key)
+        return i;
 
-    for (size_t i (0); i < dyn_count; ++i)
+    for (size_t i (0), dyn_count (callback_count_ - stack_count);
+         i < dyn_count; ++i)
+      if (dyn_callbacks_[i].key == key)
+        return i + stack_callback_count;
+
+    return callback_count_;
+  }
+
+  void transaction::
+  unregister (void* key)
+  {
+    size_t i (find (key));
+
+    // It is ok for this function not to find the key.
+    //
+    if (i == callback_count_)
+      return;
+
+    // See if this is the last slot registered.
+    //
+    if (i == callback_count_ - 1)
     {
-      callback_data& d (dyn_callbacks_[i]);
-      if (d.key == key)
-      {
-        // Add to the free list.
-        //
-        d.event = 0;
-        d.key = reinterpret_cast<void*> (free_callback_);
-        free_callback_ = stack_callback_count + i;
-        return;
-      }
+      if (i >= stack_callback_count)
+        dyn_callbacks_.pop_back ();
+
+      callback_count_--;
     }
+    else
+    {
+      callback_data& d (
+        i < stack_callback_count
+        ? stack_callbacks_[i]
+        : dyn_callbacks_[i - stack_callback_count]);
+
+      // Add to the free list.
+      //
+      d.event = 0;
+      d.key = reinterpret_cast<void*> (free_callback_);
+      free_callback_ = i;
+    }
+  }
+
+  void transaction::
+  update (void* key, unsigned long long data, transaction** state)
+  {
+    size_t i (find (key));
+
+    // It is ok for this function not to find the key.
+    //
+    if (i == callback_count_)
+      return;
+
+    callback_data& d (
+      i < stack_callback_count
+      ? stack_callbacks_[i]
+      : dyn_callbacks_[i - stack_callback_count]);
+
+    d.data = data;
+    d.state = state;
   }
 
   //
