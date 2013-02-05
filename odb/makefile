@@ -8,6 +8,7 @@ cxx :=             \
 callback.cxx       \
 exceptions.cxx     \
 database.cxx       \
+vector-impl.cxx    \
 connection.cxx     \
 lazy-ptr-impl.cxx  \
 prepared-query.cxx \

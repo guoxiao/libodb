@@ -19,7 +19,8 @@ namespace odb
   class access::container_traits<std::map<K, V, C, A> >
   {
   public:
-    static container_kind const kind = ck_map;
+    static const container_kind kind = ck_map;
+    static const bool smart = false;
 
     typedef std::map<K, V, C, A> container_type;
 
@@ -35,7 +36,7 @@ namespace odb
     {
       for (typename container_type::const_iterator i (c.begin ()),
              e (c.end ()); i != e; ++i)
-        f.insert_one (i->first, i->second);
+        f.insert (i->first, i->second);
     }
 
     static void
@@ -47,7 +48,7 @@ namespace odb
       {
         key_type k;
         value_type v;
-        more = f.load_all (k, v);
+        more = f.select (k, v);
 #ifdef ODB_CXX11
         c.insert (pair_type (std::move (k), std::move (v)));
 #else
@@ -59,17 +60,17 @@ namespace odb
     static void
     update (const container_type& c, const functions& f)
     {
-      f.delete_all ();
+      f.delete_ ();
 
       for (typename container_type::const_iterator i (c.begin ()),
              e (c.end ()); i != e; ++i)
-        f.insert_one (i->first, i->second);
+        f.insert (i->first, i->second);
     }
 
     static void
     erase (const functions& f)
     {
-      f.delete_all ();
+      f.delete_ ();
     }
   };
 
@@ -81,7 +82,8 @@ namespace odb
   class access::container_traits<std::multimap<K, V, C, A> >
   {
   public:
-    static container_kind const kind = ck_multimap;
+    static const container_kind kind = ck_multimap;
+    static const bool smart = false;
 
     typedef std::multimap<K, V, C, A> container_type;
 
@@ -97,7 +99,7 @@ namespace odb
     {
       for (typename container_type::const_iterator i (c.begin ()),
              e (c.end ()); i != e; ++i)
-        f.insert_one (i->first, i->second);
+        f.insert (i->first, i->second);
     }
 
     static void
@@ -109,7 +111,7 @@ namespace odb
       {
         key_type k;
         value_type v;
-        more = f.load_all (k, v);
+        more = f.select (k, v);
 #ifdef ODB_CXX11
         c.insert (pair_type (std::move (k), std::move (v)));
 #else
@@ -121,17 +123,17 @@ namespace odb
     static void
     update (const container_type& c, const functions& f)
     {
-      f.delete_all ();
+      f.delete_ ();
 
       for (typename container_type::const_iterator i (c.begin ()),
              e (c.end ()); i != e; ++i)
-        f.insert_one (i->first, i->second);
+        f.insert (i->first, i->second);
     }
 
     static void
     erase (const functions& f)
     {
-      f.delete_all ();
+      f.delete_ ();
     }
   };
 }

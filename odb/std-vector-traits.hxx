@@ -17,7 +17,8 @@ namespace odb
   class access::container_traits<std::vector<V, A> >
   {
   public:
-    static container_kind const kind = ck_ordered;
+    static const container_kind kind = ck_ordered;
+    static const bool smart = false;
 
     typedef std::vector<V, A> container_type;
 
@@ -31,7 +32,7 @@ namespace odb
     persist (const container_type& c, const functions& f)
     {
       for (index_type i (0), n (c.size ()); i < n; ++i)
-        f.insert_one (i, c[i]);
+        f.insert (i, c[i]);
     }
 
     static void
@@ -43,23 +44,23 @@ namespace odb
       {
         index_type dummy;
         c.push_back (value_type ());
-        more = f.load_all (dummy, c.back ());
+        more = f.select (dummy, c.back ());
       }
     }
 
     static void
     update (const container_type& c, const functions& f)
     {
-      f.delete_all ();
+      f.delete_ ();
 
       for (index_type i (0), n (c.size ()); i < n; ++i)
-        f.insert_one (i, c[i]);
+        f.insert (i, c[i]);
     }
 
     static void
     erase (const functions& f)
     {
-      f.delete_all ();
+      f.delete_ ();
     }
   };
 }

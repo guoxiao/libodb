@@ -46,50 +46,82 @@ namespace odb
     }
 
     void
-    insert_one (I index, const V& value) const
+    insert (I index, const V& value) const
     {
-      insert_one_ (index, value, data_);
+      insert_ (index, value, data_);
     }
 
     bool
-    load_all (I& next_index, V& next_value) const
+    select (I& next_index, V& next_value) const
     {
-      return load_all_ (next_index, next_value, data_);
+      return select_ (next_index, next_value, data_);
     }
 
     void
-    delete_all () const
+    delete_ () const
     {
-      delete_all_ (data_);
+      delete__ (data_);
     }
 
     // Implementation details.
     //
   public:
-    typedef void (*insert_one_type) (I, const V&, void*);
-    typedef bool (*load_all_type) (I&, V&, void*);
-    typedef void (*delete_all_type) (void*);
+    ordered_functions (void* data): data_ (data) {}
 
-    ordered_functions (void* data,
-                       insert_one_type io,
-                       load_all_type la,
-                       delete_all_type da)
-        : data_ (data), insert_one_ (io), load_all_ (la), delete_all_ (da)
+  public:
+    void* data_;
+    bool ordered_;
+
+    void (*insert_) (I, const V&, void*);
+    bool (*select_) (I&, V&, void*);
+    void (*delete__) (void*);
+  };
+
+  template <typename I, typename V>
+  struct smart_ordered_functions
+  {
+    typedef I index_type;
+    typedef V value_type;
+
+    void
+    insert (I index, const V& value) const
     {
+      insert_ (index, value, data_);
+    }
+
+    bool
+    select (I& next_index, V& next_value) const
+    {
+      return select_ (next_index, next_value, data_);
     }
 
     void
-    ordered (bool v)
+    update (I index, const V& value) const
     {
-      ordered_ = v;
+      update_ (index, value, data_);
     }
 
-  private:
+    // Delete all the elements starting with the specified index. To
+    // delete everything, pass 0.
+    //
+    void
+    delete_ (I start_index) const
+    {
+      delete__ (start_index, data_);
+    }
+
+    // Implementation details.
+    //
+  public:
+    smart_ordered_functions (void* data) : data_ (data) {}
+
+  public:
     void* data_;
-    bool ordered_;
-    insert_one_type insert_one_;
-    load_all_type load_all_;
-    delete_all_type delete_all_;
+
+    void (*insert_) (I, const V&, void*);
+    bool (*select_) (I&, V&, void*);
+    void (*update_) (I, const V&, void*);
+    void (*delete__) (I, void*);
   };
 
   // Set/multiset containers.
@@ -100,43 +132,34 @@ namespace odb
     typedef V value_type;
 
     void
-    insert_one (const V& value) const
+    insert (const V& value) const
     {
-      insert_one_ (value, data_);
+      insert_ (value, data_);
     }
 
     bool
-    load_all (V& next_value) const
+    select (V& next_value) const
     {
-      return load_all_ (next_value, data_);
+      return select_ (next_value, data_);
     }
 
     void
-    delete_all () const
+    delete_ () const
     {
-      delete_all_ (data_);
+      delete__ (data_);
     }
 
     // Implementation details.
     //
   public:
-    typedef void (*insert_one_type) (const V&, void*);
-    typedef bool (*load_all_type) (V&, void*);
-    typedef void (*delete_all_type) (void*);
+    set_functions (void* data): data_ (data) {}
 
-    set_functions (void* data,
-                   insert_one_type io,
-                   load_all_type la,
-                   delete_all_type da)
-        : data_ (data), insert_one_ (io), load_all_ (la), delete_all_ (da)
-    {
-    }
-
-  private:
+  public:
     void* data_;
-    insert_one_type insert_one_;
-    load_all_type load_all_;
-    delete_all_type delete_all_;
+
+    void (*insert_) (const V&, void*);
+    bool (*select_) (V&, void*);
+    void (*delete__) (void*);
   };
 
   // Map/multimap containers.
@@ -148,43 +171,34 @@ namespace odb
     typedef V value_type;
 
     void
-    insert_one (const K& key, const V& value) const
+    insert (const K& key, const V& value) const
     {
-      insert_one_ (key, value, data_);
+      insert_ (key, value, data_);
     }
 
     bool
-    load_all (K& next_key, V& next_value) const
+    select (K& next_key, V& next_value) const
     {
-      return load_all_ (next_key, next_value, data_);
+      return select_ (next_key, next_value, data_);
     }
 
     void
-    delete_all () const
+    delete_ () const
     {
-      delete_all_ (data_);
+      delete__ (data_);
     }
 
     // Implementation details.
     //
   public:
-    typedef void (*insert_one_type) (const K&, const V&, void*);
-    typedef bool (*load_all_type) (K&, V&, void*);
-    typedef void (*delete_all_type) (void*);
+    map_functions (void* data): data_ (data) {}
 
-    map_functions (void* data,
-                   insert_one_type io,
-                   load_all_type la,
-                   delete_all_type da)
-        : data_ (data), insert_one_ (io), load_all_ (la), delete_all_ (da)
-    {
-    }
-
-  private:
+  public:
     void* data_;
-    insert_one_type insert_one_;
-    load_all_type load_all_;
-    delete_all_type delete_all_;
+
+    void (*insert_) (const K&, const V&, void*);
+    bool (*select_) (K&, V&, void*);
+    void (*delete__) (void*);
   };
 }
 

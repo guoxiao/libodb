@@ -18,7 +18,8 @@ namespace odb
   class access::container_traits<std::unordered_set<V, H, P, A>>
   {
   public:
-    static container_kind const kind = ck_set;
+    static const container_kind kind = ck_set;
+    static const bool smart = false;
 
     typedef std::unordered_set<V, H, P, A> container_type;
     typedef V value_type;
@@ -31,7 +32,7 @@ namespace odb
     {
       for (typename container_type::const_iterator i (c.begin ()),
              e (c.end ()); i != e; ++i)
-        f.insert_one (*i);
+        f.insert (*i);
     }
 
     static void
@@ -42,7 +43,7 @@ namespace odb
       while (more)
       {
         value_type v;
-        more = f.load_all (v);
+        more = f.select (v);
         c.insert (std::move (v));
       }
     }
@@ -50,17 +51,17 @@ namespace odb
     static void
     update (const container_type& c, const functions& f)
     {
-      f.delete_all ();
+      f.delete_ ();
 
       for (typename container_type::const_iterator i (c.begin ()),
              e (c.end ()); i != e; ++i)
-        f.insert_one (*i);
+        f.insert (*i);
     }
 
     static void
     erase (const functions& f)
     {
-      f.delete_all ();
+      f.delete_ ();
     }
   };
 
@@ -72,7 +73,8 @@ namespace odb
   class access::container_traits<std::unordered_multiset<V, H, P, A>>
   {
   public:
-    static container_kind const kind = ck_multiset;
+    static const container_kind kind = ck_multiset;
+    static const bool smart = false;
 
     typedef std::unordered_multiset<V, H, P, A> container_type;
     typedef V value_type;
@@ -85,7 +87,7 @@ namespace odb
     {
       for (typename container_type::const_iterator i (c.begin ()),
              e (c.end ()); i != e; ++i)
-        f.insert_one (*i);
+        f.insert (*i);
     }
 
     static void
@@ -96,7 +98,7 @@ namespace odb
       while (more)
       {
         value_type v;
-        more = f.load_all (v);
+        more = f.select (v);
         c.insert (std::move (v));
       }
     }
@@ -104,17 +106,17 @@ namespace odb
     static void
     update (const container_type& c, const functions& f)
     {
-      f.delete_all ();
+      f.delete_ ();
 
       for (typename container_type::const_iterator i (c.begin ()),
              e (c.end ()); i != e; ++i)
-        f.insert_one (*i);
+        f.insert (*i);
     }
 
     static void
     erase (const functions& f)
     {
-      f.delete_all ();
+      f.delete_ ();
     }
   };
 }
