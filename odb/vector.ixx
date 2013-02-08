@@ -42,7 +42,7 @@ namespace odb
 #ifdef ODB_CXX11
   template <class T, class A>
   inline vector<T, A>& vector<T, A>::
-  vector& operator=(vector&& x)
+  operator=(vector&& x)
   {
     v_ = std::move (x.v_);
     if (_tracking ())
