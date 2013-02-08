@@ -191,7 +191,7 @@ namespace odb
   {
     if (x.tran_ != 0)
     {
-      x.tran_->unregister (&x);
+      x.tran_->callback_unregister (&x);
       _arm (*x.tran_);
     }
   }
@@ -214,13 +214,13 @@ namespace odb
     transaction* t (x.tran_);
     if (tran_ != 0)
     {
-      tran_->unregister (this);
+      tran_->callback_unregister (this);
       x._arm (*tran_);
     }
 
     if (t != 0)
     {
-      t->unregister (&x);
+      t->callback_unregister (&x);
       _arm (*t);
     }
 

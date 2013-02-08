@@ -79,7 +79,8 @@ namespace odb
   struct rollback_guard
   {
     rollback_guard (transaction& t): t_ (&t) {}
-    ~rollback_guard () {if (t_ != 0) t_->call (transaction::event_rollback);}
+    ~rollback_guard ()
+    {if (t_ != 0) t_->callback_call (transaction::event_rollback);}
     void release () {t_ = 0;}
   private:
     transaction* t_;
@@ -106,7 +107,7 @@ namespace odb
     rg.release ();
 
     if (callback_count_ != 0)
-      call (event_commit);
+      callback_call (event_commit);
   }
 
   void transaction::
@@ -130,11 +131,11 @@ namespace odb
     rg.release ();
 
     if (callback_count_ != 0)
-      call (event_rollback);
+      callback_call (event_rollback);
   }
 
   void transaction::
-  call (unsigned short event)
+  callback_call (unsigned short event)
   {
     size_t stack_count (callback_count_ < stack_callback_count
                         ? callback_count_ : stack_callback_count);
@@ -185,11 +186,11 @@ namespace odb
   }
 
   void transaction::
-  register_ (callback_type func,
-             void* key,
-             unsigned short event,
-             unsigned long long data,
-             transaction** state)
+  callback_register (callback_type func,
+                     void* key,
+                     unsigned short event,
+                     unsigned long long data,
+                     transaction** state)
   {
     callback_data* s;
 
@@ -227,7 +228,7 @@ namespace odb
   }
 
   size_t transaction::
-  find (void* key)
+  callback_find (void* key)
   {
     if (callback_count_ == 0)
       return 0;
@@ -267,9 +268,9 @@ namespace odb
   }
 
   void transaction::
-  unregister (void* key)
+  callback_unregister (void* key)
   {
-    size_t i (find (key));
+    size_t i (callback_find (key));
 
     // It is ok for this function not to find the key.
     //
@@ -301,9 +302,12 @@ namespace odb
   }
 
   void transaction::
-  update (void* key, unsigned long long data, transaction** state)
+  callback_update (void* key,
+                   unsigned short event,
+                   unsigned long long data,
+                   transaction** state)
   {
-    size_t i (find (key));
+    size_t i (callback_find (key));
 
     // It is ok for this function not to find the key.
     //
@@ -315,6 +319,7 @@ namespace odb
       ? stack_callbacks_[i]
       : dyn_callbacks_[i - stack_callback_count]);
 
+    d.event = event;
     d.data = data;
     d.state = state;
   }

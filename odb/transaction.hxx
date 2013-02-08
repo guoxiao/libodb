@@ -121,26 +121,29 @@ namespace odb
     // unspecified.
     //
     void
-    register_ (callback_type,
-               void* key,
-               unsigned short event = event_all,
-               unsigned long long data = 0,
-               transaction** state = 0);
+    callback_register (callback_type,
+                       void* key,
+                       unsigned short event = event_all,
+                       unsigned long long data = 0,
+                       transaction** state = 0);
 
     // Unregister a post-commit/rollback callback. Note that this is a
     // potentially slow operation. You also don't need to unregister
     // a callback that has been called or auto-reset using the state
-    // argument passed to register_(). This function does nothing if
+    // argument passed to register(). This function does nothing if
     // the key is not found.
     //
     void
-    unregister (void* key);
+    callback_unregister (void* key);
 
-    // Update the data and state values for a callback. Note that just
-    // like unregister(), this is a potentially slow operation.
+    // Update the event, data, and state values for a callback. Note
+    // that just like unregister(), this is a potentially slow operation.
     //
     void
-    update (void* key, unsigned long long data, transaction** state = 0);
+    callback_update (void* key,
+                     unsigned short event,
+                     unsigned long long data = 0,
+                     transaction** state = 0);
 
   public:
     transaction_impl&
@@ -156,10 +159,10 @@ namespace odb
     friend struct rollback_guard;
 
     std::size_t
-    find (void* key);
+    callback_find (void* key);
 
     void
-    call (unsigned short event);
+    callback_call (unsigned short event);
 
   protected:
     bool finalized_;

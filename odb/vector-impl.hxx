@@ -192,7 +192,7 @@ namespace odb
 
   protected:
     vector_base (): tran_ (0) {}
-    ~vector_base () {if (tran_ != 0) tran_->unregister (this);}
+    ~vector_base () {if (tran_ != 0) tran_->callback_unregister (this);}
     vector_base (const vector_base&);
 
 #ifdef ODB_CXX11

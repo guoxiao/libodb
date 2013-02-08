@@ -141,11 +141,11 @@ namespace odb
   _arm (transaction& t) const
   {
     tran_ = &t;
-    t.register_ (&rollback,
-                 const_cast<vector_base*> (this),
-                 transaction::event_rollback,
-                 0,
-                 &tran_);
+    t.callback_register (&rollback,
+                         const_cast<vector_base*> (this),
+                         transaction::event_rollback,
+                         0,
+                         &tran_);
   }
 
   inline vector_base::
