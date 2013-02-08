@@ -20,6 +20,15 @@ namespace odb
   public:
     static void
     create_schema (database&, const std::string& name = "");
+
+    static bool
+    exists (database_id, const std::string& name);
+
+    static bool
+    exists (const database& db, const std::string& name)
+    {
+      return exists (db.id (), name);
+    }
   };
 
   namespace common

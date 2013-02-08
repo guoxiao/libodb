@@ -27,6 +27,13 @@ namespace odb
   schema_catalog_impl* schema_catalog_init::catalog = 0;
   size_t schema_catalog_init::count = 0;
 
+  bool schema_catalog::
+  exists (database_id id, const std::string& name)
+  {
+    const schema_catalog_impl& c (*schema_catalog_init::catalog);
+    return c.find (key (id, name)) != c.end ();
+  }
+
   void schema_catalog::
   create_schema (database& db, const string& name)
   {
