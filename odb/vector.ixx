@@ -137,7 +137,7 @@ namespace odb
   inline typename vector<T, A>::reference vector<T, A>::
   modify (size_type n)
   {
-    reference& r (v_[n]);
+    reference r (v_[n]);
     if (_tracking ())
       impl_.modify (n);
     return r;
@@ -147,7 +147,7 @@ namespace odb
   inline typename vector<T, A>::reference vector<T, A>::
   modify_at (size_type n)
   {
-    reference& r (v_.at (n));
+    reference r (v_.at (n));
     if (_tracking ())
       impl_.modify (n);
     return r;
@@ -157,7 +157,7 @@ namespace odb
   inline typename vector<T, A>::reference vector<T, A>::
   modify_front ()
   {
-    reference& r (v_.front ());
+    reference r (v_.front ());
     if (_tracking ())
       impl_.modify (0);
     return r;
@@ -167,7 +167,7 @@ namespace odb
   inline typename vector<T, A>::reference vector<T, A>::
   modify_back ()
   {
-    reference& r (v_.back ());
+    reference r (v_.back ());
     if (_tracking ())
       impl_.modify (v_.size () - 1);
     return r;
