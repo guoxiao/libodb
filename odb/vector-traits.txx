@@ -4,8 +4,8 @@
 
 namespace odb
 {
-  template <typename V, typename A>
-  void access::container_traits<vector<V, A> >::
+  template <typename V, typename A LIBODB_VECTOR_ARG_DECL>
+  void access::container_traits<vector<V, A LIBODB_VECTOR_ARG_USE> >::
   update (const container_type& c, const functions& f)
   {
     bool u (false); // Updated flag.

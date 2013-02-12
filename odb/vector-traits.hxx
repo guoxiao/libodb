@@ -14,8 +14,8 @@
 
 namespace odb
 {
-  template <typename V, typename A>
-  class access::container_traits<vector<V, A> >
+  template <typename V, typename A LIBODB_VECTOR_ARG_DECL>
+  class access::container_traits<vector<V, A LIBODB_VECTOR_ARG_USE> >
   {
   public:
     static const container_kind kind = ck_ordered;

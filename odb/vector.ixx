@@ -4,14 +4,11 @@
 
 namespace odb
 {
-  //
-  // vector
-  //
-
   // construct/copy/destroy:
   //
-  template <class T, class A>
-  inline vector<T, A>& vector<T, A>::
+  template <class T, class A LIBODB_VECTOR_ARG_DECL>
+  inline vector<T, A LIBODB_VECTOR_ARG_USE>&
+  vector<T, A LIBODB_VECTOR_ARG_USE>::
   operator= (const vector& x)
   {
     v_ = x.v_;
@@ -20,9 +17,9 @@ namespace odb
     return *this;
   }
 
-  template <class T, class A>
+  template <class T, class A LIBODB_VECTOR_ARG_DECL>
   template <class I>
-  inline void vector<T, A>::
+  inline void vector<T, A LIBODB_VECTOR_ARG_USE>::
   assign (I f, I l)
   {
     v_.assign (f, l);
@@ -30,8 +27,8 @@ namespace odb
       impl_.assign (v_.size ());
   }
 
-  template <class T, class A>
-  inline void vector<T, A>::
+  template <class T, class A LIBODB_VECTOR_ARG_DECL>
+  inline void vector<T, A LIBODB_VECTOR_ARG_USE>::
   assign (size_type n, const T& u)
   {
     v_.assign (n, u);
@@ -40,8 +37,9 @@ namespace odb
   }
 
 #ifdef ODB_CXX11
-  template <class T, class A>
-  inline vector<T, A>& vector<T, A>::
+  template <class T, class A LIBODB_VECTOR_ARG_DECL>
+  inline vector<T, A LIBODB_VECTOR_ARG_USE>&
+  vector<T, A LIBODB_VECTOR_ARG_USE>::
   operator=(vector&& x)
   {
     v_ = std::move (x.v_);
@@ -51,8 +49,9 @@ namespace odb
   }
 
 #ifdef ODB_CXX11_INITIALIZER_LIST
-  template <class T, class A>
-  inline vector<T, A>& vector<T, A>::
+  template <class T, class A LIBODB_VECTOR_ARG_DECL>
+  inline vector<T, A LIBODB_VECTOR_ARG_USE>&
+  vector<T, A LIBODB_VECTOR_ARG_USE>::
   operator= (std::initializer_list<T> il)
   {
     v_ = il;
@@ -61,8 +60,8 @@ namespace odb
     return *this;
   }
 
-  template <class T, class A>
-  inline void vector<T, A>::
+  template <class T, class A LIBODB_VECTOR_ARG_DECL>
+  inline void vector<T, A LIBODB_VECTOR_ARG_USE>::
   assign (std::initializer_list<T> il)
   {
     v_.assign (il);
@@ -74,8 +73,9 @@ namespace odb
 
   // iterators:
   //
-  template <class T, class A>
-  inline typename vector<T, A>::base_iterator_type vector<T, A>::
+  template <class T, class A LIBODB_VECTOR_ARG_DECL>
+  inline typename vector<T, A LIBODB_VECTOR_ARG_USE>::base_iterator_type
+  vector<T, A LIBODB_VECTOR_ARG_USE>::
   mbegin ()
   {
     if (_tracking ())
@@ -83,8 +83,10 @@ namespace odb
     return v_.begin ();
   }
 
-  template <class T, class A>
-  inline typename vector<T, A>::base_reverse_iterator_type vector<T, A>::
+  template <class T, class A LIBODB_VECTOR_ARG_DECL>
+  inline
+  typename vector<T, A LIBODB_VECTOR_ARG_USE>::base_reverse_iterator_type
+  vector<T, A LIBODB_VECTOR_ARG_USE>::
   mrbegin ()
   {
     if (_tracking ())
@@ -94,8 +96,8 @@ namespace odb
 
   // capacity:
   //
-  template <class T, class A>
-  inline void vector<T, A>::
+  template <class T, class A LIBODB_VECTOR_ARG_DECL>
+  inline void vector<T, A LIBODB_VECTOR_ARG_USE>::
   resize (size_type n)
   {
     v_.resize (n);
@@ -103,8 +105,8 @@ namespace odb
       impl_.resize (n);
   }
 
-  template <class T, class A>
-  inline void vector<T, A>::
+  template <class T, class A LIBODB_VECTOR_ARG_DECL>
+  inline void vector<T, A LIBODB_VECTOR_ARG_USE>::
   resize (size_type n, const T& c)
   {
     v_.resize (n, c);
@@ -112,8 +114,8 @@ namespace odb
       impl_.resize (n);
   }
 
-  template <class T, class A>
-  inline void vector<T, A>::
+  template <class T, class A LIBODB_VECTOR_ARG_DECL>
+  inline void vector<T, A LIBODB_VECTOR_ARG_USE>::
   reserve (size_type n)
   {
     v_.reserve (n);
@@ -122,8 +124,8 @@ namespace odb
   }
 
 #ifdef ODB_CXX11
-  template <class T, class A>
-  inline void vector<T, A>::
+  template <class T, class A LIBODB_VECTOR_ARG_DECL>
+  inline void vector<T, A LIBODB_VECTOR_ARG_USE>::
   shrink_to_fit ()
   {
     v_.shrink_to_fit ();
@@ -133,8 +135,9 @@ namespace odb
 
   // element access:
   //
-  template <class T, class A>
-  inline typename vector<T, A>::reference vector<T, A>::
+  template <class T, class A LIBODB_VECTOR_ARG_DECL>
+  inline typename vector<T, A LIBODB_VECTOR_ARG_USE>::reference
+  vector<T, A LIBODB_VECTOR_ARG_USE>::
   modify (size_type n)
   {
     reference r (v_[n]);
@@ -143,8 +146,9 @@ namespace odb
     return r;
   }
 
-  template <class T, class A>
-  inline typename vector<T, A>::reference vector<T, A>::
+  template <class T, class A LIBODB_VECTOR_ARG_DECL>
+  inline typename vector<T, A LIBODB_VECTOR_ARG_USE>::reference
+  vector<T, A LIBODB_VECTOR_ARG_USE>::
   modify_at (size_type n)
   {
     reference r (v_.at (n));
@@ -153,8 +157,9 @@ namespace odb
     return r;
   }
 
-  template <class T, class A>
-  inline typename vector<T, A>::reference vector<T, A>::
+  template <class T, class A LIBODB_VECTOR_ARG_DECL>
+  inline typename vector<T, A LIBODB_VECTOR_ARG_USE>::reference
+  vector<T, A LIBODB_VECTOR_ARG_USE>::
   modify_front ()
   {
     reference r (v_.front ());
@@ -163,8 +168,9 @@ namespace odb
     return r;
   }
 
-  template <class T, class A>
-  inline typename vector<T, A>::reference vector<T, A>::
+  template <class T, class A LIBODB_VECTOR_ARG_DECL>
+  inline typename vector<T, A LIBODB_VECTOR_ARG_USE>::reference
+  vector<T, A LIBODB_VECTOR_ARG_USE>::
   modify_back ()
   {
     reference r (v_.back ());
@@ -174,8 +180,8 @@ namespace odb
   }
 
 #ifdef ODB_CXX11
-  template <class T, class A>
-  inline T* vector<T, A>::
+  template <class T, class A LIBODB_VECTOR_ARG_DECL>
+  inline T* vector<T, A LIBODB_VECTOR_ARG_USE>::
   modify_data() /*noexcept*/
   {
     if (_tracking ())
@@ -186,8 +192,8 @@ namespace odb
 
   // modifiers:
   //
-  template <class T, class A>
-  inline void vector<T, A>::
+  template <class T, class A LIBODB_VECTOR_ARG_DECL>
+  inline void vector<T, A LIBODB_VECTOR_ARG_USE>::
   push_back (const T& x)
   {
     v_.push_back (x);
@@ -195,8 +201,8 @@ namespace odb
       impl_.push_back ();
   }
 
-  template <class T, class A>
-  inline void vector<T, A>::
+  template <class T, class A LIBODB_VECTOR_ARG_DECL>
+  inline void vector<T, A LIBODB_VECTOR_ARG_USE>::
   pop_back ()
   {
     v_.pop_back ();
@@ -204,8 +210,9 @@ namespace odb
       impl_.pop_back ();
   }
 
-  template <class T, class A>
-  inline typename vector<T, A>::iterator vector<T, A>::
+  template <class T, class A LIBODB_VECTOR_ARG_DECL>
+  inline typename vector<T, A LIBODB_VECTOR_ARG_USE>::iterator
+  vector<T, A LIBODB_VECTOR_ARG_USE>::
   insert (iterator p, const T& x)
   {
     if (_tracking ())
@@ -213,8 +220,8 @@ namespace odb
     return iterator (this, v_.insert (p.base (), x));
   }
 
-  template <class T, class A>
-  inline void vector<T, A>::
+  template <class T, class A LIBODB_VECTOR_ARG_DECL>
+  inline void vector<T, A LIBODB_VECTOR_ARG_USE>::
   insert (iterator p, size_type n, const T& x)
   {
     if (_tracking ())
@@ -222,9 +229,9 @@ namespace odb
     v_.insert (p.base (), n, x);
   }
 
-  template <class T, class A>
+  template <class T, class A LIBODB_VECTOR_ARG_DECL>
   template <class I>
-  inline void vector<T, A>::
+  inline void vector<T, A LIBODB_VECTOR_ARG_USE>::
   insert (iterator p, I f, I l)
   {
     size_type i, n;
@@ -240,8 +247,9 @@ namespace odb
       impl_.insert (i, v_.size () - n);
   }
 
-  template <class T, class A>
-  inline typename vector<T, A>::iterator vector<T, A>::
+  template <class T, class A LIBODB_VECTOR_ARG_DECL>
+  inline typename vector<T, A LIBODB_VECTOR_ARG_USE>::iterator
+  vector<T, A LIBODB_VECTOR_ARG_USE>::
   erase (iterator p)
   {
     if (_tracking ())
@@ -249,8 +257,9 @@ namespace odb
     return iterator (this, v_.erase (p.base ()));
   }
 
-  template <class T, class A>
-  inline typename vector<T, A>::iterator vector<T, A>::
+  template <class T, class A LIBODB_VECTOR_ARG_DECL>
+  inline typename vector<T, A LIBODB_VECTOR_ARG_USE>::iterator
+  vector<T, A LIBODB_VECTOR_ARG_USE>::
   erase (iterator f, iterator l)
   {
     if (_tracking ())
@@ -259,16 +268,16 @@ namespace odb
     return iterator (this, v_.erase (f.base (), l.base ()));
   }
 
-  template <class T, class A>
-  inline void vector<T, A>::
+  template <class T, class A LIBODB_VECTOR_ARG_DECL>
+  inline void vector<T, A LIBODB_VECTOR_ARG_USE>::
   swap (vector& x)
   {
     v_.swap (x.v_);
     vector_base::swap (x);
   }
 
-  template <class T, class A>
-  inline void vector<T, A>::
+  template <class T, class A LIBODB_VECTOR_ARG_DECL>
+  inline void vector<T, A LIBODB_VECTOR_ARG_USE>::
   clear ()
   {
     v_.clear ();
@@ -277,8 +286,8 @@ namespace odb
   }
 
 #ifdef ODB_CXX11
-  template <class T, class A>
-  inline void vector<T, A>::
+  template <class T, class A LIBODB_VECTOR_ARG_DECL>
+  inline void vector<T, A LIBODB_VECTOR_ARG_USE>::
   push_back(T&& x)
   {
     v_.push_back (std::move (x));
@@ -286,8 +295,9 @@ namespace odb
       impl_.push_back ();
   }
 
-  template <class T, class A>
-  inline typename vector<T, A>::iterator vector<T, A>::
+  template <class T, class A LIBODB_VECTOR_ARG_DECL>
+  inline typename vector<T, A LIBODB_VECTOR_ARG_USE>::iterator
+  vector<T, A LIBODB_VECTOR_ARG_USE>::
   insert (iterator p, T&& x)
   {
     base_iterator_type r (v_.insert (p.base (), std::move (x)));
@@ -297,9 +307,9 @@ namespace odb
   }
 
 #ifdef ODB_CXX11_VARIADIC_TEMPLATE
-  template <class T, class A>
+  template <class T, class A LIBODB_VECTOR_ARG_DECL>
   template <class... Args>
-  inline void vector<T, A>::
+  inline void vector<T, A LIBODB_VECTOR_ARG_USE>::
   emplace_back (Args&&... args)
   {
     v_.push_back (std::forward<Args> (args)...);
@@ -307,9 +317,10 @@ namespace odb
       impl_.push_back ();
   }
 
-  template <class T, class A>
+  template <class T, class A LIBODB_VECTOR_ARG_DECL>
   template <class... Args>
-  inline typename vector<T, A>::iterator vector<T, A>::
+  inline typename vector<T, A LIBODB_VECTOR_ARG_USE>::iterator
+  vector<T, A LIBODB_VECTOR_ARG_USE>::
   emplace (iterator p, Args&&... args)
   {
     base_iterator_type r (
@@ -323,8 +334,9 @@ namespace odb
 
   // Interfacing with base vector.
   //
-  template <class T, class A>
-  inline vector<T, A>& vector<T, A>::
+  template <class T, class A LIBODB_VECTOR_ARG_DECL>
+  inline vector<T, A LIBODB_VECTOR_ARG_USE>&
+  vector<T, A LIBODB_VECTOR_ARG_USE>::
   operator= (const base_vector_type& x)
   {
     v_ = x;
@@ -334,8 +346,9 @@ namespace odb
   }
 
 #ifdef ODB_CXX11
-  template <class T, class A>
-  inline vector<T, A>& vector<T, A>::
+  template <class T, class A LIBODB_VECTOR_ARG_DECL>
+  inline vector<T, A LIBODB_VECTOR_ARG_USE>&
+  vector<T, A LIBODB_VECTOR_ARG_USE>::
   operator= (base_vector_type&& x)
   {
     v_ = std::move (x);
@@ -344,54 +357,4 @@ namespace odb
     return *this;
   }
 #endif
-
-  //
-  // vector_iterator
-  //
-
-  template <class V, class I>
-  inline typename vector_iterator<V, I>::reference vector_iterator<V, I>::
-  modify () const
-  {
-    if (v_->_tracking ())
-      v_->_impl ().modify (static_cast<size_type> (i_ - v_->base ().begin ()));
-    return *i_;
-  }
-
-  template <class V, class I>
-  inline typename vector_iterator<V, I>::reference vector_iterator<V, I>::
-  modify (difference_type n) const
-  {
-    if (v_->_tracking ())
-      v_->_impl ().modify (
-        static_cast<size_type> (i_ - v_->base ().begin () + n));
-    return i_[n];
-  }
-
-  //
-  // vector_iterator<std::reverse_iterator>
-  //
-
-  template <class V, class J>
-  inline typename vector_iterator<V, std::reverse_iterator<J> >::reference
-  vector_iterator<V, std::reverse_iterator<J> >::
-  modify () const
-  {
-    if (v_->_tracking ())
-      v_->_impl ().modify (
-        static_cast<size_type> (v_->base ().rend () - i_ - 1));
-    return *i_;
-  }
-
-  template <class V, class J>
-  inline typename vector_iterator<V, std::reverse_iterator<J> >::reference
-  vector_iterator<V, std::reverse_iterator<J> >::
-  modify (difference_type n) const
-  {
-    if (v_->_tracking ())
-      // Note: going in the opposite direction.
-      v_->_impl ().modify (
-        static_cast<size_type> (v_->base ().rend () - i_ - 1 - n));
-    return i_[n];
-  }
 }
