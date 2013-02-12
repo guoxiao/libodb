@@ -9,12 +9,7 @@
 #if (defined(_MSC_VER) && defined(LIBODB_DYNAMIC_LIB)) || \
     (!defined(_MSC_VER) && defined(DLL_EXPORT))
 
-#ifndef WIN32_LEAN_AND_MEAN
-#define WIN32_LEAN_AND_MEAN
-#endif
-
-#include <windows.h>
-
+#include <odb/details/win32/windows.hxx>
 #include <odb/details/win32/init.hxx>
 
 using namespace odb::details;
