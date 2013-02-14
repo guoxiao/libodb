@@ -24,6 +24,17 @@ AC_LANG(C++)
 #
 LT_OUTPUT
 
+# Check for Windows.
+#
+win32=no
+case $host_os in
+  windows* | mingw*)
+    win32=yes
+    ;;
+esac
+
+AM_CONDITIONAL([ODB_WIN32], [test x$win32 = xyes])
+
 # Check for threads.
 #
 THREADS

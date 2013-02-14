@@ -16,6 +16,6 @@ __header_filter_entry__(details\config-vc.h)
   </ItemGroup>
   <ItemGroup>
 __source_filter_entries__(sources)
-__source_filter_entries__(win32_sources)
+__source_filter_entries__(win32_threads_sources)
   </ItemGroup>
 </Project>

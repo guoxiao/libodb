@@ -31,13 +31,13 @@ details/shared-ptr/base.cxx
 
 # POSIX-based implementation details.
 #
-posix_cxx :=                 \
+posix_thr_cxx :=             \
 details/posix/exceptions.cxx \
 details/posix/thread.cxx
 
 # Win32-based implementation details.
 #
-win32_cxx :=                 \
+win32_thr_cxx :=             \
 details/win32/init.cxx       \
 details/win32/once.cxx       \
 details/win32/tls.cxx        \
@@ -50,11 +50,11 @@ win32_dll_cxx := details/win32/dll.cxx
 cxx_tun := $(cxx)
 
 ifeq ($(libodb_threads),posix)
-cxx_tun += $(posix_cxx)
+cxx_tun += $(posix_thr_cxx)
 endif
 
 ifeq ($(libodb_threads),win32)
-cxx_tun += $(win32_cxx)
+cxx_tun += $(win32_thr_cxx)
 
 $(call include,$(bld_root)/ld/configuration-lib.make) # ld_lib_type
 
@@ -115,18 +115,20 @@ $(out_base)/: $(odb.l)
 # Dist.
 #
 $(dist): export sources := $(cxx)
-$(dist): export posix_sources := $(posix_cxx)
-$(dist): export win32_sources := $(win32_cxx)
+$(dist): export posix_threads_sources := $(posix_thr_cxx)
+$(dist): export win32_threads_sources := $(win32_thr_cxx)
 $(dist): export win32_dll_sources := $(win32_dll_cxx)
 
-$(dist): export headers = $(subst $(src_base)/,,$(shell find $(src_base) \
+$(dist): export headers := $(subst $(src_base)/,,$(shell find $(src_base) \
 -path $(src_base)/details/posix -a -prune -a -false -o \
 -path $(src_base)/details/win32 -a -prune -a -false -o \
 -name '*.hxx' -o -name '*.ixx' -o -name '*.txx'))
-$(dist): export posix_headers = $(subst $(src_base)/,,$(shell find \
+$(dist): export posix_threads_headers := $(subst $(src_base)/,,$(shell find \
 $(src_base)/details/posix -name '*.hxx' -o -name '*.ixx' -o -name '*.txx'))
-$(dist): export win32_headers = $(subst $(src_base)/,,$(shell find \
-$(src_base)/details/win32 -name '*.hxx' -o -name '*.ixx' -o -name '*.txx'))
+$(dist): export win32_headers := details/win32/windows.hxx
+$(dist): export win32_threads_headers := $(foreach \
+h,$(win32_headers),$(filter-out $h,$(subst $(src_base)/,,$(shell find \
+$(src_base)/details/win32 -name '*.hxx' -o -name '*.ixx' -o -name '*.txx'))))
 
 $(dist): data_dist := details/config-vc.h
 $(dist): export extra_dist := $(data_dist) libodb-vc9.vcproj \
@@ -136,8 +138,9 @@ $(dist): export interface_version = $(shell sed -e \
 's/^\([0-9]*\.[0-9]*\).*/\1/' $(src_root)/version)
 
 $(dist):
-	$(call dist-data,$(sources) $(posix_sources) $(win32_sources) \
-$(win32_dll_sources) $(headers) $(posix_headers) $(win32_headers) \
+	$(call dist-data,$(sources) $(posix_threads_sources) \
+$(win32_threads_sources) $(win32_dll_sources) $(headers) \
+$(posix_threads_headers) $(win32_headers) $(win32_threads_headers) \
 $(data_dist) details/config.h.in)
 	$(call meta-vc9proj,$(src_base)/libodb-vc9.vcproj)
 	$(call meta-vc10proj,$(src_base)/libodb-vc10.vcxproj)
