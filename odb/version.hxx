@@ -31,8 +31,8 @@
 
 // libodb version: interface version plus the bugfix version.
 //
-#define LIBODB_VERSION     2020000
-#define LIBODB_VERSION_STR "2.2.0"
+#define LIBODB_VERSION     2020100
+#define LIBODB_VERSION_STR "2.2.1"
 
 #include <odb/post.hxx>
 
