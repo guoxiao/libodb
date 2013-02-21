@@ -135,6 +135,8 @@ namespace odb
         op_not_null,    // is_not_null ()
 
         op_in,          // in(), data is the number of arguments
+        op_like,        // like(pattern)
+        op_like_escape, // like(pattern, escape)
 
         op_eq,          // ==
         op_ne,          // !=
@@ -414,6 +416,47 @@ namespace odb
     template <typename I>
     query_base
     in_range (I begin, I end) const;
+
+    // like
+    //
+  public:
+    query_base
+    like (const T& pattern) const
+    {
+      return like (val_bind<T> (pattern));
+    }
+
+    query_base
+    like (val_bind<T> pattern) const;
+
+    template <typename T2>
+    query_base
+    like (val_bind<T2> pattern) const
+    {
+      return like (val_bind<T> (T (pattern.val)));
+    }
+
+    query_base
+    like (ref_bind<T> pattern) const;
+
+    query_base
+    like (const T& pattern, const T& escape) const
+    {
+      return like (val_bind<T> (pattern), escape);
+    }
+
+    query_base
+    like (val_bind<T> pattern, const T& escape) const;
+
+    template <typename T2>
+    query_base
+    like (val_bind<T2> pattern, const T& escape) const
+    {
+      return like (val_bind<T> (T (pattern.val)), escape);
+    }
+
+    query_base
+    like (ref_bind<T> pattern, const T& escape) const;
 
     // ==
     //

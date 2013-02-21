@@ -4,8 +4,10 @@
 
 namespace odb
 {
+  //
   // query_base
   //
+
   template <typename T>
   void query_base::
   append_val (const T& val, const native_column_info* c)
@@ -21,7 +23,11 @@ namespace odb
     p.data = reinterpret_cast<std::size_t> (qp);
   }
 
+  //
   // query_column
+  //
+
+  // in
   //
   template <typename T>
   query_base query_column<T>::
@@ -85,6 +91,50 @@ namespace odb
       q.append_val (*i, native_info);
 
     q.append (query_base::clause_part::op_in, n);
+    return q;
+  }
+
+  // like
+  //
+  template <typename T>
+  query_base query_column<T>::
+  like (val_bind<T> p) const
+  {
+    query_base q (native_info);
+    q.append_val (p.val, native_info);
+    q.append (query_base::clause_part::op_like, 0);
+    return q;
+  }
+
+  template <typename T>
+  query_base query_column<T>::
+  like (ref_bind<T> p) const
+  {
+    query_base q (native_info);
+    q.append_ref (p.ptr (), native_info);
+    q.append (query_base::clause_part::op_like, 0);
+    return q;
+  }
+
+  template <typename T>
+  query_base query_column<T>::
+  like (val_bind<T> p, const T& e) const
+  {
+    query_base q (native_info);
+    q.append_val (p.val, native_info);
+    q.append_val (e, native_info);
+    q.append (query_base::clause_part::op_like_escape, 0);
+    return q;
+  }
+
+  template <typename T>
+  query_base query_column<T>::
+  like (ref_bind<T> p, const T& e) const
+  {
+    query_base q (native_info);
+    q.append_ref (p.ptr (), native_info);
+    q.append_val (e, native_info);
+    q.append (query_base::clause_part::op_like_escape, 0);
     return q;
   }
 }

@@ -100,6 +100,8 @@ namespace odb
       case clause_part::op_null:
       case clause_part::op_not_null:
       case clause_part::op_in:
+      case clause_part::op_like:
+      case clause_part::op_like_escape:
         break;
       }
     }
