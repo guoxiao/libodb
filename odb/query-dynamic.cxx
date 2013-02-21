@@ -76,13 +76,30 @@ namespace odb
           d.data = strings_.size () - 1;
           break;
         }
-      case clause_part::op_eq:
+      case clause_part::op_add:
+
       case clause_part::op_and:
+      case clause_part::op_or:
+
+      case clause_part::op_eq:
+      case clause_part::op_ne:
+      case clause_part::op_lt:
+      case clause_part::op_gt:
+      case clause_part::op_le:
+      case clause_part::op_ge:
         {
           d.data += delta;
           break;
         }
-      default:
+        // Do not use default here to remember to handle new op codes.
+        //
+      case clause_part::kind_column:
+      case clause_part::kind_true:
+      case clause_part::kind_false:
+      case clause_part::op_not:
+      case clause_part::op_null:
+      case clause_part::op_not_null:
+      case clause_part::op_in:
         break;
       }
     }
