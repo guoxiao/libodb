@@ -2,6 +2,7 @@
 // copyright : Copyright (c) 2009-2013 Code Synthesis Tools CC
 // license   : GNU GPL v2; see accompanying LICENSE file
 
+#include <sstream>
 #include <odb/exceptions.hxx>
 
 using namespace std;
@@ -159,6 +160,27 @@ namespace odb
   }
 
   const char* unknown_schema::
+  what () const throw ()
+  {
+    return what_.c_str ();
+  }
+
+  unknown_schema_version::
+  unknown_schema_version (schema_version v)
+      : version_ (v)
+  {
+    ostringstream os;
+    os << v;
+    what_ = "unknown database schema version ";
+    what_ += os.str ();
+  }
+
+  unknown_schema_version::
+  ~unknown_schema_version () throw ()
+  {
+  }
+
+  const char* unknown_schema_version::
   what () const throw ()
   {
     return what_.c_str ();

@@ -9,7 +9,7 @@
 
 #include <string>
 
-#include <odb/forward.hxx>    // odb::core
+#include <odb/forward.hxx>    // schema_version, odb::core
 #include <odb/exception.hxx>
 
 #include <odb/details/export.hxx>
@@ -189,6 +189,25 @@ namespace odb
     std::string what_;
   };
 
+  struct LIBODB_EXPORT unknown_schema_version: exception
+  {
+    unknown_schema_version (schema_version);
+    ~unknown_schema_version () throw ();
+
+    schema_version
+    version () const
+    {
+      return version_;
+    }
+
+    virtual const char*
+    what () const throw ();
+
+  private:
+    schema_version version_;
+    std::string what_;
+  };
+
   namespace common
   {
     using odb::null_pointer;
@@ -215,6 +234,7 @@ namespace odb
     using odb::no_type_info;
 
     using odb::unknown_schema;
+    using odb::unknown_schema_version;
   }
 }
 

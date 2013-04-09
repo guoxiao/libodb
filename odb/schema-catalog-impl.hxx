@@ -9,7 +9,7 @@
 
 #include <cstddef>
 
-#include <odb/forward.hxx>
+#include <odb/forward.hxx> // schema_version
 
 #include <odb/details/export.hxx>
 
@@ -32,12 +32,21 @@ namespace odb
 
   // Catalog entry registration.
   //
-  struct LIBODB_EXPORT schema_catalog_entry
+  struct LIBODB_EXPORT schema_catalog_create_entry
   {
-    schema_catalog_entry (
-      database_id id,
+    schema_catalog_create_entry (
+      database_id,
       const char* name,
       bool (*create_function) (database&, unsigned short pass, bool drop));
+  };
+
+  struct LIBODB_EXPORT schema_catalog_migrate_entry
+  {
+    schema_catalog_migrate_entry (
+      database_id,
+      const char* name,
+      schema_version,
+      bool (*migrate_function) (database&, unsigned short pass, bool pre));
   };
 }
 

@@ -27,6 +27,7 @@ namespace odb
 
   //
   //
+  typedef unsigned long long schema_version;
   class database;
   class connection;
   typedef details::shared_ptr<connection> connection_ptr;
@@ -36,6 +37,7 @@ namespace odb
 
   namespace common
   {
+    using odb::schema_version;
     using odb::session;
   }
 
