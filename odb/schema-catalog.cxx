@@ -15,6 +15,8 @@ using namespace std;
 
 namespace odb
 {
+  // Schema.
+  //
   typedef bool (*create_function) (database&, unsigned short pass, bool drop);
   typedef bool (*migrate_function) (database&, unsigned short pass, bool pre);
 
@@ -28,26 +30,65 @@ namespace odb
     create_functions create;
     version_map migrate;
   };
+  typedef map<key, schema_functions> schema_map;
 
-  struct schema_catalog_impl: map<key, schema_functions> {};
+  // Data. Normally the code would be database-independent, though there
+  // could be database-specific migration steps.
+  //
+  typedef pair<string, schema_version> data_key;
 
+  struct data_function
+  {
+    typedef schema_catalog::data_migration_function_type function_type;
+
+    data_function () {}
+    data_function (database_id i, function_type m): id (i), migrate (m) {}
+
+    database_id id;
+    function_type migrate;
+  };
+  typedef vector<data_function> data_functions;
+  typedef map<data_key, data_functions> data_map;
+
+  struct schema_catalog_impl
+  {
+    schema_map schema;
+    data_map data;
+  };
+
+  // Static initialization.
+  //
   schema_catalog_impl* schema_catalog_init::catalog = 0;
   size_t schema_catalog_init::count = 0;
 
+  struct schema_catalog_init_extra
+  {
+    bool initialized;
+
+    schema_catalog_init_extra (): initialized (false) {}
+    ~schema_catalog_init_extra ()
+    {
+      if (initialized && --schema_catalog_init::count == 0)
+        delete schema_catalog_init::catalog;
+    }
+  };
+
+  static schema_catalog_init_extra schema_catalog_init_extra_;
+
   bool schema_catalog::
-  exists (database_id id, const std::string& name)
+  exists (database_id id, const string& name)
   {
     const schema_catalog_impl& c (*schema_catalog_init::catalog);
-    return c.find (key (id, name)) != c.end ();
+    return c.schema.find (key (id, name)) != c.schema.end ();
   }
 
   void schema_catalog::
   create_schema (database& db, const string& name, bool drop)
   {
     const schema_catalog_impl& c (*schema_catalog_init::catalog);
-    schema_catalog_impl::const_iterator i (c.find (key (db.id (), name)));
+    schema_map::const_iterator i (c.schema.find (key (db.id (), name)));
 
-    if (i == c.end ())
+    if (i == c.schema.end ())
       throw unknown_schema (name);
 
     const create_functions& fs (i->second.create);
@@ -78,9 +119,9 @@ namespace odb
   drop_schema (database& db, const string& name)
   {
     const schema_catalog_impl& c (*schema_catalog_init::catalog);
-    schema_catalog_impl::const_iterator i (c.find (key (db.id (), name)));
+    schema_map::const_iterator i (c.schema.find (key (db.id (), name)));
 
-    if (i == c.end ())
+    if (i == c.schema.end ())
       throw unknown_schema (name);
 
     const create_functions& fs (i->second.create);
@@ -111,9 +152,9 @@ namespace odb
                        migrate_mode m)
   {
     const schema_catalog_impl& c (*schema_catalog_init::catalog);
-    schema_catalog_impl::const_iterator i (c.find (key (db.id (), name)));
+    schema_map::const_iterator i (c.schema.find (key (db.id (), name)));
 
-    if (i == c.end ())
+    if (i == c.schema.end ())
       throw unknown_schema (name);
 
     const version_map& vm (i->second.migrate);
@@ -154,7 +195,54 @@ namespace odb
   }
 
   void schema_catalog::
-  migrate (database& db, schema_version v, const std::string& name)
+  migrate_data (database& db, schema_version v, const string& name)
+  {
+    if (v == 0)
+    {
+      if (!db.schema_migration ())
+        return;
+
+      v = db.schema_version ();
+    }
+
+    const schema_catalog_impl& c (*schema_catalog_init::catalog);
+    data_map::const_iterator i (c.data.find (data_key (name, v)));
+
+    if (i == c.data.end ())
+      return; // No data migration for this schema/version.
+
+    const data_functions& df (i->second);
+
+    for (data_functions::const_iterator i (df.begin ()), e (df.end ());
+         i != e; ++i)
+    {
+      if (i->id == id_common || i->id == db.id ())
+        i->migrate (db);
+    }
+  }
+
+  void schema_catalog::
+  data_migration_function (database_id id,
+                           schema_version v,
+                           data_migration_function_type f,
+                           const string& name)
+  {
+    // This function can be called from a static initializer in which
+    // case the catalog might not have yet been created.
+    //
+    if (schema_catalog_init::count == 0)
+    {
+      schema_catalog_init::catalog = new schema_catalog_impl;
+      ++schema_catalog_init::count;
+      schema_catalog_init_extra_.initialized = true;
+    }
+
+    schema_catalog_impl& c (*schema_catalog_init::catalog);
+    c.data[data_key (name, v)].push_back (data_function (id, f));
+  }
+
+  void schema_catalog::
+  migrate (database& db, schema_version v, const string& name)
   {
     schema_version latest (latest_version (db, name));
 
@@ -168,7 +256,7 @@ namespace odb
          i = next_version (db, i, name))
     {
       migrate_schema_pre (db, i, name);
-      // migrate_data (db, i, name);
+      migrate_data (db, i, name);
       migrate_schema_post (db, i, name);
     }
   }
@@ -177,9 +265,9 @@ namespace odb
   next_version (database_id id, schema_version current, const string& name)
   {
     const schema_catalog_impl& c (*schema_catalog_init::catalog);
-    schema_catalog_impl::const_iterator i (c.find (key (id, name)));
+    schema_map::const_iterator i (c.schema.find (key (id, name)));
 
-    if (i == c.end ())
+    if (i == c.schema.end ())
       throw unknown_schema (name);
 
     const version_map& vm (i->second.migrate);
@@ -191,9 +279,9 @@ namespace odb
   latest_version (database_id id, const string& name)
   {
     const schema_catalog_impl& c (*schema_catalog_init::catalog);
-    schema_catalog_impl::const_iterator i (c.find (key (id, name)));
+    schema_map::const_iterator i (c.schema.find (key (id, name)));
 
-    if (i == c.end ())
+    if (i == c.schema.end ())
       throw unknown_schema (name);
 
     const version_map& vm (i->second.migrate);
@@ -227,7 +315,7 @@ namespace odb
                                create_function cf)
   {
     schema_catalog_impl& c (*schema_catalog_init::catalog);
-    c[key(id, name)].create.push_back (cf);
+    c.schema[key(id, name)].create.push_back (cf);
   }
 
   // schema_catalog_migrate_entry
@@ -239,6 +327,6 @@ namespace odb
                                 migrate_function mf)
   {
     schema_catalog_impl& c (*schema_catalog_init::catalog);
-    c[key(id, name)].migrate[v].push_back (mf);
+    c.schema[key(id, name)].migrate[v].push_back (mf);
   }
 }

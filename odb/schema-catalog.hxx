@@ -7,7 +7,13 @@
 
 #include <odb/pre.hxx>
 
+#include <odb/details/config.hxx> // ODB_CXX11
+
 #include <string>
+
+#ifdef ODB_CXX11
+#  include <functional> // std::function
+#endif
 
 #include <odb/forward.hxx> // schema_version, odb::core
 
@@ -28,6 +34,7 @@ namespace odb
 
     // Schema migration.
     //
+  public:
     static void
     migrate_schema_pre (database& db,
                         schema_version v,
@@ -52,12 +59,62 @@ namespace odb
       migrate_schema_impl (db, v, name, migrate_both);
     }
 
+    // Data migration.
+    //
+  public:
+    // If version is 0, then use the current version and also check whether
+    // we are in migration.
+    //
+    static void
+    migrate_data (database&,
+                  schema_version = 0,
+                  const std::string& name = "");
+
+#ifdef ODB_CXX11
+    typedef std::function<void (database&)> data_migration_function_type;
+#else
+    typedef void (*data_migration_function_type) (database&);
+#endif
+
+    // Data migration functions are called in the order of registration.
+    //
+    static void
+    data_migration_function (schema_version v,
+                             data_migration_function_type f,
+                             const std::string& name = "")
+    {
+      data_migration_function (id_common, v, f, name);
+    }
+
+    // Database-specific data migration.
+    //
+    static void
+    data_migration_function (database& db,
+                             schema_version v,
+                             data_migration_function_type f,
+                             const std::string& name = "")
+    {
+      data_migration_function (db.id (), v, f, name);
+    }
+
+    static void
+    data_migration_function (database_id,
+                             schema_version,
+                             data_migration_function_type,
+                             const std::string& name = "");
+
+    // Combined schema and data migration.
+    //
+  public:
     // Migrate both schema and data to the specified version. If version
     // is not specified, then migrate to the latest version.
     //
     static void
-    migrate (database& db, schema_version v = 0, const std::string& name = "");
+    migrate (database&, schema_version = 0, const std::string& name = "");
 
+    // Schema version information.
+    //
+  public:
     // Return 0 if current is greater or equal to the latest version.
     // If current is not specified, get the current version from the
     // database.
@@ -86,6 +143,9 @@ namespace odb
     static schema_version
     latest_version (database_id, const std::string& name = "");
 
+    // Schema existence.
+    //
+  public:
     // Test for presence of a schema with a specific name.
     //
     static bool
@@ -112,9 +172,32 @@ namespace odb
                          migrate_mode);
   };
 
+  // Static data migration function registration.
+  //
+  struct LIBODB_EXPORT data_migration_entry
+  {
+    typedef schema_catalog::data_migration_function_type function_type;
+
+    data_migration_entry (schema_version v,
+                          function_type f,
+                          const std::string& name = "")
+    {
+      schema_catalog::data_migration_function (v, f, name);
+    }
+
+    data_migration_entry (database_id id,
+                          schema_version v,
+                          function_type f,
+                          const std::string& name = "")
+    {
+      schema_catalog::data_migration_function (id, v, f, name);
+    }
+  };
+
   namespace common
   {
     using odb::schema_catalog;
+    using odb::data_migration_entry;
   }
 }
 
