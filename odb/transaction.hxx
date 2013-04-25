@@ -31,6 +31,11 @@ namespace odb
     explicit
     transaction (transaction_impl*, bool make_current = true);
 
+    // Create a finalized transaction instance which can later be initialized
+    // with reset().
+    //
+    transaction ();
+
     // Unless the transaction has already been finalized (explicitly
     // committed or rolled back), the destructor will roll it back.
     //
@@ -59,6 +64,9 @@ namespace odb
     //
     connection_type&
     connection ();
+
+    bool
+    finalized () const {return finalized_;}
 
   public:
     // Return true if there is a transaction in effect.
