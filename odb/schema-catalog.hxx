@@ -52,28 +52,38 @@ namespace odb
       migrate_schema_impl (db, v, name, migrate_both);
     }
 
-    // Return 0 if current is greater or equal to the latest version.
+    // Migrate both schema and data to the specified version. If version
+    // is not specified, then migrate to the latest version.
     //
-    schema_version
+    static void
+    migrate (database& db, schema_version v = 0, const std::string& name = "");
+
+    // Return 0 if current is greater or equal to the latest version.
+    // If current is not specified, get the current version from the
+    // database.
+    //
+    static schema_version
     next_version (const database& db,
-                  schema_version current /*= 0*/,
+                  schema_version current = 0,
                   const std::string& name = "")
     {
-      return next_version (db.id (), current, name);
+      return next_version (db.id (),
+                           current == 0 ? db.schema_version () : current,
+                           name);
     }
 
-    schema_version
+    static schema_version
     next_version (database_id,
-                  schema_version current /*= 0*/,
+                  schema_version current,
                   const std::string& name = "");
 
-    schema_version
+    static schema_version
     latest_version (const database& db, const std::string& name = "")
     {
       return latest_version (db.id (), name);
     }
 
-    schema_version
+    static schema_version
     latest_version (database_id, const std::string& name = "");
 
     // Test for presence of a schema with a specific name.

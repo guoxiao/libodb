@@ -317,6 +317,47 @@ namespace odb
     tracer_type*
     tracer () const;
 
+    // Database schema version.
+    //
+  public:
+    typedef odb::schema_version schema_version_type;
+
+    schema_version_type
+    schema_version (const std::string& schema_name = "") const;
+
+    bool
+    schema_migration (const std::string& schema_name = "") const;
+
+    // Set schema version and migration state manually.
+    //
+    void
+    schema_version (schema_version_type,
+                    bool migration,
+                    const std::string& schema_name = "");
+
+    // Set default schema version table for all schema names. The table
+    // name should already be quoted if necessary.
+    //
+    void
+    schema_version_table (const std::string& table_name);
+
+    // Set schema version table for a specific schema.
+    //
+    void
+    schema_version_table (const std::string& table_name,
+                          const std::string& schema_name);
+
+  protected:
+    struct schema_version_info
+    {
+      schema_version_type version;
+      bool migration;
+      std::string version_table;
+    };
+
+    virtual const schema_version_info&
+    load_schema_version (const std::string& schema_name) const = 0;
+
     // Database id.
     //
   public:
@@ -393,9 +434,14 @@ namespace odb
     std::map<const char*, query_factory_type, details::c_string_comparator>
     query_factory_map;
 
+    typedef std::map<std::string, schema_version_info> schema_version_map;
+
     database_id id_;
     tracer_type* tracer_;
     query_factory_map query_factory_map_;
+
+    std::string schema_version_table_;
+    mutable schema_version_map schema_version_map_;
   };
 }
 

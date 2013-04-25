@@ -21,6 +21,44 @@ namespace odb
     return id_;
   }
 
+  inline database::schema_version_type database::
+  schema_version (const std::string& name) const
+  {
+    schema_version_map::const_iterator i (schema_version_map_.find (name));
+    return i != schema_version_map_.end () && i->second.version != 0
+      ? i->second.version
+      : load_schema_version (name).version;
+  }
+
+  inline bool database::
+  schema_migration (const std::string& name) const
+  {
+    schema_version_map::const_iterator i (schema_version_map_.find (name));
+    return i != schema_version_map_.end () && i->second.version != 0
+      ? i->second.migration
+      : load_schema_version (name).migration;
+  }
+
+  inline void database::
+  schema_version (schema_version_type v, bool m, const std::string& name)
+  {
+    schema_version_info& svi (schema_version_map_[name]);
+    svi.version = v;
+    svi.migration = m;
+  }
+
+  inline void database::
+  schema_version_table (const std::string& tname)
+  {
+    schema_version_table_ = tname;
+  }
+
+  inline void database::
+  schema_version_table (const std::string& tname, const std::string& sname)
+  {
+    schema_version_map_[sname].version_table = tname;
+  }
+
   inline connection_ptr database::
   connection ()
   {

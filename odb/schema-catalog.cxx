@@ -147,6 +147,30 @@ namespace odb
       if (!pre || m != migrate_both)
         break;
     }
+
+    // Update the schema version on the database instance.
+    //
+    db.schema_version (v, m == migrate_pre, name);
+  }
+
+  void schema_catalog::
+  migrate (database& db, schema_version v, const std::string& name)
+  {
+    schema_version latest (latest_version (db, name));
+
+    if (v == 0)
+      v = latest;
+    else if (v > latest)
+      throw unknown_schema_version (v);
+
+    for (schema_version i (next_version (db, 0, name));
+         i != 0 && i <= v;
+         i = next_version (db, i, name))
+    {
+      migrate_schema_pre (db, i, name);
+      // migrate_data (db, i, name);
+      migrate_schema_post (db, i, name);
+    }
   }
 
   schema_version schema_catalog::
