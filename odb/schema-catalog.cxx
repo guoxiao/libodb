@@ -42,7 +42,40 @@ namespace odb
   }
 
   void schema_catalog::
-  create_schema (database& db, const string& name)
+  create_schema (database& db, const string& name, bool drop)
+  {
+    const schema_catalog_impl& c (*schema_catalog_init::catalog);
+    schema_catalog_impl::const_iterator i (c.find (key (db.id (), name)));
+
+    if (i == c.end ())
+      throw unknown_schema (name);
+
+    const create_functions& fs (i->second.create);
+
+    if (drop)
+      drop_schema (db, name);
+
+    // Run the passes until we ran them all or all the functions
+    // return false, which means no more passes necessary.
+    //
+    for (unsigned short pass (1); pass < 3; ++pass)
+    {
+      bool done (true);
+
+      for (create_functions::const_iterator j (fs.begin ()), e (fs.end ());
+           j != e; ++j)
+      {
+        if ((*j) (db, pass, false))
+          done = false;
+      }
+
+      if (done)
+        break;
+    }
+  }
+
+  void schema_catalog::
+  drop_schema (database& db, const string& name)
   {
     const schema_catalog_impl& c (*schema_catalog_init::catalog);
     schema_catalog_impl::const_iterator i (c.find (key (db.id (), name)));
@@ -53,10 +86,8 @@ namespace odb
     const create_functions& fs (i->second.create);
 
     // Run the passes until we ran them all or all the functions
-    // return false, which means no more passes necessary. Do that
-    // first for drop passes, then for create.
+    // return false, which means no more passes necessary.
     //
-
     for (unsigned short pass (1); pass < 3; ++pass)
     {
       bool done (true);
@@ -65,21 +96,6 @@ namespace odb
            j != e; ++j)
       {
         if ((*j) (db, pass, true))
-          done = false;
-      }
-
-      if (done)
-        break;
-    }
-
-    for (unsigned short pass (1); pass < 3; ++pass)
-    {
-      bool done (true);
-
-      for (create_functions::const_iterator j (fs.begin ()), e (fs.end ());
-           j != e; ++j)
-      {
-        if ((*j) (db, pass, false))
           done = false;
       }
 

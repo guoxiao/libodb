@@ -21,7 +21,10 @@ namespace odb
     // Schema creation.
     //
     static void
-    create_schema (database&, const std::string& name = "");
+    create_schema (database&, const std::string& name = "", bool drop = true);
+
+    static void
+    drop_schema (database&, const std::string& name = "");
 
     // Schema migration.
     //
@@ -76,13 +79,13 @@ namespace odb
     // Test for presence of a schema with a specific name.
     //
     static bool
-    exists (const database& db, const std::string& name)
+    exists (const database& db, const std::string& name = "")
     {
       return exists (db.id (), name);
     }
 
     static bool
-    exists (database_id, const std::string& name);
+    exists (database_id, const std::string& name = "");
 
   private:
     enum migrate_mode
