@@ -2,6 +2,7 @@
 // copyright : Copyright (c) 2009-2013 Code Synthesis Tools CC
 // license   : GNU GPL v2; see accompanying LICENSE file
 
+#include <odb/section.hxx>
 #include <odb/exceptions.hxx>
 #include <odb/no-op-cache-traits.hxx>
 #include <odb/pointer-traits.hxx>
@@ -96,6 +97,20 @@ namespace odb
 
   template <typename T, database_id DB>
   void database::
+  load_ (T& obj, section& s)
+  {
+    connection_type& c (transaction::current ().connection ());
+
+    // T is always object_type.
+    //
+    if (object_traits_impl<T, DB>::load (c, obj, s))
+      s.reset (true, false); // Loaded, unchanged.
+    else
+      throw section_not_in_object ();
+  }
+
+  template <typename T, database_id DB>
+  void database::
   reload_ (T& obj)
   {
     // T should be object_type (cannot be const). We also don't need to
@@ -103,6 +118,26 @@ namespace odb
     //
     if (!object_traits_impl<T, DB>::reload (*this, obj))
       throw object_not_persistent ();
+  }
+
+  template <typename T, database_id DB>
+  void database::
+  update_ (const T& obj, const section& s)
+  {
+    if (!s.loaded ())
+      throw section_not_loaded ();
+
+    transaction& t (transaction::current ());
+
+    // T is always object_type.
+    //
+    if (object_traits_impl<T, DB>::update (t.connection (), obj, s))
+    {
+      if (s.changed ())
+        s.reset (true, false, &t); // Clear the change flag.
+    }
+    else
+      throw section_not_in_object ();
   }
 
   template <typename T, database_id DB>

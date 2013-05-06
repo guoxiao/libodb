@@ -15,6 +15,7 @@ prepared-query.cxx \
 query-dynamic.cxx  \
 result.cxx         \
 schema-catalog.cxx \
+section.cxx        \
 session.cxx        \
 statement.cxx      \
 tracer.cxx         \

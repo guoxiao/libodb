@@ -185,4 +185,16 @@ namespace odb
   {
     return what_.c_str ();
   }
+
+  const char* section_not_loaded::
+  what () const throw ()
+  {
+    return "section is not loaded";
+  }
+
+  const char* section_not_in_object::
+  what () const throw ()
+  {
+    return "section instance is not part of an object (section was copied?)";
+  }
 }

@@ -181,6 +181,12 @@ namespace odb
     struct id_type {};
   };
 
+  // Specialization for section to allow instantiation of all the load()
+  // signature.
+  //
+  template <>
+  struct object_traits<section> {};
+
   template <typename T, database_id DB>
   //
   // If a C++ compiler issues an error pointing to this struct and
@@ -270,6 +276,48 @@ namespace odb
   template <typename T, database_id DB>
   struct composite_value_traits: access::composite_value_traits<T, DB>
   {
+  };
+
+  //
+  // Get root image from a polymorphic image chain.
+  //
+
+  template <typename T, std::size_t d>
+  struct root_image_impl
+  {
+    typedef root_image_impl<typename T::base_traits, d - 1> base_type;
+    typedef typename base_type::image_type image_type;
+
+    static image_type&
+    get (typename T::image_type& i) {return base_type::get (*i.base);}
+    };
+
+  template <typename T>
+  struct root_image_impl<T, 1>
+  {
+    typedef typename T::image_type image_type;
+
+    static image_type&
+    get (image_type& i) {return i;}
+  };
+
+  template <typename T, bool p>
+  struct root_image
+  {
+    typedef root_image_impl<T, T::depth> impl_type;
+    typedef typename impl_type::image_type image_type;
+
+    static image_type&
+    get (typename T::image_type& i) {return impl_type::get (i);}
+  };
+
+  template <typename T>
+  struct root_image<T, false>
+  {
+    typedef typename T::image_type image_type;
+
+    static image_type&
+    get (image_type& i) {return i;}
   };
 }
 

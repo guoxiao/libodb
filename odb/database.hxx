@@ -83,6 +83,12 @@ namespace odb
     void
     load (const typename object_traits<T>::id_type& id, T& object);
 
+    // Load (or reload, if it is already loaded) a section of an object.
+    //
+    template <typename T>
+    void
+    load (T& object, section&);
+
     // Reload an object.
     //
     template <typename T>
@@ -152,6 +158,14 @@ namespace odb
     template <typename T>
     void
     update (const typename object_traits<T>::pointer_type& obj_ptr);
+
+    // Update a section of an object. Throws section_not_loaded exception
+    // if section is not loaded. Note also that this function does not
+    // clear the changed flag if it is set.
+    //
+    template <typename T>
+    void
+    update (const T& object, const section&);
 
     // Make the object transient. Throw object_not_persistent if not
     // found.
@@ -394,6 +408,10 @@ namespace odb
 
     template <typename T, database_id DB>
     void
+    load_ (T&, section&);
+
+    template <typename T, database_id DB>
+    void
     reload_ (T&);
 
     template <typename T, database_id DB>
@@ -411,6 +429,10 @@ namespace odb
     template <typename T, database_id DB>
     void
     update_ (const typename object_traits<T>::pointer_type&);
+
+    template <typename T, database_id DB>
+    void
+    update_ (const T&, const section&);
 
     template <typename T, database_id DB>
     void

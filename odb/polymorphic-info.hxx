@@ -7,9 +7,10 @@
 
 #include <odb/pre.hxx>
 
+#include <cstddef>  // std::size_t
 #include <typeinfo>
 
-#include <odb/forward.hxx> // database
+#include <odb/forward.hxx> // database, connection
 #include <odb/traits.hxx>
 
 namespace odb
@@ -17,9 +18,20 @@ namespace odb
   template <typename R>
   struct polymorphic_abstract_info
   {
+    typedef void (*section_load) (odb::connection&, R&, bool top);
+    typedef void (*section_update) (odb::connection&, const R&);
+
+    struct section_functions
+    {
+      section_load load;
+      section_update update;
+    };
+
+  public:
     polymorphic_abstract_info (const std::type_info& t,
-                               const polymorphic_abstract_info* b)
-        : type (t), base (b) {}
+                               const polymorphic_abstract_info* b,
+                               const section_functions* s)
+        : type (t), base (b), sections (s) {}
 
     bool
     derived (const polymorphic_abstract_info& b) const
@@ -31,9 +43,48 @@ namespace odb
       return false;
     }
 
+    // Find the "most overridden" section functions.
+    //
+    section_load
+    find_section_load (std::size_t index) const
+    {
+      for (const polymorphic_abstract_info* b (this); b != 0; b = b->base)
+        if (b->sections != 0 && b->sections[index].load != 0)
+          return b->sections[index].load;
+
+      return 0;
+    }
+
+    section_update
+    find_section_update (std::size_t index) const
+    {
+      for (const polymorphic_abstract_info* b (this); b != 0; b = b->base)
+        if (b->sections != 0 && b->sections[index].update != 0)
+          return b->sections[index].update;
+
+      return 0;
+    }
+
+    bool
+    final_section_update (const polymorphic_abstract_info& i,
+                          std::size_t index) const
+    {
+      return i.sections != 0 &&
+        i.sections[index].update != 0 &&
+        i.sections[index].update == find_section_update (index);
+    }
+
   public:
     const std::type_info& type;
     const polymorphic_abstract_info* base;
+
+    // Sections.
+    //
+    // There could be "concrete" (i.e., not overridden) section in an
+    // abstract class. Which means the section table has to be in
+    // abstract_info.
+    //
+    const section_functions* sections;
   };
 
   template <typename R>
@@ -46,6 +97,9 @@ namespace odb
     typedef typename root_traits::id_type id_type;
     typedef typename root_traits::pointer_type pointer_type;
     typedef typename root_traits::discriminator_type discriminator_type;
+
+    typedef typename polymorphic_abstract_info<R>::section_functions
+    section_functions;
 
     enum call_type
     {
@@ -67,11 +121,12 @@ namespace odb
   public:
     polymorphic_concrete_info (const std::type_info& t,
                                const polymorphic_abstract_info<R>* b,
+                               const section_functions* s,
                                const discriminator_type& d,
                                create_function cf,
                                dispatch_function df,
                                delayed_loader_function dlf)
-        : polymorphic_abstract_info<R> (t, b),
+        : polymorphic_abstract_info<R> (t, b, s),
           discriminator (d),
           create (cf), dispatch (df), delayed_loader (dlf)
     {

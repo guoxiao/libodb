@@ -149,7 +149,8 @@ namespace odb
   };
 
   template <typename T, database_id DB>
-  bool dispatch_impl (
+  bool
+  dispatch_impl (
     typename polymorphic_concrete_info<
       typename object_traits<T>::root_type>::call_type c,
     database& db,
@@ -234,6 +235,37 @@ namespace odb
     }
 
     return r;
+  }
+
+  template <typename T, database_id DB, typename ST>
+  void
+  section_load_impl (odb::connection& conn,
+                     typename object_traits<T>::root_type& obj,
+                     bool top)
+  {
+    typedef object_traits_impl<T, DB> derived_traits;
+    typedef typename derived_traits::statements_type statements_type;
+    typedef typename statements_type::connection_type connection_type;
+
+    connection_type& c (static_cast<connection_type&> (conn));
+    statements_type& sts (c.statement_cache ().template find_object<T> ());
+
+    ST::load (sts.extra_statement_cache (), static_cast<T&> (obj), top);
+  }
+
+  template <typename T, database_id DB, typename ST>
+  void
+  section_update_impl (odb::connection& conn,
+                       const typename object_traits<T>::root_type& obj)
+  {
+    typedef object_traits_impl<T, DB> derived_traits;
+    typedef typename derived_traits::statements_type statements_type;
+    typedef typename statements_type::connection_type connection_type;
+
+    connection_type& c (static_cast<connection_type&> (conn));
+    statements_type& sts (c.statement_cache ().template find_object<T> ());
+
+    ST::update (sts.extra_statement_cache (), static_cast<const T&> (obj));
   }
 }
 

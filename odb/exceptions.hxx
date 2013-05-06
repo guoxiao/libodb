@@ -208,6 +208,20 @@ namespace odb
     std::string what_;
   };
 
+  // Section exceptions.
+  //
+  struct LIBODB_EXPORT section_not_loaded: odb::exception
+  {
+    virtual const char*
+    what () const throw ();
+  };
+
+  struct LIBODB_EXPORT section_not_in_object: odb::exception
+  {
+    virtual const char*
+    what () const throw ();
+  };
+
   namespace common
   {
     using odb::null_pointer;
@@ -235,6 +249,9 @@ namespace odb
 
     using odb::unknown_schema;
     using odb::unknown_schema_version;
+
+    using odb::section_not_loaded;
+    using odb::section_not_in_object;
   }
 }
 

@@ -34,11 +34,13 @@ namespace odb
   class transaction;
   class statement;
   class session;
+  class section;
 
   namespace common
   {
     using odb::schema_version;
     using odb::session;
+    using odb::section;
   }
 
   namespace core
