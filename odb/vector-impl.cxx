@@ -4,15 +4,8 @@
 
 #include <odb/vector-impl.hxx>
 
-#include <cstring> // std::memcpy, std::memset
-
-#ifdef ODB_CXX11
-#  include <utility> // std::swap, std::move
-#else
-#  include <algorithm> // std::swap
-#endif
-
-#include <iostream> // @@ tmp
+#include <cstring>   // std::memcpy, std::memset
+#include <algorithm> // std::swap
 
 using namespace std;
 
@@ -184,19 +177,6 @@ namespace odb
 
   // vector_base
   //
-#ifdef ODB_CXX11
-  vector_base::
-  vector_base (vector_base&& x)
-      : impl_ (std::move (x.impl_)), tran_ (0)
-  {
-    if (x.tran_ != 0)
-    {
-      x.tran_->callback_unregister (&x);
-      _arm (*x.tran_);
-    }
-  }
-#endif
-
   void vector_base::
   rollback (unsigned short, void* key, unsigned long long)
   {

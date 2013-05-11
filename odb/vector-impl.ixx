@@ -3,7 +3,7 @@
 // license   : GNU GPL v2; see accompanying LICENSE file
 
 #ifdef ODB_CXX11
-#  include <utility> // std::swap
+#  include <utility> // std::swap, std::move
 #else
 #  include <algorithm> // std::swap
 #endif
@@ -137,6 +137,19 @@ namespace odb
 
   // vector_base
   //
+#ifdef ODB_CXX11
+  inline vector_base::
+  vector_base (vector_base&& x)
+      : impl_ (std::move (x.impl_)), tran_ (0)
+  {
+    if (x.tran_ != 0)
+    {
+      x.tran_->callback_unregister (&x);
+      _arm (*x.tran_);
+    }
+  }
+#endif
+
   inline void vector_base::
   _arm (transaction& t) const
   {
