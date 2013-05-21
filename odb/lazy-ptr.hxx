@@ -72,6 +72,11 @@ namespace odb
     //
     void unload () const;
 
+    // Get the underlying eager pointer. If this is an unloaded pointer
+    // to a persistent object, then the returned pointer will be NULL.
+    //
+    T* get_eager () const;
+
     template <class DB, class ID> lazy_ptr (DB&, const ID&);
     template <class DB, class Y> lazy_ptr (DB&, Y*);
 
@@ -184,6 +189,11 @@ namespace odb
     // equivalent to reset().
     //
     void unload () const;
+
+    // Get the underlying eager pointer. If this is an unloaded pointer
+    // to a persistent object, then the returned pointer will be NULL.
+    //
+    std::auto_ptr<T>& get_eager () const;
 
     template <class DB, class ID> lazy_auto_ptr (DB&, const ID&);
     template <class DB> lazy_auto_ptr (DB&, T*);
@@ -304,6 +314,11 @@ namespace odb
     // equivalent to reset().
     //
     void unload () const;
+
+    // Get the underlying eager pointer. If this is an unloaded pointer
+    // to a persistent object, then the returned pointer will be NULL.
+    //
+    std::unique_ptr<T, D>& get_eager () const;
 
     template <class DB, class ID> lazy_unique_ptr (DB&, const ID&);
     template <class DB> lazy_unique_ptr (DB&, pointer);
@@ -464,6 +479,11 @@ namespace odb
     //
     void unload () const;
 
+    // Get the underlying eager pointer. If this is an unloaded pointer
+    // to a persistent object, then the returned pointer will be NULL.
+    //
+    std::shared_ptr<T> get_eager () const;
+
     template <class DB, class ID> lazy_shared_ptr (DB&, const ID&);
     template <class DB, class Y> lazy_shared_ptr (DB&, Y*);
     template <class DB, class Y, class D> lazy_shared_ptr (DB&, Y*, D);
@@ -592,6 +612,11 @@ namespace odb
     // equivalent to reset().
     //
     void unload () const;
+
+    // Get the underlying eager pointer. If this is an unloaded pointer
+    // to a persistent object, then the returned pointer will be NULL.
+    //
+    std::weak_ptr<T> get_eager () const;
 
     template <class DB, class ID> lazy_weak_ptr (DB&, const ID&);
     template <class DB, class Y> lazy_weak_ptr (DB&, const std::shared_ptr<Y>&);

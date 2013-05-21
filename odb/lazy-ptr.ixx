@@ -137,6 +137,13 @@ namespace odb
   }
 
   template <class T>
+  inline T* lazy_ptr<T>::
+  get_eager () const
+  {
+    return p_;
+  }
+
+  template <class T>
   template <class DB, class ID>
   inline lazy_ptr<T>::
   lazy_ptr (DB& db, const ID& id): p_ (0), i_ (db, id) {}
@@ -393,6 +400,13 @@ namespace odb
 
       p_.reset ();
     }
+  }
+
+  template <class T>
+  inline std::auto_ptr<T>& lazy_auto_ptr<T>::
+  get_eager () const
+  {
+    return p_;
   }
 
   template <class T>
@@ -664,6 +678,13 @@ namespace odb
 
       p_.reset ();
     }
+  }
+
+  template <class T, class D>
+  inline std::unique_ptr<T, D>& lazy_unique_ptr<T, D>::
+  get_eager () const
+  {
+    return p_;
   }
 
   template <class T, class D>
@@ -1150,6 +1171,13 @@ namespace odb
   }
 
   template <class T>
+  inline std::shared_ptr<T> lazy_shared_ptr<T>::
+  get_eager () const
+  {
+    return p_;
+  }
+
+  template <class T>
   template <class DB, class ID>
   inline lazy_shared_ptr<T>::
   lazy_shared_ptr (DB& db, const ID& id): i_ (db, id) {}
@@ -1533,6 +1561,13 @@ namespace odb
     // With weak pointer we always keep i_ up to date.
     //
     p_.reset ();
+  }
+
+  template <class T>
+  inline std::weak_ptr<T> lazy_weak_ptr<T>::
+  get_eager () const
+  {
+    return p_;
   }
 
   template <class T>
