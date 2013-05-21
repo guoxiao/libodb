@@ -115,7 +115,7 @@ namespace odb
   inline T* lazy_ptr<T>::
   load () const
   {
-    if (!loaded ())
+    if (p_ == 0 && i_)
       p_ = i_.template load<T> (true); // Reset id.
 
     return p_;
@@ -371,7 +371,7 @@ namespace odb
   inline std::auto_ptr<T>& lazy_auto_ptr<T>::
   load () const
   {
-    if (!loaded ())
+    if (p_.get () == 0 && i_)
     {
       std::auto_ptr<T> tmp (i_.template load<T> (true)); // Reset id.
       p_ = tmp;
@@ -645,7 +645,7 @@ namespace odb
   inline std::unique_ptr<T, D>& lazy_unique_ptr<T, D>::
   load () const
   {
-    if (!loaded ())
+    if (!p_ && i_)
       p_ = std::unique_ptr<T, D> (i_.template load<T> (true)); // Reset id.
 
     return p_;
@@ -1128,7 +1128,7 @@ namespace odb
   inline std::shared_ptr<T> lazy_shared_ptr<T>::
   load () const
   {
-    if (!loaded ())
+    if (!p_ && i_)
       p_ = i_.template load<T> (true); // Reset id.
 
     return p_;
@@ -1517,11 +1517,12 @@ namespace odb
   {
     std::shared_ptr<T> r (p_.lock ());
 
-    if (r || !i_)
-      return r;
+    if (!r && i_)
+    {
+      r = i_.template load<T> (false); // Keep id.
+      p_ = r;
+    }
 
-    r = i_.template load<T> (false); // Keep id.
-    p_ = r;
     return r;
   }
 

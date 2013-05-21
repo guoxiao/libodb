@@ -185,7 +185,7 @@ namespace odb
     inline std::tr1::shared_ptr<T> lazy_shared_ptr<T>::
     load () const
     {
-      if (!loaded ())
+      if (!p_ && i_)
         p_ = i_.template load<T> (true); // Reset id.
 
       return p_;
@@ -499,11 +499,12 @@ namespace odb
     {
       std::tr1::shared_ptr<T> r (p_.lock ());
 
-      if (r || !i_)
-        return r;
+      if (!r && i_)
+      {
+        r = i_.template load<T> (false); // Keep id.
+        p_ = r;
+      }
 
-      r = i_.template load<T> (false); // Keep id.
-      p_ = r;
       return r;
     }
 
