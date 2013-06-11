@@ -60,9 +60,9 @@ namespace odb
 
     typedef pointer_type (*create_function) ();
     typedef bool (*dispatch_function) (
-      call_type, database&, const root_type*, const void* arg);
+      call_type, odb::database&, const root_type*, const void* arg);
     typedef void (*delayed_loader_function) (
-      database&, const id_type&, root_type&);
+      odb::database&, const id_type&, root_type&);
 
   public:
     polymorphic_concrete_info (const std::type_info& t,
