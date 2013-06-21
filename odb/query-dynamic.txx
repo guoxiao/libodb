@@ -88,7 +88,7 @@ namespace odb
 
     std::size_t n (0);
     for (; i != end; ++i, ++n)
-      q.append_val (*i, native_info);
+      q.append_val<T> (*i, native_info); // Force implicit conversion.
 
     q.append (query_base::clause_part::op_in, n);
     return q;
