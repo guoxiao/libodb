@@ -177,6 +177,19 @@ namespace odb
 
   // vector_base
   //
+#ifdef ODB_CXX11
+  vector_base::
+  vector_base (vector_base&& x)
+      : impl_ (std::move (x.impl_)), tran_ (0)
+  {
+    if (x.tran_ != 0)
+    {
+      x.tran_->callback_unregister (&x);
+      _arm (*x.tran_);
+    }
+  }
+#endif
+
   void vector_base::
   rollback (unsigned short, void* key, unsigned long long)
   {
