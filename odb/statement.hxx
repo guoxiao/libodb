@@ -7,6 +7,9 @@
 
 #include <odb/pre.hxx>
 
+#include <string>
+#include <cstddef> // std::size_t
+
 #include <odb/forward.hxx> // connection
 
 #include <odb/details/export.hxx>
@@ -34,6 +37,66 @@ namespace odb
 
   protected:
     statement () {}
+
+    // Statement processing. Kept public only for testing.
+    //
+  public:
+    // Expected statement structure:
+    //
+    //  INSERT INTO table\n
+    // [(a,\n
+    //  b)\n]
+    // [OUTPUT ...\n]
+    // [VALUES\n
+    //  ($1,\n
+    //  $2)[\n]]
+    // [DEFAULT VALUES[\n]]
+    // [RETURNING ...]
+    // [; SELECT ...]
+    //
+    static void
+    process_insert (const char* statement,
+                    const void* const* bind, // Array of bind buffer pointers.
+                    std::size_t bind_size,   // Number of bind elements.
+                    std::size_t bind_skip,   // Offset to the next bind.
+                    char param_symbol,       // $, ?, :, etc.
+                    std::string& result);
+
+    // Expected statement structure:
+    //
+    //  UPDATE table\n
+    // [SET\n
+    //  a=$1,\n
+    //  b=$2[\n]]
+    // [OUTPUT ...]
+    // [WHERE ...]
+    //
+    static void
+    process_update (const char* statement,
+                    const void* const* bind, // Array of bind buffer pointers.
+                    std::size_t bind_size,   // Number of bind elements.
+                    std::size_t bind_skip,   // Offset to the next bind.
+                    char param_symbol,       // $, ?, :, etc.
+                    std::string& result);
+
+    // Expected statement structure:
+    //
+    //  SELECT\n
+    //  [schema.]table.a,\n
+    //  alias.b\n
+    //  FROM [schema.]table\n
+    // [LEFT JOIN [schema.]table [AS alias] ON ...\n]*
+    // [WHERE ...]
+    //
+    static void
+    process_select (const char* statement,
+                    const void* const* bind, // Array of bind buffer pointers.
+                    std::size_t bind_size,   // Number of bind elements.
+                    std::size_t bind_skip,   // Offset to the next bind.
+                    char quote_open,         // Identifier opening quote.
+                    char quote_close,        // Identifier closing quote.
+                    bool optimize,           // Remove unused JOINs.
+                    std::string& result);
   };
 }
 

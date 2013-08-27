@@ -4,21 +4,22 @@
 
 include $(dir $(lastword $(MAKEFILE_LIST)))../build/bootstrap.make
 
-cxx :=             \
-callback.cxx       \
-exceptions.cxx     \
-database.cxx       \
-vector-impl.cxx    \
-connection.cxx     \
-lazy-ptr-impl.cxx  \
-prepared-query.cxx \
-query-dynamic.cxx  \
-result.cxx         \
-schema-catalog.cxx \
-section.cxx        \
-session.cxx        \
-statement.cxx      \
-tracer.cxx         \
+cxx :=                   \
+callback.cxx             \
+exceptions.cxx           \
+database.cxx             \
+vector-impl.cxx          \
+connection.cxx           \
+lazy-ptr-impl.cxx        \
+prepared-query.cxx       \
+query-dynamic.cxx        \
+result.cxx               \
+schema-catalog.cxx       \
+section.cxx              \
+session.cxx              \
+statement.cxx            \
+statement-processing.cxx \
+tracer.cxx               \
 transaction.cxx
 
 # Implementation details.
