@@ -335,12 +335,16 @@ namespace odb
     //
   public:
     typedef odb::schema_version schema_version_type;
+    typedef odb::schema_version_migration schema_version_migration_type;
 
     schema_version_type
     schema_version (const std::string& schema_name = "") const;
 
     bool
     schema_migration (const std::string& schema_name = "") const;
+
+    const schema_version_migration_type&
+    schema_version_migration (const std::string& schema_name = "") const;
 
     // Set schema version and migration state manually.
     //
@@ -362,10 +366,8 @@ namespace odb
                           const std::string& schema_name);
 
   protected:
-    struct schema_version_info
+    struct schema_version_info: schema_version_migration_type
     {
-      schema_version_type version;
-      bool migration;
       std::string version_table;
     };
 

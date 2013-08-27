@@ -28,6 +28,16 @@ namespace odb
   //
   //
   typedef unsigned long long schema_version;
+
+  struct schema_version_migration
+  {
+    schema_version_migration (schema_version v = 0, bool m = false)
+        : version (v), migration (m) {}
+
+    schema_version version;
+    bool migration;
+  };
+
   class database;
   class connection;
   typedef details::shared_ptr<connection> connection_ptr;
