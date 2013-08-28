@@ -28,15 +28,7 @@ namespace odb
   //
   //
   typedef unsigned long long schema_version;
-
-  struct schema_version_migration
-  {
-    schema_version_migration (schema_version v = 0, bool m = false)
-        : version (v), migration (m) {}
-
-    schema_version version;
-    bool migration;
-  };
+  struct schema_version_migration;
 
   class database;
   class connection;
@@ -49,6 +41,7 @@ namespace odb
   namespace common
   {
     using odb::schema_version;
+    using odb::schema_version_migration;
     using odb::session;
     using odb::section;
   }

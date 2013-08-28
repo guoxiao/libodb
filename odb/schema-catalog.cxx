@@ -191,7 +191,7 @@ namespace odb
 
     // Update the schema version on the database instance.
     //
-    db.schema_version (v, m == migrate_pre, name);
+    db.schema_version_migration (v, m == migrate_pre, name);
   }
 
   void schema_catalog::

@@ -43,11 +43,22 @@ namespace odb
   }
 
   inline void database::
-  schema_version (schema_version_type v, bool m, const std::string& name)
+  schema_version_migration (schema_version_type v,
+                            bool m,
+                            const std::string& name)
   {
     schema_version_info& svi (schema_version_map_[name]);
     svi.version = v;
     svi.migration = m;
+  }
+
+  inline void database::
+  schema_version_migration (const schema_version_migration_type& svm,
+                            const std::string& name)
+  {
+    schema_version_info& svi (schema_version_map_[name]);
+    svi.version = svm.version;
+    svi.migration = svm.migration;
   }
 
   inline void database::

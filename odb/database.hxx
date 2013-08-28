@@ -20,6 +20,7 @@
 
 #include <odb/traits.hxx>
 #include <odb/forward.hxx>
+#include <odb/schema-version.hxx>
 #include <odb/query.hxx>
 #include <odb/prepared-query.hxx>
 #include <odb/result.hxx>
@@ -349,9 +350,13 @@ namespace odb
     // Set schema version and migration state manually.
     //
     void
-    schema_version (schema_version_type,
-                    bool migration,
-                    const std::string& schema_name = "");
+    schema_version_migration (schema_version_type,
+                              bool migration,
+                              const std::string& schema_name = "");
+
+    void
+    schema_version_migration (const schema_version_migration_type&,
+                              const std::string& schema_name = "");
 
     // Set default schema version table for all schema names. The table
     // name should already be quoted if necessary.
