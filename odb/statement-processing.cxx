@@ -6,13 +6,18 @@
 // to minimize statically-linked object code size when processing
 // is not used.
 
+//#define LIBODB_DEBUG_STATEMENT_PROCESSING 1
+//#define LIBODB_TRACE_STATEMENT_PROCESSING 1
+
 #include <cassert>
+
+#ifdef LIBODB_TRACE_STATEMENT_PROCESSING
+#  include <iostream>
+#endif
 
 #include <odb/statement.hxx>
 
 using namespace std;
-
-// #define LIBODB_DEBUG_STATEMENT_PROCESSING 1
 
 namespace odb
 {
@@ -310,6 +315,13 @@ namespace odb
         r.append (trailer_begin, trailer_size);
       }
 
+#ifdef LIBODB_TRACE_STATEMENT_PROCESSING
+      if (r.size () != n)
+        cerr << endl
+             << "old: '" << s << "'" << endl << endl
+             << "new: '" << r << "'" << endl << endl;
+#endif
+
       return;
     }
 
@@ -395,6 +407,13 @@ namespace odb
       r += ' ';
       r.append (trailer_begin, trailer_size);
     }
+
+#ifdef LIBODB_TRACE_STATEMENT_PROCESSING
+    if (r.size () != n)
+      cerr << endl
+           << "old: '" << s << "'" << endl << endl
+           << "new: '" << r << "'" << endl << endl;
+#endif
   }
 
   void statement::
@@ -484,6 +503,13 @@ namespace odb
         r.append (trailer_begin, trailer_size);
       }
 
+#ifdef LIBODB_TRACE_STATEMENT_PROCESSING
+      if (r.size () != n)
+        cerr << endl
+             << "old: '" << s << "'" << endl << endl
+             << "new: '" << r << "'" << endl << endl;
+#endif
+
       return;
     }
 
@@ -526,6 +552,13 @@ namespace odb
       r += ' ';
       r.append (trailer_begin, trailer_size);
     }
+
+#ifdef LIBODB_TRACE_STATEMENT_PROCESSING
+    if (r.size () != n)
+      cerr << endl
+           << "old: '" << s << "'" << endl << endl
+           << "new: '" << r << "'" << endl << endl;
+#endif
   }
 
   void statement::
@@ -766,5 +799,12 @@ namespace odb
           r.erase (join_pos - 1, n + 1); // Extra one for space.
       }
     }
+
+#ifdef LIBODB_TRACE_STATEMENT_PROCESSING
+    if (r.size () != n)
+      cerr << endl
+           << "old: '" << s << "'" << endl << endl
+           << "new: '" << r << "'" << endl << endl;
+#endif
   }
 }
