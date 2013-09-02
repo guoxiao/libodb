@@ -370,6 +370,13 @@ namespace odb
     schema_version_table (const std::string& table_name,
                           const std::string& schema_name);
 
+    // Schema version sequence number. It is incremented every time
+    // the schema version or migration flag is changed and can be
+    // used to detect version changes. The starting value is 1.
+    //
+    unsigned int
+    schema_version_sequence () const;
+
   protected:
     struct schema_version_info: schema_version_migration_type
     {
@@ -471,6 +478,7 @@ namespace odb
 
     std::string schema_version_table_;
     mutable schema_version_map schema_version_map_;
+    unsigned int schema_version_seq_;
   };
 }
 

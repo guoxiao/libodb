@@ -11,6 +11,7 @@
 #include <typeinfo>
 
 #include <odb/forward.hxx> // database, connection
+#include <odb/schema-version.hxx>
 #include <odb/traits.hxx>
 
 namespace odb
@@ -116,7 +117,10 @@ namespace odb
     typedef bool (*dispatch_function) (
       call_type, odb::database&, const root_type*, const void* arg);
     typedef void (*delayed_loader_function) (
-      odb::database&, const id_type&, root_type&);
+      odb::database&,
+      const id_type&,
+      root_type&,
+      const schema_version_migration*);
 
   public:
     polymorphic_concrete_info (const std::type_info& t,
