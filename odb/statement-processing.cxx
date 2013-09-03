@@ -480,6 +480,22 @@ namespace odb
       }
     }
 
+    // Empty case.
+    //
+    if (empty)
+    {
+      r.clear ();
+
+#ifdef LIBODB_TRACE_STATEMENT_PROCESSING
+      if (n != 0)
+        cerr << endl
+             << "old: '" << s << "'" << endl << endl
+             << "new: '" << r << "'" << endl << endl;
+#endif
+
+      return;
+    }
+
     // Trailer.
     //
     const char* trailer_begin (0);
@@ -488,29 +504,6 @@ namespace odb
     {
       trailer_begin = p;
       trailer_size = e - p;
-    }
-
-    // Empty case.
-    //
-    if (empty)
-    {
-      r.reserve (header_size + (trailer_size == 0 ? 0 : trailer_size + 1));
-      r.assign (s, header_size);
-
-      if (trailer_size != 0)
-      {
-        r += ' ';
-        r.append (trailer_begin, trailer_size);
-      }
-
-#ifdef LIBODB_TRACE_STATEMENT_PROCESSING
-      if (r.size () != n)
-        cerr << endl
-             << "old: '" << s << "'" << endl << endl
-             << "new: '" << r << "'" << endl << endl;
-#endif
-
-      return;
     }
 
     // Assume the same size as the original. It can only shrink, and in
@@ -575,11 +568,30 @@ namespace odb
 #endif
                   string& r)
   {
-    bool fast (true); // Fast case (if all present).
-    for (size_t i (0); i != bind_size && fast; ++i)
+    bool empty (true); // Empty case (if none present).
+    bool fast (true);  // Fast case (if all present).
+    for (size_t i (0); i != bind_size && (empty || fast); ++i)
     {
-      if (bind_at (i, bind, bind_skip) == 0)
+      if (bind_at (i, bind, bind_skip) != 0)
+        empty = false;
+      else
         fast = false;
+    }
+
+    // Empty.
+    //
+    if (empty)
+    {
+      r.clear ();
+
+#ifdef LIBODB_TRACE_STATEMENT_PROCESSING
+      if (*s != '\0')
+        cerr << endl
+             << "old: '" << s << "'" << endl << endl
+             << "new: '" << r << "'" << endl << endl;
+#endif
+
+      return;
     }
 
     // Fast path: just remove the "structure".
@@ -619,7 +631,6 @@ namespace odb
     size_t from_size (p - from_begin);
     if (p != e)
       p++;
-
 
     // JOIN list.
     //
