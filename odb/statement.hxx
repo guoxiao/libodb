@@ -65,9 +65,9 @@ namespace odb
     // Expected statement structure:
     //
     //  UPDATE table\n
-    // [SET\n
+    //  SET\n
     //  a=$1,\n
-    //  b=$2[\n]]
+    //  b=$2[\n]
     // [OUTPUT ...]
     // [WHERE ...]
     //
