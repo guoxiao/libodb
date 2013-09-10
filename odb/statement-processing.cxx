@@ -2,14 +2,9 @@
 // copyright : Copyright (c) 2009-2013 Code Synthesis Tools CC
 // license   : GNU GPL v2; see accompanying LICENSE file
 
-// Place the statement processing code into a separate source file
-// to minimize statically-linked object code size when processing
-// is not used.
-
-//#define LIBODB_DEBUG_STATEMENT_PROCESSING 1
-//#define LIBODB_TRACE_STATEMENT_PROCESSING 1
-
 #include <cassert>
+
+#include <odb/statement-processing-common.hxx>
 
 #ifdef LIBODB_TRACE_STATEMENT_PROCESSING
 #  include <iostream>
@@ -21,7 +16,6 @@ using namespace std;
 
 namespace odb
 {
-  typedef char_traits<char> traits;
   typedef const void* const* bind_type;
 
   static inline const void*
@@ -29,155 +23,6 @@ namespace odb
   {
     const char* b (reinterpret_cast<const char*> (bind));
     return *reinterpret_cast<bind_type> (b + i * bind_skip);
-  }
-
-  static inline const char*
-  find (const char* b, const char* e, char c)
-  {
-    return traits::find (b, e - b, c);
-  }
-
-  static inline const char*
-  rfind (const char* b, const char* e, char c)
-  {
-    for (--e; b != e; --e)
-      if (*e == c)
-        return e;
-
-    return 0;
-  }
-
-  // Iterate over INSERT column/value list, UPDATE SET expression list,
-  // or SELECT column/join list.
-  //
-  // for (const char* b (columns_begin), *e (begin (b, end));
-  //      e != 0;
-  //      next (b, e, end))
-  // {
-  //   // b points to the beginning of the value (i.e., one past '(').
-  //   // e points one past the end of the value (i.e., to ',', ')', or '\n').
-  // }
-  //
-  // // b points one past the last value.
-  //
-  static inline const char*
-  paren_begin (const char*& b, const char* end)
-  {
-    // Note that the list may not end with '\n'.
-
-    b++; // Skip '('.
-    const char* e (find (b, end, '\n'));
-    return (e != 0 ? e : end) - 1; // Skip ',' or ')'.
-  }
-
-  static inline void
-  paren_next (const char*& b, const char*& e, const char* end)
-  {
-    if (*e == ',')
-    {
-      b = e + 2; // Skip past '\n'.
-      e = find (b, end, '\n');
-      e = (e != 0 ? e : end) - 1; // Skip ',' or ')'.
-    }
-    else
-    {
-      b = (e + 1 != end ? e + 2 : end); // Skip past '\n'.
-      e = 0;
-    }
-  }
-
-  static inline const char*
-  comma_begin (const char* b, const char* end)
-  {
-    // Note that the list may not end with '\n'.
-
-    const char* e (find (b, end, '\n'));
-    return e != 0 ? e - (*(e - 1) == ',' ? 1 : 0) : end; // Skip ','.
-  }
-
-  static inline void
-  comma_next (const char*& b, const char*& e, const char* end)
-  {
-    if (*e == ',')
-    {
-      b = e + 2; // Skip past '\n'.
-      e = find (b, end, '\n');
-      e = (e != 0 ? e - (*(e - 1) == ',' ? 1 : 0) : end); // Skip ','.
-    }
-    else
-    {
-      b = (e != end ? e + 1 : end); // Skip past '\n'.
-      e = 0;
-    }
-  }
-
-  static inline const char*
-  newline_begin (const char* b, const char* end)
-  {
-    // Note that the list may not end with '\n'.
-
-    const char* e (find (b, end, '\n'));
-    return e != 0 ? e : end;
-  }
-
-  static inline void
-  newline_next (const char*& b,
-                const char*& e,
-                const char* end,
-                const char* prefix,
-                size_t prefix_size)
-  {
-    if (e != end)
-      e++; // Skip past '\n'.
-
-    b = e;
-
-    // Do we have another element?
-    //
-    if (static_cast<size_t> (end - b) > prefix_size &&
-        traits::compare (b, prefix, prefix_size) == 0)
-    {
-      e = find (b, end, '\n');
-      if (e == 0)
-        e = end;
-    }
-    else
-      e = 0;
-  }
-
-  // Note that end must point to the beginning of the list.
-  //
-  static inline const char*
-  newline_rbegin (const char* e, const char* end)
-  {
-    const char* b (rfind (end, e - 1, '\n'));
-    return b != 0 ? b + 1 : end; // Skip past '\n'.
-  }
-
-  static inline void
-  newline_rnext (const char*& b, const char*& e, const char* end)
-  {
-    if (b != end)
-    {
-      e = b - 1; // Skip to previous '\n'.
-      b = rfind (end, e - 1, '\n');
-      b = (b != 0 ? b + 1 : end); // Skip past '\n'.
-    }
-    else
-    {
-      e = end - 1; // One before the first element.
-      b = 0;
-    }
-  }
-
-  // Fast path: just remove the "structure".
-  //
-  static inline void
-  process_fast (const char* s, string& r)
-  {
-    r = s;
-    for (size_t i (r.find ('\n')); i != string::npos; i = r.find ('\n', i))
-      r[i++] = ' ';
   }
 
   void statement::
@@ -566,7 +411,8 @@ namespace odb
 #else
                   bool,
 #endif
-                  string& r)
+                  string& r,
+                  bool as)
   {
     bool empty (true); // Empty case (if none present).
     bool fast (true);  // Fast case (if all present).
@@ -590,7 +436,6 @@ namespace odb
              << "old: '" << s << "'" << endl << endl
              << "new: '" << r << "'" << endl << endl;
 #endif
-
       return;
     }
 
@@ -739,11 +584,15 @@ namespace odb
         const char* table_end (p);
         p++; // Skip space.
 
+        // We may or may not have the AS keyword.
+        //
         const char* alias_begin (0);
         size_t alias_size (0);
-        if (je - p > 3 && traits::compare (p, "AS ", 3) == 0)
+        if (je - p > 3 && traits::compare (p, "ON ", 3) != 0)
         {
-          p += 3;
+          if (as)
+            p += 3;
+
           alias_begin = p;
           alias_size = find (p, je, ' ') - alias_begin;
         }

@@ -96,7 +96,8 @@ namespace odb
                     char quote_open,         // Identifier opening quote.
                     char quote_close,        // Identifier closing quote.
                     bool optimize,           // Remove unused JOINs.
-                    std::string& result);
+                    std::string& result,
+                    bool as = true);         // JOINs use AS keyword.
   };
 }
 
