@@ -102,4 +102,4 @@ namespace odb
 
 #include <odb/post.hxx>
 
-#endif // ODB_MYSQL_STATEMENT_HXX
+#endif // ODB_STATEMENT_HXX

@@ -210,4 +210,4 @@ namespace odb
 
 #include <odb/post.hxx>
 
-#endif // ODB_MYSQL_CONNECTION_HXX
+#endif // ODB_CONNECTION_HXX
