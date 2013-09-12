@@ -339,24 +339,29 @@ namespace odb
     typedef odb::schema_version_migration schema_version_migration_type;
 
     schema_version_type
-    schema_version (const std::string& schema_name = "") const;
+    schema_version (const std::string& schema_name = std::string ()) const;
 
     bool
-    schema_migration (const std::string& schema_name = "") const;
+    schema_migration (const std::string& schema_name = std::string ()) const;
 
+    // Note that there is code that relies on the returned reference
+    // being valid until the version is changed or the database instance
+    // is destroyed.
+    //
     const schema_version_migration_type&
-    schema_version_migration (const std::string& schema_name = "") const;
+    schema_version_migration (
+      const std::string& schema_name = std::string ()) const;
 
     // Set schema version and migration state manually.
     //
     void
     schema_version_migration (schema_version_type,
                               bool migration,
-                              const std::string& schema_name = "");
+                              const std::string& schema_name = std::string ());
 
     void
     schema_version_migration (const schema_version_migration_type&,
-                              const std::string& schema_name = "");
+                              const std::string& schema_name = std::string ());
 
     // Set default schema version table for all schema names. The table
     // name should already be quoted if necessary.
@@ -385,6 +390,10 @@ namespace odb
 
     virtual const schema_version_info&
     load_schema_version (const std::string& schema_name) const = 0;
+
+  private:
+    const schema_version_info&
+    schema_version_migration_ (const std::string& schema_name) const;
 
     // Database id.
     //
@@ -478,6 +487,7 @@ namespace odb
 
     std::string schema_version_table_;
     mutable schema_version_map schema_version_map_;
+    mutable const schema_version_info* default_schema_version_; // Cached.
     unsigned int schema_version_seq_;
   };
 }

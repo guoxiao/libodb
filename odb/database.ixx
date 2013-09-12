@@ -11,7 +11,10 @@ namespace odb
 {
   inline database::
   database (database_id id)
-      : id_ (id), tracer_ (0), schema_version_seq_ (1)
+      : id_ (id),
+        tracer_ (0),
+        default_schema_version_ (0),
+        schema_version_seq_ (1)
   {
   }
 
@@ -36,14 +39,11 @@ namespace odb
   inline const database::schema_version_migration_type& database::
   schema_version_migration (const std::string& name) const
   {
-    // Note that there is code that relies on the returned reference
-    // being valid until the version is changed or the database instance
-    // is destroyed.
-    //
-    schema_version_map::const_iterator i (schema_version_map_.find (name));
-    return i != schema_version_map_.end () && i->second.version != 0
-      ? i->second
-      : load_schema_version (name);
+    return name.empty () &&
+      default_schema_version_ != 0 &&
+      default_schema_version_->version != 0
+      ? *default_schema_version_
+      : schema_version_migration_ (name);
   }
 
   inline void database::
@@ -51,26 +51,7 @@ namespace odb
                             bool m,
                             const std::string& name)
   {
-    schema_version_info& svi (schema_version_map_[name]);
-    if (svi.version != v || svi.migration != m)
-    {
-      svi.version = v;
-      svi.migration = m;
-      schema_version_seq_++;
-    }
-  }
-
-  inline void database::
-  schema_version_migration (const schema_version_migration_type& svm,
-                            const std::string& name)
-  {
-    schema_version_info& svi (schema_version_map_[name]);
-    if (svi.version != svm.version || svi.migration != svm.migration)
-    {
-      svi.version = svm.version;
-      svi.migration = svm.migration;
-      schema_version_seq_++;
-    }
+    schema_version_migration (schema_version_migration_type (v, m), name);
   }
 
   inline void database::
