@@ -22,7 +22,7 @@ namespace odb
   // Sample specialization for raw pointers. It is not enabled by default
   // since it makes many assumptions that may not always hold true (such
   // as that instances are allocated with new and freed with delete).
-  // This makes it too dangerous to be enable unconditionally. If you
+  // This makes it too dangerous to be enabled unconditionally. If you
   // need this functionality, you can copy the below code into your
   // application. Also consider changing it to only specialize for
   // specific types instead of for any pointer (it will almost always
