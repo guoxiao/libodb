@@ -28,10 +28,16 @@ namespace odb
       section_update update;
     };
 
+    struct section_list
+    {
+      std::size_t count;
+      const section_functions* functions;
+    };
+
   public:
     polymorphic_abstract_info (const std::type_info& t,
                                const polymorphic_abstract_info* b,
-                               const section_functions* s)
+                               const section_list* s)
         : type (t), base (b), sections (s) {}
 
     bool
@@ -50,8 +56,10 @@ namespace odb
     find_section_load (std::size_t index) const
     {
       for (const polymorphic_abstract_info* b (this); b != 0; b = b->base)
-        if (b->sections != 0 && b->sections[index].load != 0)
-          return b->sections[index].load;
+        if (b->sections != 0 &&
+            index < b->sections->count &&
+            b->sections->functions[index].load != 0)
+          return b->sections->functions[index].load;
 
       return 0;
     }
@@ -60,8 +68,10 @@ namespace odb
     find_section_update (std::size_t index) const
     {
       for (const polymorphic_abstract_info* b (this); b != 0; b = b->base)
-        if (b->sections != 0 && b->sections[index].update != 0)
-          return b->sections[index].update;
+        if (b->sections != 0 &&
+            index < b->sections->count &&
+            b->sections->functions[index].update != 0)
+          return b->sections->functions[index].update;
 
       return 0;
     }
@@ -71,8 +81,9 @@ namespace odb
                           std::size_t index) const
     {
       return i.sections != 0 &&
-        i.sections[index].update != 0 &&
-        i.sections[index].update == find_section_update (index);
+        index < i.sections->count &&
+        i.sections->functions[index].update != 0 &&
+        i.sections->functions[index].update == find_section_update (index);
     }
 
   public:
@@ -85,7 +96,7 @@ namespace odb
     // abstract class. Which means the section table has to be in
     // abstract_info.
     //
-    const section_functions* sections;
+    const section_list* sections;
   };
 
   template <typename R>
@@ -99,8 +110,7 @@ namespace odb
     typedef typename root_traits::pointer_type pointer_type;
     typedef typename root_traits::discriminator_type discriminator_type;
 
-    typedef typename polymorphic_abstract_info<R>::section_functions
-    section_functions;
+    typedef typename polymorphic_abstract_info<R>::section_list section_list;
 
     enum call_type
     {
@@ -125,7 +135,7 @@ namespace odb
   public:
     polymorphic_concrete_info (const std::type_info& t,
                                const polymorphic_abstract_info<R>* b,
-                               const section_functions* s,
+                               const section_list* s,
                                const discriminator_type& d,
                                create_function cf,
                                dispatch_function df,
