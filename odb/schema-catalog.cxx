@@ -250,15 +250,30 @@ namespace odb
   void schema_catalog::
   migrate (database& db, schema_version v, const string& name)
   {
-    schema_version latest (latest_version (db, name));
+    schema_version cur (current_version (db, name));
 
     if (v == 0)
-      v = latest;
-    else if (v > latest)
+      v = cur;
+    else if (v > cur)
       throw unknown_schema_version (v);
 
-    for (schema_version i (next_version (db, 0, name));
-         i != 0 && i <= v;
+    schema_version i (db.schema_version (name));
+
+    // If there is no schema, then "migrate" by creating it.
+    //
+    if (i == 0)
+    {
+      // Schema creation can only "migrate" straight to current.
+      //
+      if (v != cur)
+        throw unknown_schema_version (v);
+
+      create_schema (db, name, false);
+      return;
+    }
+
+    for (i = next_version (db, i, name);
+         i <= v;
          i = next_version (db, i, name))
     {
       migrate_schema_pre (db, i, name);
@@ -268,21 +283,7 @@ namespace odb
   }
 
   schema_version schema_catalog::
-  next_version (database_id id, schema_version current, const string& name)
-  {
-    const schema_catalog_impl& c (*schema_catalog_init::catalog);
-    schema_map::const_iterator i (c.schema.find (key (id, name)));
-
-    if (i == c.schema.end ())
-      throw unknown_schema (name);
-
-    const version_map& vm (i->second.migrate);
-    version_map::const_iterator j (vm.upper_bound (current));
-    return j != vm.end () ? j->first : 0;
-  }
-
-  schema_version schema_catalog::
-  latest_version (database_id id, const string& name)
+  current_version (database_id id, const string& name)
   {
     const schema_catalog_impl& c (*schema_catalog_init::catalog);
     schema_map::const_iterator i (c.schema.find (key (id, name)));
@@ -293,6 +294,29 @@ namespace odb
     const version_map& vm (i->second.migrate);
     assert (!vm.empty ());
     return vm.rbegin ()->first;
+  }
+
+  schema_version schema_catalog::
+  next_version (database_id id, schema_version v, const string& name)
+  {
+    const schema_catalog_impl& sc (*schema_catalog_init::catalog);
+    schema_map::const_iterator i (sc.schema.find (key (id, name)));
+
+    if (i == sc.schema.end ())
+      throw unknown_schema (name);
+
+    const version_map& vm (i->second.migrate); // Cannot be empty.
+
+    schema_version b (vm.begin ()->first);
+    schema_version c (vm.rbegin ()->first);
+
+    if (v == 0)
+      return c; // "Migration" to the current via schema creation.
+    else if (v < b)
+      throw unknown_schema_version (v); // Unsupported migration.
+
+    version_map::const_iterator j (vm.upper_bound (v));
+    return j != vm.end () ? j->first : c + 1;
   }
 
   // schema_catalog_init

@@ -63,8 +63,8 @@ namespace odb
     // Data migration.
     //
   public:
-    // If version is 0, then use the current version and also check whether
-    // we are in migration. Returns the number of calls made.
+    // If version is 0, then use the current database version and also
+    // check whether we are in migration. Returns the number of calls made.
     //
     static std::size_t
     migrate_data (database&,
@@ -108,7 +108,7 @@ namespace odb
     //
   public:
     // Migrate both schema and data to the specified version. If version
-    // is not specified, then migrate to the latest version.
+    // is not specified, then migrate to the current model version.
     //
     static void
     migrate (database&, schema_version = 0, const std::string& name = "");
@@ -116,33 +116,33 @@ namespace odb
     // Schema version information.
     //
   public:
-    // Return 0 if current is greater or equal to the latest version.
-    // If current is not specified, get the current version from the
-    // database.
+    // Return the current model version.
+    //
+    static schema_version
+    current_version (const database& db, const std::string& name = "")
+    {
+      return current_version (db.id (), name);
+    }
+
+    static schema_version
+    current_version (database_id, const std::string& name = "");
+
+    // Return current model version + 1 (that is, one past current) if
+    // the passed version is equal to or greater than current. If the
+    // version is not specified, then use the current database version.
     //
     static schema_version
     next_version (const database& db,
-                  schema_version current = 0,
+                  schema_version v = 0,
                   const std::string& name = "")
     {
-      return next_version (db.id (),
-                           current == 0 ? db.schema_version () : current,
-                           name);
+      return next_version (db.id (), v == 0 ? db.schema_version () : v, name);
     }
 
     static schema_version
     next_version (database_id,
-                  schema_version current,
+                  schema_version,
                   const std::string& name = "");
-
-    static schema_version
-    latest_version (const database& db, const std::string& name = "")
-    {
-      return latest_version (db.id (), name);
-    }
-
-    static schema_version
-    latest_version (database_id, const std::string& name = "");
 
     // Schema existence.
     //
