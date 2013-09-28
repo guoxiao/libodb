@@ -11,10 +11,7 @@ namespace odb
 {
   inline database::
   database (database_id id)
-      : id_ (id),
-        tracer_ (0),
-        default_schema_version_ (0),
-        schema_version_seq_ (1)
+      : id_ (id), tracer_ (0), schema_version_seq_ (1)
   {
   }
 
@@ -34,16 +31,6 @@ namespace odb
   schema_migration (const std::string& name) const
   {
     return schema_version_migration (name).migration;
-  }
-
-  inline const database::schema_version_migration_type& database::
-  schema_version_migration (const std::string& name) const
-  {
-    return name.empty () &&
-      default_schema_version_ != 0 &&
-      default_schema_version_->version != 0
-      ? *default_schema_version_
-      : schema_version_migration_ (name);
   }
 
   inline void database::

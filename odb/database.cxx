@@ -4,10 +4,14 @@
 
 #include <odb/database.hxx>
 
+#include <odb/details/lock.hxx>
+
 using namespace std;
 
 namespace odb
 {
+  using details::lock;
+
   database::
   ~database ()
   {
@@ -20,25 +24,23 @@ namespace odb
     return c.execute (st, n);
   }
 
-  const database::schema_version_info& database::
-  schema_version_migration_ (const string& name) const
+  const database::schema_version_migration_type& database::
+  schema_version_migration (const string& name) const
   {
+    lock l (mutex_); // Prevents concurrent loading.
+
     schema_version_map::const_iterator i (schema_version_map_.find (name));
-    const schema_version_info& svi (
-      i != schema_version_map_.end () && i->second.version != 0
+    return i != schema_version_map_.end () && i->second.version != 0
       ? i->second
-      : load_schema_version (name));
-
-    if (default_schema_version_ == 0 && name.empty ())
-      default_schema_version_ = &svi;
-
-    return svi;
+      : load_schema_version (name);
   }
 
   void database::
   schema_version_migration (const schema_version_migration_type& svm,
                             const string& name)
   {
+    // Note: no lock, not thread-safe.
+
     schema_version_info& svi (schema_version_map_[name]);
     if (svi.version != svm.version || svi.migration != svm.migration)
     {
@@ -46,8 +48,5 @@ namespace odb
       svi.migration = svm.migration;
       schema_version_seq_++;
     }
-
-    if (default_schema_version_ == 0 && name.empty ())
-      default_schema_version_ = &svi;
   }
 }

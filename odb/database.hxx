@@ -28,6 +28,7 @@
 #include <odb/exceptions.hxx>
 
 #include <odb/details/export.hxx>
+#include <odb/details/mutex.hxx>
 #include <odb/details/c-string.hxx>
 
 namespace odb
@@ -339,31 +340,34 @@ namespace odb
     typedef odb::schema_version_migration schema_version_migration_type;
 
     schema_version_type
-    schema_version (const std::string& schema_name = std::string ()) const;
+    schema_version (const std::string& schema_name = "") const;
 
     bool
-    schema_migration (const std::string& schema_name = std::string ()) const;
+    schema_migration (const std::string& schema_name = "") const;
 
     // Note that there is code that relies on the returned reference
     // being valid until the version is changed or the database instance
     // is destroyed.
     //
     const schema_version_migration_type&
-    schema_version_migration (
-      const std::string& schema_name = std::string ()) const;
+    schema_version_migration (const std::string& schema_name = "") const;
 
     // Set schema version and migration state manually.
+    //
+    // Note that the modifier API is not thread-safe. That is, you should
+    // not modify the schema version while other threads may be accessing
+    // or modifying the same information.
     //
     void
     schema_version_migration (schema_version_type,
                               bool migration,
-                              const std::string& schema_name = std::string ());
+                              const std::string& schema_name = "");
 
     void
     schema_version_migration (const schema_version_migration_type&,
-                              const std::string& schema_name = std::string ());
+                              const std::string& schema_name = "");
 
-    // Set default schema version table for all schema names. The table
+    // Set default schema version table for all the schema names. The table
     // name should already be quoted if necessary.
     //
     void
@@ -375,9 +379,9 @@ namespace odb
     schema_version_table (const std::string& table_name,
                           const std::string& schema_name);
 
-    // Schema version sequence number. It is incremented every time
-    // the schema version or migration flag is changed and can be
-    // used to detect version changes. The starting value is 1.
+    // Schema version sequence number. It is incremented every time the
+    // schema version or migration flag is changed and can be used to
+    // detect overall version changes. The starting value is 1.
     //
     unsigned int
     schema_version_sequence () const;
@@ -485,9 +489,9 @@ namespace odb
     tracer_type* tracer_;
     query_factory_map query_factory_map_;
 
-    std::string schema_version_table_;
+    mutable details::mutex mutex_;
     mutable schema_version_map schema_version_map_;
-    mutable const schema_version_info* default_schema_version_; // Cached.
+    std::string schema_version_table_;
     unsigned int schema_version_seq_;
   };
 }
