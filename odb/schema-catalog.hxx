@@ -10,6 +10,7 @@
 #include <odb/details/config.hxx> // ODB_CXX11
 
 #include <string>
+#include <cstddef> // std::size_t
 
 #ifdef ODB_CXX11
 #  include <functional> // std::function
@@ -63,9 +64,9 @@ namespace odb
     //
   public:
     // If version is 0, then use the current version and also check whether
-    // we are in migration.
+    // we are in migration. Returns the number of calls made.
     //
-    static void
+    static std::size_t
     migrate_data (database&,
                   schema_version = 0,
                   const std::string& name = "");

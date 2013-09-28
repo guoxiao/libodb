@@ -194,13 +194,13 @@ namespace odb
     db.schema_version_migration (v, m == migrate_pre, name);
   }
 
-  void schema_catalog::
+  size_t schema_catalog::
   migrate_data (database& db, schema_version v, const string& name)
   {
     if (v == 0)
     {
       if (!db.schema_migration ())
-        return;
+        return 0;
 
       v = db.schema_version ();
     }
@@ -209,16 +209,22 @@ namespace odb
     data_map::const_iterator i (c.data.find (data_key (name, v)));
 
     if (i == c.data.end ())
-      return; // No data migration for this schema/version.
+      return 0; // No data migration for this schema/version.
+
+    size_t r (0);
 
     const data_functions& df (i->second);
-
     for (data_functions::const_iterator i (df.begin ()), e (df.end ());
          i != e; ++i)
     {
       if (i->id == id_common || i->id == db.id ())
+      {
         i->migrate (db);
+        r++;
+      }
     }
+
+    return r;
   }
 
   void schema_catalog::
