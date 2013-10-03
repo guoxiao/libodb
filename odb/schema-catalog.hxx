@@ -19,6 +19,8 @@
 #include <odb/forward.hxx> // schema_version, odb::core
 
 #include <odb/details/export.hxx>
+#include <odb/details/unused.hxx>
+#include <odb/details/meta/static-assert.hxx>
 
 namespace odb
 {
@@ -77,7 +79,59 @@ namespace odb
     typedef void (*data_migration_function_type) (database&);
 #endif
 
+    // The following three variants of the registration functions make
+    // sure that the version is greater that the base model version.
+    // This helps with identifying and removing data migration function
+    // that are no longer required.
+    //
     // Data migration functions are called in the order of registration.
+    //
+    template <schema_version v, schema_version base>
+    static void
+    data_migration_function (data_migration_function_type f,
+                             const std::string& name = "")
+    {
+      data_migration_function<v, base> (id_common, f, name);
+    }
+
+    // Database-specific data migration.
+    //
+    template <schema_version v, schema_version base>
+    static void
+    data_migration_function (database& db,
+                             data_migration_function_type f,
+                             const std::string& name = "")
+    {
+      data_migration_function<v, base> (db.id (), f, name);
+    }
+
+    template <schema_version v, schema_version base>
+    static void
+    data_migration_function (database_id id,
+                             data_migration_function_type f,
+                             const std::string& name = "")
+    {
+      // If the data migration version is below the base model version
+      // then it will never be called.
+      //
+#ifdef ODB_CXX11
+      static_assert (v > base || base == 0,
+                     "data migration function is no longer necessary");
+#else
+      // Poor man's static_assert.
+      //
+      typedef details::meta::static_assert_test<(v > base || base == 0)>
+      data_migration_function_is_no_longer_necessary;
+
+      char sa [sizeof (data_migration_function_is_no_longer_necessary)];
+      ODB_POTENTIALLY_UNUSED (sa);
+#endif
+
+      data_migration_function (id, v, f, name);
+    }
+
+    // The same as above but take the version as an argument and do
+    // not check whether it is greater than the base model version.
     //
     static void
     data_migration_function (schema_version v,
@@ -87,8 +141,6 @@ namespace odb
       data_migration_function (id_common, v, f, name);
     }
 
-    // Database-specific data migration.
-    //
     static void
     data_migration_function (database& db,
                              schema_version v,
@@ -175,23 +227,21 @@ namespace odb
 
   // Static data migration function registration.
   //
+  template <schema_version v, schema_version base>
   struct LIBODB_EXPORT data_migration_entry
   {
     typedef schema_catalog::data_migration_function_type function_type;
 
-    data_migration_entry (schema_version v,
-                          function_type f,
-                          const std::string& name = "")
+    data_migration_entry (function_type f, const std::string& name = "")
     {
-      schema_catalog::data_migration_function (v, f, name);
+      schema_catalog::data_migration_function<v, base> (f, name);
     }
 
     data_migration_entry (database_id id,
-                          schema_version v,
                           function_type f,
                           const std::string& name = "")
     {
-      schema_catalog::data_migration_function (id, v, f, name);
+      schema_catalog::data_migration_function<v, base> (id, v, f, name);
     }
   };
 
