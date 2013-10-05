@@ -168,6 +168,17 @@ namespace odb
     // Schema version information.
     //
   public:
+    // Return the base model version.
+    //
+    static schema_version
+    base_version (const database& db, const std::string& name = "")
+    {
+      return base_version (db.id (), name);
+    }
+
+    static schema_version
+    base_version (database_id, const std::string& name = "");
+
     // Return the current model version.
     //
     static schema_version

@@ -283,6 +283,20 @@ namespace odb
   }
 
   schema_version schema_catalog::
+  base_version (database_id id, const string& name)
+  {
+    const schema_catalog_impl& c (*schema_catalog_init::catalog);
+    schema_map::const_iterator i (c.schema.find (key (id, name)));
+
+    if (i == c.schema.end ())
+      throw unknown_schema (name);
+
+    const version_map& vm (i->second.migrate);
+    assert (!vm.empty ());
+    return vm.begin ()->first;
+  }
+
+  schema_version schema_catalog::
   current_version (database_id id, const string& name)
   {
     const schema_catalog_impl& c (*schema_catalog_init::catalog);
