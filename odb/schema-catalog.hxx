@@ -228,7 +228,7 @@ namespace odb
   // Static data migration function registration.
   //
   template <schema_version v, schema_version base>
-  struct LIBODB_EXPORT data_migration_entry
+  struct data_migration_entry
   {
     typedef schema_catalog::data_migration_function_type function_type;
 
