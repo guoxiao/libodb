@@ -21,6 +21,12 @@
 //#  define ODB_CXX11_FUNCTION_TEMPLATE_DEFAULT_ARGUMENT
 //#  define ODB_CXX11_VARIADIC_TEMPLATES
 //#  define ODB_CXX11_INITIALIZER_LIST
+
+// Strongly typed enums are supported starting from VC++11.
+//
+#  if _MSC_VER >= 1700
+#    define ODB_CXX11_ENUM
+#  endif
 #endif
 
 #endif /* ODB_DETAILS_CONFIG_VC_H */

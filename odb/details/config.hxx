@@ -39,6 +39,10 @@
 #    define ODB_CXX11_FUNCTION_TEMPLATE_DEFAULT_ARGUMENT
 #    define ODB_CXX11_VARIADIC_TEMPLATE
 #    define ODB_CXX11_INITIALIZER_LIST
+// GCC supports strongly typed enums from 4.4 (forward -- 4.6),
+// Clang -- 2.9 (3.1).
+//
+#    define ODB_CXX11_ENUM
 #  endif
 #endif
 
