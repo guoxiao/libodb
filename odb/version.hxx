@@ -26,13 +26,13 @@
 
 // ODB interface version: minor, major, and alpha/beta versions.
 //
-#define ODB_VERSION     20252
-#define ODB_VERSION_STR "2.3.b2"
+#define ODB_VERSION     20300
+#define ODB_VERSION_STR "2.3"
 
 // libodb version: interface version plus the bugfix version.
 //
-#define LIBODB_VERSION     2029952
-#define LIBODB_VERSION_STR "2.3.0.b2"
+#define LIBODB_VERSION     2030000
+#define LIBODB_VERSION_STR "2.3.0"
 
 #include <odb/post.hxx>
 
