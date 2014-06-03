@@ -136,7 +136,8 @@ $(dist): data_dist := details/config-vc.h
 $(dist): export extra_dist := $(data_dist) \
 libodb-vc8.vcproj libodb-vc9.vcproj \
 libodb-vc10.vcxproj libodb-vc10.vcxproj.filters \
-libodb-vc11.vcxproj libodb-vc11.vcxproj.filters
+libodb-vc11.vcxproj libodb-vc11.vcxproj.filters \
+libodb-vc12.vcxproj libodb-vc12.vcxproj.filters
 $(dist): export interface_version = $(shell sed -e \
 's/^\([0-9]*\.[0-9]*\).*/\1/' $(src_root)/version)
 
@@ -149,6 +150,7 @@ $(data_dist) details/config.h.in)
 	$(call meta-vc9proj,$(src_base)/libodb-vc9.vcproj)
 	$(call meta-vc10proj,$(src_base)/libodb-vc10.vcxproj)
 	$(call meta-vc11proj,$(src_base)/libodb-vc11.vcxproj)
+	$(call meta-vc12proj,$(src_base)/libodb-vc12.vcxproj)
 	$(call meta-automake)
 
 # Clean.
@@ -177,6 +179,7 @@ $(call include,$(bld_root)/meta/vc8proj.make)
 $(call include,$(bld_root)/meta/vc9proj.make)
 $(call include,$(bld_root)/meta/vc10proj.make)
 $(call include,$(bld_root)/meta/vc11proj.make)
+$(call include,$(bld_root)/meta/vc12proj.make)
 $(call include,$(bld_root)/meta/automake.make)
 
 $(call include,$(bld_root)/cxx/o-l.make)
