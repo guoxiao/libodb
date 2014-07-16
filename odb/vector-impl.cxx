@@ -22,7 +22,7 @@ namespace odb
   {
     // Copy the data over if we are tracking.
     //
-    if (state_ == state_tracking && size_ != 0)
+    if (state_ == state_tracking && x.size_ != 0)
     {
       realloc (x.size_ < 1024 ? 1024 : x.size_);
       memcpy (data_, x.data_, x.size_ / 4 + (x.size_ % 4 == 0 ? 0 : 1));
