@@ -33,6 +33,7 @@
 #include <odb/details/mutex.hxx>
 #include <odb/details/c-string.hxx>
 #include <odb/details/function-wrapper.hxx>
+#include <odb/details/meta/answer.hxx>
 
 namespace odb
 {
@@ -52,6 +53,10 @@ namespace odb
     template <typename T>
     typename object_traits<T>::id_type
     persist (T& object);
+
+    template <typename T>
+    typename object_traits<T>::id_type
+    persist (const T& object);
 
     template <typename T>
     typename object_traits<T>::id_type
@@ -76,6 +81,13 @@ namespace odb
     template <typename T>
     typename object_traits<T>::id_type
     persist (const typename object_traits<T>::pointer_type& obj_ptr);
+
+    // Bulk persist. Can be a range of references or pointers (including
+    // smart pointers) to objects.
+    //
+    template <typename I>
+    void
+    persist (I begin, I end, bool continue_failed = true);
 
     // Load an object. Throw object_not_persistent if not found.
     //
@@ -163,6 +175,13 @@ namespace odb
     void
     update (const typename object_traits<T>::pointer_type& obj_ptr);
 
+    // Bulk update. Can be a range of references or pointers (including
+    // smart pointers) to objects.
+    //
+    template <typename I>
+    void
+    update (I begin, I end, bool continue_failed = true);
+
     // Update a section of an object. Throws section_not_loaded exception
     // if section is not loaded. Note also that this function does not
     // clear the changed flag if it is set.
@@ -205,6 +224,19 @@ namespace odb
     template <typename T>
     void
     erase (const typename object_traits<T>::pointer_type& obj_ptr);
+
+    // Bulk erase.
+    //
+    template <typename T, typename I>
+    void
+    erase (I id_begin, I id_end, bool continue_failed = true);
+
+    // Can be a range of references or pointers (including smart pointers)
+    // to objects.
+    //
+    template <typename I>
+    void
+    erase (I obj_begin, I obj_end, bool continue_failed = true);
 
     // Erase multiple objects matching a query predicate.
     //
@@ -489,6 +521,18 @@ namespace odb
     typename object_traits<T>::id_type
     persist_ (const typename object_traits<T>::pointer_type&);
 
+    template <typename I, database_id DB>
+    void
+    persist_ (I, I, bool);
+
+    template <typename I, typename T, database_id DB>
+    void
+    persist_ (I, I, bool, details::meta::no ptr);
+
+    template <typename I, typename T, database_id DB>
+    void
+    persist_ (I, I, bool, details::meta::yes ptr);
+
     template <typename T, database_id DB>
     typename object_traits<T>::pointer_type
     load_ (const typename object_traits<T>::id_type&);
@@ -521,6 +565,10 @@ namespace odb
     void
     update_ (const typename object_traits<T>::pointer_type&);
 
+    template <typename I, database_id DB>
+    void
+    update_ (I, I, bool);
+
     template <typename T, database_id DB>
     void
     update_ (const T&, const section&);
@@ -536,6 +584,14 @@ namespace odb
     template <typename T, database_id DB>
     void
     erase_ (const typename object_traits<T>::pointer_type&);
+
+    template <typename I, typename T, database_id DB>
+    void
+    erase_id_ (I, I, bool);
+
+    template <typename I, database_id DB>
+    void
+    erase_object_ (I, I, bool);
 
     template <typename T, database_id DB, typename Q>
     typename object_traits<T>::pointer_type
