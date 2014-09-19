@@ -59,6 +59,7 @@ namespace odb
   //
   class tracer; // Not in core.
   extern LIBODB_EXPORT tracer& stderr_tracer;
+  extern LIBODB_EXPORT tracer& stderr_full_tracer;
 
   namespace common
   {
