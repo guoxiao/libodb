@@ -20,15 +20,17 @@ namespace odb
   template <typename T>
   class access::object_traits
   {
-    // If a C++ compiler issues an error pointing to this c;ass and saying
-    // that it missing some declaration, then you are most likely trying to
-    // perform a database operation on a C++ type that is not a persistent
+    // If a C++ compiler issues an error pointing to this class and saying
+    // that it is missing some declaration, then you are most likely trying
+    // to perform a database operation on a C++ type that is not a persistent
     // object. Or you forgot to include the corresponding -odb.hxx file.
     //
   public:
     struct id_type {};
     typedef T object_type;
     typedef T* pointer_type;
+
+    static const bool polymorphic = false;
   };
 
   template <typename T, typename P>
