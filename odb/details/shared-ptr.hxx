@@ -100,7 +100,7 @@ namespace odb
       // Conversion to bool.
       //
       typedef void (shared_ptr::*boolean_convertible)();
-      void true_value () {};
+      void true_value () {}
 
       operator boolean_convertible () const
       {
