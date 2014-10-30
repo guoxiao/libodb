@@ -3,7 +3,6 @@
 // license   : GNU GPL v2; see accompanying LICENSE file
 
 #include <cstring> // std::strlen()
-#include <utility> // std::move
 
 #include <odb/transaction.hxx>
 
@@ -65,31 +64,13 @@ namespace odb
     return connection_ptr (connection_ ());
   }
 
+#ifndef ODB_CXX11
   inline void database::
-  query_factory (const char* name, query_factory_type f)
+  query_factory (const char* name, query_factory_ptr f)
   {
-    if (f)
-#ifdef ODB_CXX11
-      query_factory_map_[name] = std::move (f);
-#else
-      query_factory_map_[name] = f;
+    query_factory (name, query_factory_wrapper (f));
+  }
 #endif
-    else
-      query_factory_map_.erase (name);
-  }
-
-  inline database::query_factory_type database::
-  lookup_query_factory (const char* name) const
-  {
-    query_factory_map::const_iterator i (query_factory_map_.find (name));
-
-    if (i == query_factory_map_.end ())
-      i = query_factory_map_.find (""); // Wildcard factory.
-
-    return i != query_factory_map_.end ()
-      ? i->second
-      : database::query_factory_type ();
-  }
 
   inline void database::
   tracer (tracer_type& t)

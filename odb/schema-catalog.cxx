@@ -38,13 +38,15 @@ namespace odb
 
   struct data_function
   {
-    typedef schema_catalog::data_migration_function_type function_type;
+    typedef schema_catalog::data_migration_function_wrapper
+    function_wrapper_type;
 
     data_function () {}
-    data_function (database_id i, function_type m): id (i), migrate (m) {}
+    data_function (database_id i, function_wrapper_type m)
+        : id (i), migrate (m) {}
 
     database_id id;
-    function_type migrate;
+    function_wrapper_type migrate;
   };
   typedef vector<data_function> data_functions;
   typedef map<data_key, data_functions> data_map;
@@ -218,7 +220,15 @@ namespace odb
     {
       if (i->id == id_common || i->id == db.id ())
       {
-        i->migrate (db);
+        const data_migration_function_wrapper &m = i->migrate;
+
+        if (m.std_function == 0)
+          m.function (db);
+        else
+        {
+          typedef void (*caller) (const void*, database&);
+          reinterpret_cast<caller> (m.function) (m.std_function, db);
+        }
         r++;
       }
     }
@@ -229,7 +239,7 @@ namespace odb
   void schema_catalog::
   data_migration_function (database_id id,
                            schema_version v,
-                           data_migration_function_type f,
+                           data_migration_function_wrapper f,
                            const string& name)
   {
     // This function can be called from a static initializer in which

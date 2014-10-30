@@ -49,4 +49,36 @@ namespace odb
       schema_version_seq_++;
     }
   }
+
+  bool database::
+  call_query_factory (const char* name, connection_type& c) const
+  {
+    query_factory_map::const_iterator i (query_factory_map_.find (name));
+
+    if (i == query_factory_map_.end ())
+      i = query_factory_map_.find (""); // Wildcard factory.
+
+    if (i == query_factory_map_.end ())
+      return false;
+
+    const query_factory_wrapper& fw (i->second);
+    if (fw.std_function == 0)
+      fw.function (name, c);
+    else
+    {
+      typedef void (*caller) (const void*, const char*, connection_type&);
+      reinterpret_cast<caller> (fw.function) (fw.std_function, name, c);
+    }
+
+    return true;
+  }
+
+  void database::
+  query_factory (const char* name, query_factory_wrapper w)
+  {
+    if (w)
+      query_factory_map_[name] = w; // Destructive copy assignment (move).
+    else
+      query_factory_map_.erase (name);
+  }
 }

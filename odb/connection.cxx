@@ -96,16 +96,11 @@ namespace odb
 
     if (i == prepared_map_.end ())
     {
-      // See if there is a factory.
+      // Use a factory, if there is one.
       //
-      database_type::query_factory_type f (
-        database_.lookup_query_factory (name));
-
-      if (f)
-      {
-        f (name, const_cast<connection&> (*this));
+      if (database_.call_query_factory (name,
+                                        const_cast<connection&> (*this)))
         i = prepared_map_.find (name);
-      }
     }
 
     if (i == prepared_map_.end ())

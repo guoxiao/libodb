@@ -15,7 +15,9 @@
 #include <cstddef> // std::size_t
 
 #ifdef ODB_CXX11
-#  include <functional> // std::function
+#  include <utility>     // std::move
+#  include <functional>  // std::function
+#  include <type_traits> // std::enable_if, std::is_convertible
 #endif
 
 #include <odb/traits.hxx>
@@ -30,6 +32,7 @@
 #include <odb/details/export.hxx>
 #include <odb/details/mutex.hxx>
 #include <odb/details/c-string.hxx>
+#include <odb/details/function-wrapper.hxx>
 
 namespace odb
 {
@@ -44,7 +47,6 @@ namespace odb
     // Object persistence API.
     //
   public:
-
     // Make the object persistent.
     //
     template <typename T>
@@ -281,19 +283,31 @@ namespace odb
   public:
     typedef odb::connection connection_type;
 
-#ifdef ODB_CXX11
-    typedef
-    std::function<void (const char*, connection_type&)>
-    query_factory_type;
+    typedef void query_factory_type (const char* name, connection_type&);
+    typedef query_factory_type* query_factory_ptr;
+    typedef details::function_wrapper<
+      query_factory_type> query_factory_wrapper;
+
+#ifndef ODB_CXX11
+    void
+    query_factory (const char* name, query_factory_ptr);
 #else
-    typedef void (*query_factory_type) (const char*, connection_type&);
+    template <typename F>
+    typename std::enable_if<
+      std::is_convertible<
+      F, std::function<query_factory_type>>::value, void>::type
+    query_factory (const char* name, F f)
+    {
+      query_factory (name, query_factory_wrapper (std::move (f)));
+    }
 #endif
 
-    void
-    query_factory (const char* name, query_factory_type);
+    bool
+    call_query_factory (const char* name, connection_type&) const;
 
-    query_factory_type
-    lookup_query_factory (const char* name) const;
+  private:
+    void
+    query_factory (const char* name, query_factory_wrapper);
 
     // Native database statement execution.
     //
@@ -480,7 +494,7 @@ namespace odb
 
   protected:
     typedef
-    std::map<const char*, query_factory_type, details::c_string_comparator>
+    std::map<const char*, query_factory_wrapper, details::c_string_comparator>
     query_factory_map;
 
     typedef std::map<std::string, schema_version_info> schema_version_map;
