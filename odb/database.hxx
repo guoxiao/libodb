@@ -242,6 +242,56 @@ namespace odb
     result<T>
     query (const odb::query<T>&, bool cache = true);
 
+    // Query one API.
+    //
+    template <typename T>
+    typename object_traits<T>::pointer_type
+    query_one ();
+
+    template <typename T>
+    bool
+    query_one (T& object);
+
+    template <typename T>
+    T
+    query_value ();
+
+    template <typename T>
+    typename object_traits<T>::pointer_type
+    query_one (const char*);
+
+    template <typename T>
+    bool
+    query_one (const char*, T& object);
+
+    template <typename T>
+    T
+    query_value (const char*);
+
+    template <typename T>
+    typename object_traits<T>::pointer_type
+    query_one (const std::string&);
+
+    template <typename T>
+    bool
+    query_one (const std::string&, T& object);
+
+    template <typename T>
+    T
+    query_value (const std::string&);
+
+    template <typename T>
+    typename object_traits<T>::pointer_type
+    query_one (const odb::query<T>&);
+
+    template <typename T>
+    bool
+    query_one (const odb::query<T>&, T& object);
+
+    template <typename T>
+    T
+    query_value (const odb::query<T>&);
+
     // Query preparation.
     //
     template <typename T>
@@ -486,6 +536,18 @@ namespace odb
     template <typename T, database_id DB>
     void
     erase_ (const typename object_traits<T>::pointer_type&);
+
+    template <typename T, database_id DB, typename Q>
+    typename object_traits<T>::pointer_type
+    query_one_ (const Q&);
+
+    template <typename T, database_id DB, typename Q>
+    bool
+    query_one_ (const Q&, T&);
+
+    template <typename T, database_id DB, typename Q>
+    T
+    query_value_ (const Q&);
 
     template <typename T,
               database_id DB,

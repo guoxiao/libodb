@@ -473,6 +473,90 @@ namespace odb
   }
 
   template <typename T>
+  inline typename object_traits<T>::pointer_type database::
+  query_one ()
+  {
+    return query_one<T> (odb::query<T> ());
+  }
+
+  template <typename T>
+  inline bool database::
+  query_one (T& o)
+  {
+    return query_one<T> (odb::query<T> (), o);
+  }
+
+  template <typename T>
+  inline T database::
+  query_value ()
+  {
+    return query_value<T> (odb::query<T> ());
+  }
+
+  template <typename T>
+  inline typename object_traits<T>::pointer_type database::
+  query_one (const char* q)
+  {
+    return query_one<T> (odb::query<T> (q));
+  }
+
+  template <typename T>
+  inline bool database::
+  query_one (const char* q, T& o)
+  {
+    return query_one<T> (odb::query<T> (q), o);
+  }
+
+  template <typename T>
+  inline T database::
+  query_value (const char* q)
+  {
+    return query_value<T> (odb::query<T> (q));
+  }
+
+  template <typename T>
+  inline typename object_traits<T>::pointer_type database::
+  query_one (const std::string& q)
+  {
+    return query_one<T> (odb::query<T> (q));
+  }
+
+  template <typename T>
+  inline bool database::
+  query_one (const std::string& q, T& o)
+  {
+    return query_one<T> (odb::query<T> (q), o);
+  }
+
+  template <typename T>
+  inline T database::
+  query_value (const std::string& q)
+  {
+    return query_value<T> (odb::query<T> (q));
+  }
+
+  template <typename T>
+  inline bool database::
+  query_one (const odb::query<T>& q, T& o)
+  {
+    return query_one_<T, id_common> (q, o);
+  }
+
+  template <typename T>
+  inline typename object_traits<T>::pointer_type database::
+  query_one (const odb::query<T>& q)
+  {
+    return query_one_<T, id_common> (q);
+  }
+
+  template <typename T>
+  inline T database::
+  query_value (const odb::query<T>& q)
+  {
+    return query_value_<T, id_common> (q);
+  }
+
+  template <typename T>
   inline prepared_query<T> database::
   prepare_query (const char* n, const char* q)
   {
@@ -618,6 +702,32 @@ namespace odb
     typedef typename object_traits<T>::pointer_type pointer_type;
 
     erase_<T, DB> (pointer_traits<pointer_type>::get_ref (pobj));
+  }
+
+  template <typename T, database_id DB, typename Q>
+  inline typename object_traits<T>::pointer_type database::
+  query_one_ (const Q& q)
+  {
+    return query_<T, DB>::call (*this, q).one ();
+  }
+
+  template <typename T, database_id DB, typename Q>
+  inline bool database::
+  query_one_ (const Q& q, T& o)
+  {
+    return query_<T, DB>::call (*this, q).one (o);
+  }
+
+  template <typename T, database_id DB, typename Q>
+  inline T database::
+  query_value_ (const Q& q)
+  {
+    // Compiler error pointing here? The object must be default-constructible
+    // in order to use the return-by-value API.
+    //
+    T o;
+    query_<T, DB>::call (*this, q).value (o);
+    return o;
   }
 
   // execute()
