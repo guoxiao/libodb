@@ -380,13 +380,12 @@ namespace odb
        << failed () << " failed"
        << (fatal_ ? ", fatal" : "") << ":";
 
-    bool nl (true);
     for (iterator i (begin ()); i != end ();)
     {
       size_t p (i->position ());
       const odb::exception& e (i->exception ());
 
-      os << (nl ? "\n" : "");
+      os << '\n';
 
       if (!i->maybe ())
       {
@@ -412,9 +411,7 @@ namespace odb
           os << '[' << p << '-' << (p + n) << "] (some)";
       }
 
-      const char* w (e.what ());
-      os << ' ' << w;
-      nl = (w[strlen (w) - 1] != '\n');
+      os << ' ' << e.what ();
     }
 
     what_ = os.str ();
