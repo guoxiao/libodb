@@ -301,7 +301,11 @@ namespace odb
 
     typedef object_traits_impl<object_type, DB> object_traits;
 
-    multiple_exceptions mex (typeid (object_not_persistent));
+    multiple_exceptions mex (
+      object_traits::managed_optimistic_column_count == 0
+      ? typeid (object_not_persistent)
+      : typeid (object_changed));
+
     try
     {
       while (b != e && (cont || mex.empty ()))
@@ -426,7 +430,11 @@ namespace odb
 
     typedef object_traits_impl<object_type, DB> object_traits;
 
-    multiple_exceptions mex (typeid (object_not_persistent));
+    multiple_exceptions mex (
+      object_traits::managed_optimistic_column_count == 0
+      ? typeid (object_not_persistent)
+      : typeid (object_changed));
+
     try
     {
       while (b != e && (cont || mex.empty ()))
