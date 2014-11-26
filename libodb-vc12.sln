@@ -3,7 +3,7 @@ Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio 2013
 VisualStudioVersion = 12.0.21005.1
 MinimumVisualStudioVersion = 10.0.40219.1
-Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "libodb", "odb\libodb-vc11.vcxproj", "{1C53C543-8038-4C8A-8AB1-65E74FD7DE2E}"
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "libodb", "odb\libodb-vc12.vcxproj", "{1C53C543-8038-4C8A-8AB1-65E74FD7DE2E}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
