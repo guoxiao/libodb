@@ -382,7 +382,7 @@ namespace odb
     // If fatal() returns false, then the operation on the elements that
     // don't have an exception has succeeded. The application can try to
     // correct the errors and re-attempt the operation on the elements
-    // that did cause an exception. In either case, the transactions can
+    // that did cause an exception. In either case, the transaction can
     // be committed.
     //
     bool
