@@ -826,25 +826,38 @@ namespace odb
   inline typename object_traits<T>::pointer_type database::
   query_one_ (const Q& q)
   {
-    return query_<T, DB>::call (*this, q).one ();
+    result<T> r (query_<T, DB>::call (*this, q));
+
+    // We still have to cache the result since loading the object
+    // may result in loading of it's related objects and that would
+    // invalidate the result even for just getting the 'end' status.
+    //
+    r.cache ();
+
+    return r.one ();
   }
 
   template <typename T, database_id DB, typename Q>
   inline bool database::
   query_one_ (const Q& q, T& o)
   {
-    return query_<T, DB>::call (*this, q).one (o);
+    result<T> r (query_<T, DB>::call (*this, q));
+    r.cache (); // See above.
+    return r.one (o);
   }
 
   template <typename T, database_id DB, typename Q>
   inline T database::
   query_value_ (const Q& q)
   {
+    result<T> r (query_<T, DB>::call (*this, q));
+    r.cache (); // See above.
+
     // Compiler error pointing here? The object must be default-constructible
     // in order to use the return-by-value API.
     //
     T o;
-    query_<T, DB>::call (*this, q).value (o);
+    r.value (o);
     return o;
   }
 
