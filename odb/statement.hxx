@@ -85,7 +85,7 @@ namespace odb
     //  [schema.]table.a,\n
     //  alias.b\n
     //  FROM [schema.]table[\n]
-    // [LEFT JOIN [schema.]table [AS alias] ON ...[\n]]*
+    // [{A-Z }* JOIN [schema.]table [AS alias][ ON ...][\n]]*
     // [WHERE ...]
     //
     static void

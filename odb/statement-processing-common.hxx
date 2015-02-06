@@ -33,6 +33,20 @@ namespace odb
     return 0;
   }
 
+  static inline const char*
+  find (const char* b, const char* e, const char* s, std::size_t n)
+  {
+    for (; b != e; ++b)
+    {
+      if (*b == *s &&
+          static_cast<std::size_t> (e - b) >= n &&
+          traits::compare (b, s, n) == 0)
+        return b;
+    }
+
+    return 0;
+  }
+
   // Iterate over INSERT column/value list, UPDATE SET expression list,
   // or SELECT column/join list.
   //
@@ -97,6 +111,30 @@ namespace odb
     }
   }
 
+  // Only allows A-Z and spaces before prefix (e.g., JOIN in LEFT OUTER JOIN).
+  //
+  static inline bool
+  fuzzy_prefix (const char* b,
+                const char* end,
+                const char* prefix,
+                std::size_t prefix_size)
+  {
+    for (; b != end; ++b)
+    {
+      char c (*b);
+
+      if ((c < 'A' || c > 'Z') && c != ' ')
+        break;
+
+      if (c == *prefix &&
+          static_cast<std::size_t> (end - b) > prefix_size &&
+          traits::compare (b, prefix, prefix_size) == 0)
+        return true;
+    }
+
+    return false;
+  }
+
   static inline const char*
   newline_begin (const char* b, const char* end)
   {
@@ -111,7 +149,8 @@ namespace odb
                 const char*& e,
                 const char* end,
                 const char* prefix,
-                std::size_t prefix_size)
+                std::size_t prefix_size,
+                bool prefix_fuzzy = false)
   {
     if (e != end)
       e++; // Skip past '\n'.
@@ -121,7 +160,9 @@ namespace odb
     // Do we have another element?
     //
     if (static_cast<std::size_t> (end - b) > prefix_size &&
-        traits::compare (b, prefix, prefix_size) == 0)
+        (prefix_fuzzy
+         ? fuzzy_prefix (b, end, prefix, prefix_size)
+         : traits::compare (b, prefix, prefix_size) == 0))
     {
       e = find (b, end, '\n');
       if (e == 0)
