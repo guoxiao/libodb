@@ -208,6 +208,7 @@ namespace odb
 #include <odb/std-set-traits.hxx>
 #include <odb/std-list-traits.hxx>
 #include <odb/std-vector-traits.hxx>
+#include <odb/std-deque-traits.hxx>
 
 #ifdef ODB_CXX11
 #  include <odb/std-array-traits.hxx>
