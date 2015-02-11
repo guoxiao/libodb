@@ -174,10 +174,10 @@ namespace odb
   {
   public:
     void
-    _stop () const {impl_.stop ();}
+    _stop () const;
 
     bool
-    _tracking () const {return impl_.tracking ();}
+    _tracking () const;
 
     void
     _arm (transaction& t) const;
@@ -191,8 +191,8 @@ namespace odb
     vector_base& operator= (const vector_base&);
 
   protected:
-    vector_base (): tran_ (0) {}
-    ~vector_base () {if (tran_ != 0) tran_->callback_unregister (this);}
+    ~vector_base ();
+    vector_base ();
     vector_base (const vector_base&);
 
 #ifdef ODB_CXX11

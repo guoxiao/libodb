@@ -38,25 +38,16 @@ namespace odb
   {
     r.id_ = 0;
   }
-
-  inline lazy_ptr_base& lazy_ptr_base::
-  operator= (lazy_ptr_base&& r)
-  {
-    if (id_ != r.id_)
-    {
-      reset_id ();
-      id_ = r.id_;
-      db_ = r.db_;
-      loader_ = r.loader_;
-      free_ = r.free_;
-      copy_ = r.copy_;
-
-      r.id_ = 0;
-    }
-
-    return *this;
-  }
 #endif
+
+  inline void lazy_ptr_base::
+  reset_id ()
+  {
+    if (id_)
+      free_ (id_);
+
+    id_ = 0;
+  }
 
   inline void lazy_ptr_base::
   reset_ (database_type* db,
@@ -86,14 +77,25 @@ namespace odb
     loader_ = 0;
   }
 
-  inline void lazy_ptr_base::
-  reset_id ()
+#ifdef ODB_CXX11
+  inline lazy_ptr_base& lazy_ptr_base::
+  operator= (lazy_ptr_base&& r)
   {
-    if (id_)
-      free_ (id_);
+    if (id_ != r.id_)
+    {
+      reset_id ();
+      id_ = r.id_;
+      db_ = r.db_;
+      loader_ = r.loader_;
+      free_ = r.free_;
+      copy_ = r.copy_;
 
-    id_ = 0;
+      r.id_ = 0;
+    }
+
+    return *this;
   }
+#endif
 
   inline lazy_ptr_base& lazy_ptr_base::
   operator= (const lazy_ptr_base& r)
