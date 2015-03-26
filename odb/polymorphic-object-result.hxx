@@ -184,10 +184,12 @@ namespace odb
     }
 
   public:
-    typename object_traits<T>::pointer_type
+    typedef typename object_traits<T>::pointer_type pointer_type;
+
+    pointer_type
     load ()
     {
-      typename object_traits<T>::pointer_type r (res_->current ());
+      pointer_type r (res_->current ());
       res_->release ();
       return r;
     }

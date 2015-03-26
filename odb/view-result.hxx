@@ -175,10 +175,12 @@ namespace odb
     }
 
   public:
-    typename view_traits<T>::pointer_type
+    typedef typename view_traits<T>::pointer_type pointer_type;
+
+    pointer_type
     load ()
     {
-      typename view_traits<T>::pointer_type r (res_->current ());
+      pointer_type r (res_->current ());
       res_->release ();
       return r;
     }
