@@ -26,12 +26,13 @@ namespace odb
   }
 
   void statement::
-  process_insert (const char* s,
+  process_insert (string& r,
+                  const char* s,
                   bind_type bind,
                   size_t bind_size,
                   size_t bind_skip,
                   char param_symbol,
-                  string& r)
+                  char param_symbol2)
   {
 #ifndef LIBODB_DEBUG_STATEMENT_PROCESSING
     assert (bind_size != 0); // Cannot be versioned.
@@ -109,7 +110,8 @@ namespace odb
         // INSERT ... VALUES(1,?). We also cannot be empty if this value
         // is present in the bind array.
         //
-        if (find (p, ve, param_symbol) == 0 ||
+        if ((find (p, ve, param_symbol) == 0 &&
+             (param_symbol2 == '\0' || find (p, ve, param_symbol2) == 0)) ||
             bind_at (bi++, bind, bind_skip) != 0)
           empty = false;
       }
@@ -190,7 +192,8 @@ namespace odb
         // See if the value contains the parameter symbol and, if so,
         // whether it is present in the bind array.
         //
-        if (find (v, ve, param_symbol) != 0 &&
+        if ((find (v, ve, param_symbol) != 0 ||
+             (param_symbol2 != '\0' && find (v, ve, param_symbol2) != 0)) &&
             bind_at (bi++, bind, bind_skip) == 0)
           continue;
 
@@ -228,7 +231,8 @@ namespace odb
         // See if the value contains the parameter symbol and, if so,
         // whether it is present in the bind array.
         //
-        if (find (v, ve, param_symbol) != 0 &&
+        if ((find (v, ve, param_symbol) != 0 ||
+             (param_symbol2 != '\0' && find (v, ve, param_symbol2) != 0)) &&
             bind_at (bi++, bind, bind_skip) == 0)
           continue;
 
@@ -262,12 +266,13 @@ namespace odb
   }
 
   void statement::
-  process_update (const char* s,
+  process_update (string& r,
+                  const char* s,
                   bind_type bind,
                   size_t bind_size,
                   size_t bind_skip,
                   char param_symbol,
-                  string& r)
+                  char param_symbol2)
   {
     bool fast (true); // Fast case (if all present).
     for (size_t i (0); i != bind_size && fast; ++i)
@@ -318,7 +323,8 @@ namespace odb
           // e.g., UPDATE ... SET ver=ver+1 ... We also cannot be empty if
           // this expression is present in the bind array.
           //
-          if (find (p, pe, param_symbol) == 0 ||
+          if ((find (p, pe, param_symbol) == 0 &&
+               (param_symbol2 == '\0' || find (p, pe, param_symbol2) == 0)) ||
               bind_at (bi++, bind, bind_skip) != 0)
             empty = false;
         }
@@ -370,7 +376,8 @@ namespace odb
         // See if the value contains the parameter symbol and, if so,
         // whether it is present in the bind array.
         //
-        if (find (p, pe, param_symbol) != 0 &&
+        if ((find (p, pe, param_symbol) != 0 ||
+             (param_symbol2 != '\0' && find (p, pe, param_symbol2) != 0)) &&
             bind_at (bi++, bind, bind_skip) == 0)
           continue;
 
@@ -400,7 +407,8 @@ namespace odb
   }
 
   void statement::
-  process_select (const char* s,
+  process_select (string& r,
+                  const char* s,
                   bind_type bind,
                   size_t bind_size,
                   size_t bind_skip,
@@ -411,7 +419,6 @@ namespace odb
 #else
                   bool,
 #endif
-                  string& r,
                   bool as)
   {
     bool empty (true); // Empty case (if none present).
