@@ -16,7 +16,8 @@ namespace odb
   namespace details
   {
     template <typename X>
-    class shared_ptr: bits::counter_ops<typename bits::counter_type<X>::r, X>
+    class shared_ptr:
+      private bits::counter_ops<typename bits::counter_type<X>::r, X>
     {
       typedef bits::counter_ops<typename bits::counter_type<X>::r, X> base;
 

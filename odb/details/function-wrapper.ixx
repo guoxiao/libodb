@@ -36,12 +36,5 @@ namespace odb
       swap (const_cast<function_wrapper<F>&> (x));
       return *this;
     }
-
-    template <typename F>
-    inline function_wrapper<F>::
-    operator bool_convertible () const
-    {
-      return function != 0 ? &function_wrapper<F>::true_value : 0;
-    }
   }
 }
