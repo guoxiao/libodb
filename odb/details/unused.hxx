@@ -7,11 +7,11 @@
 
 #include <odb/pre.hxx>
 
-// VC++ doesn't like the (void)x expression if x is a reference to
-// an incomplete type. On the other hand, GCC warns that (void*)&x
+// VC++ and xlC don't like the (void)x expression if x is a reference
+// to an incomplete type. On the other hand, GCC warns that (void*)&x
 // doesn't have any effect.
 //
-#ifdef _MSC_VER
+#if defined(_MSC_VER) || defined(__xlC__)
 #  define ODB_POTENTIALLY_UNUSED(x) (void*)&x
 #else
 #  define ODB_POTENTIALLY_UNUSED(x) (void)x
