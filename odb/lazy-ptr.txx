@@ -110,34 +110,6 @@ namespace odb
     return i_.database () == r.i_.database () &&
       object_id<object_type1> () == r.template object_id<object_type2> ();
   }
-
-  //
-  // lazy_weak_ptr
-  //
-
-  template <class T>
-  lazy_shared_ptr<T> lazy_weak_ptr<T>::
-  lock () const
-  {
-    std::shared_ptr<T> sp (p_.lock ());
-
-    if (sp)
-    {
-      if (database_type* db = i_.database ())
-        return lazy_shared_ptr<T> (*db, sp);
-      else
-        return lazy_shared_ptr<T> (sp);
-    }
-    else
-    {
-      if (i_)
-        return lazy_shared_ptr<T> (
-          *i_.database (), i_.template object_id<T> ());
-      else
-        return lazy_shared_ptr<T> ();
-    }
-  }
-
 #endif // ODB_CXX11
 
 }
