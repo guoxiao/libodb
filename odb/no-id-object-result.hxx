@@ -153,7 +153,11 @@ namespace odb
     pointer_type
     load ()
     {
+#ifdef ODB_CXX11
+      pointer_type r (std::move (res_->current ()));
+#else
       pointer_type r (res_->current ());
+#endif
       res_->release ();
       return r;
     }
