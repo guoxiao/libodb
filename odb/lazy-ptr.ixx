@@ -851,14 +851,14 @@ namespace odb
   inline bool
   operator!= (const lazy_unique_ptr<T, D>& a, std::nullptr_t)
   {
-    return a;
+    return bool (a); // Explicit to-bool conversion.
   }
 
   template <class T, class D>
   inline bool
   operator!= (std::nullptr_t, const lazy_unique_ptr<T, D>& b)
   {
-    return b;
+    return bool (b); // Explicit to-bool conversion.
   }
 #endif
 
@@ -1391,14 +1391,14 @@ namespace odb
   inline bool
   operator!= (const lazy_shared_ptr<T>& p, std::nullptr_t)
   {
-    return p;
+    return bool (p); // Explicit to-bool conversion.
   }
 
   template <class T>
   inline bool
   operator!= (std::nullptr_t, const lazy_shared_ptr<T>& p)
   {
-    return p;
+    return bool (p); // Explicit to-bool conversion.
   }
 #endif
 
