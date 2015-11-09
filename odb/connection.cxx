@@ -12,6 +12,8 @@ using namespace std;
 
 namespace odb
 {
+  // connection
+  //
   connection::
   ~connection ()
   {
@@ -98,8 +100,8 @@ namespace odb
     {
       // Use a factory, if there is one.
       //
-      if (database_.call_query_factory (name,
-                                        const_cast<connection&> (*this)))
+      if (factory_.database ().call_query_factory (
+            name, const_cast<connection&> (*this)))
         i = prepared_map_.find (name);
     }
 

@@ -8,8 +8,8 @@
 namespace odb
 {
   inline connection::
-  connection (database_type& database)
-      : database_ (database),
+  connection (connection_factory& f)
+      : factory_ (f),
         tracer_ (0),
         results_ (0),
         prepared_queries_ (0),
@@ -20,7 +20,7 @@ namespace odb
   inline connection::database_type& connection::
   database ()
   {
-    return database_;
+    return factory_.database ();
   }
 
   inline unsigned long long connection::

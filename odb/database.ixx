@@ -73,7 +73,10 @@ namespace odb
 
   inline database::
   database (database_id id)
-      : id_ (id), tracer_ (0), schema_version_seq_ (1)
+      : id_ (id),
+        tracer_ (0),
+        mutex_ (new details::mutex),
+        schema_version_seq_ (1)
   {
   }
 

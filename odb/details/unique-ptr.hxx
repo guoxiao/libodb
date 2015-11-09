@@ -7,6 +7,8 @@
 
 #include <odb/pre.hxx>
 
+#include <odb/details/config.hxx>
+
 namespace odb
 {
   namespace details
@@ -19,6 +21,20 @@ namespace odb
 
       explicit unique_ptr (T* p = 0): p_ (p) {}
       ~unique_ptr () {delete p_;}
+
+#ifdef ODB_CXX11
+      unique_ptr (unique_ptr&& p): p_ (p.p_) {p.p_ = 0;}
+      unique_ptr& operator= (unique_ptr&& p)
+      {
+        if (this != &p)
+        {
+          delete p_;
+          p_ = p.p_;
+          p.p_ = 0;
+        }
+        return *this;
+      }
+#endif
 
     private:
       unique_ptr (const unique_ptr&);

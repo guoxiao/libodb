@@ -26,6 +26,7 @@
 namespace odb
 {
   class transaction_impl;
+  class connection_factory;
 
   class connection;
   typedef details::shared_ptr<connection> connection_ptr;
@@ -130,7 +131,7 @@ namespace odb
     recycle ();
 
   protected:
-    connection (database_type&);
+    connection (connection_factory&);
 
     template <typename T,
               database_id DB,
@@ -180,7 +181,7 @@ namespace odb
     clear_prepared_map ();
 
   protected:
-    database_type& database_;
+    connection_factory& factory_;
     tracer_type* tracer_;
 
     // Active query result list.
@@ -202,6 +203,20 @@ namespace odb
   protected:
     friend class transaction;
     tracer_type* transaction_tracer_;
+  };
+
+  class LIBODB_EXPORT connection_factory
+  {
+  public:
+    typedef odb::database database_type;
+
+    connection_factory (): db_ (0) {}
+
+    database_type&
+    database () {return *db_;}
+
+  protected:
+    database_type* db_;
   };
 }
 

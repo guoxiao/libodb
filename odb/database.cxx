@@ -27,7 +27,7 @@ namespace odb
   const database::schema_version_migration_type& database::
   schema_version_migration (const string& name) const
   {
-    lock l (mutex_); // Prevents concurrent loading.
+    lock l (*mutex_); // Prevents concurrent loading.
 
     schema_version_map::const_iterator i (schema_version_map_.find (name));
     return i != schema_version_map_.end () && i->second.version != 0

@@ -32,6 +32,7 @@
 #include <odb/details/export.hxx>
 #include <odb/details/mutex.hxx>
 #include <odb/details/c-string.hxx>
+#include <odb/details/unique-ptr.hxx>
 #include <odb/details/function-wrapper.hxx>
 #include <odb/details/meta/answer.hxx>
 
@@ -44,6 +45,18 @@ namespace odb
   public:
     virtual
     ~database ();
+
+#ifdef ODB_CXX11
+    database (database&&) = default;
+#endif
+
+  private:
+    database (const database&);
+    database& operator= (const database&);
+
+#ifdef ODB_CXX11
+    database& operator= (const database&&);
+#endif
 
     // Object persistence API.
     //
@@ -504,10 +517,6 @@ namespace odb
   protected:
     database (database_id);
 
-  private:
-    database (const database&);
-    database& operator= (const database&);
-
   protected:
     virtual connection_type*
     connection_ () = 0;
@@ -621,7 +630,7 @@ namespace odb
     tracer_type* tracer_;
     query_factory_map query_factory_map_;
 
-    mutable details::mutex mutex_;
+    details::unique_ptr<details::mutex> mutex_; // Dynamic for move support.
     mutable schema_version_map schema_version_map_;
     std::string schema_version_table_;
     unsigned int schema_version_seq_;
